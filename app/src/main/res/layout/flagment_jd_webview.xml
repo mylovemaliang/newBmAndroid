@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.zhy.android.percent.support.PercentRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/jd_wv_header"
+            android:background="@color/module_11">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_widthPercent="15%w"
+                app:layout_heightPercent="100%h"
+                android:id="@+id/wv_back_area">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/wv_back"
+                    android:src="@mipmap/back"
+                    android:layout_centerInParent="true"
+                    />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="京东好货"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true"
+                />
+
+             <RelativeLayout
+                 android:layout_width="0dp"
+                 android:layout_height="0dp"
+                 app:layout_widthPercent="15%w"
+                 app:layout_heightPercent="100%h"
+                 android:layout_alignParentRight="true"
+                 android:id="@+id/jd_wv_close">
+                 <TextView
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="关闭"
+                     android:textColor="@color/white"
+                     android:textSize="15sp"
+                     android:layout_centerInParent="true"/>
+             </RelativeLayout>
+
+        </com.zhy.android.percent.support.PercentRelativeLayout>
+
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/jd_wv"
+        android:layout_below="@+id/jd_wv_header">
+    </WebView>
+
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/show_fanli"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="150dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/fanli_show_border"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="返"
+            android:textColor="#ffffff"
+            android:padding="10dp"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fq_jd_tip_area"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="150dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/fanli_tip_border"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/jd_left_tip_text"
+                android:layout_centerVertical="true"
+                android:textSize="15sp"
+                android:textColor="@color/module_6"
+                android:text="返钱模式" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/jd_right_tip_text"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/jd_left_tip_text"
+                android:text="返--%|约--积分"
+                android:textColor="#ffffff"
+                android:textSize="15sp"
+                android:layout_centerVertical="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/jd_hide_tip"
+                android:layout_toRightOf="@+id/jd_right_tip_text"
+                android:layout_marginLeft="10dp"
+                android:textColor="#ffffff"
+                android:text="隐藏"
+                android:textSize="15sp"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
+    </FrameLayout>
+
+</RelativeLayout>

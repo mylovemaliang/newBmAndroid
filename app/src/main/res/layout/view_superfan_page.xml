@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:id="@+id/superfan_header">
+
+        <RelativeLayout
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/superfan_backArea">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/back_gray"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="超级返"
+            android:id="@+id/superfan_title"
+            android:layout_centerInParent="true"
+            android:textStyle="normal|bold" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:orientation="horizontal"
+        android:id="@+id/line1"
+        android:layout_below="@+id/superfan_header"
+        android:background="@color/gray"
+        ></LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+      android:layout_width="match_parent"
+      android:layout_height="35dp"
+      android:id="@+id/superfan_topRcycleView"
+      android:layout_below="@+id/line1">
+    </android.support.v7.widget.RecyclerView>
+
+    <cn.fuyoushuo.fqbb.view.Layout.RefreshLayout
+        android:id="@+id/superfan_flagment_refreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/superfan_topRcycleView">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/superfan_bottomRcycleView">
+        </android.support.v7.widget.RecyclerView>
+
+    </cn.fuyoushuo.fqbb.view.Layout.RefreshLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/to_top_border"
+        android:id="@+id/main_totop_area"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/main_totop_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/to_top_iconfront"/>
+    </FrameLayout>
+
+</RelativeLayout>

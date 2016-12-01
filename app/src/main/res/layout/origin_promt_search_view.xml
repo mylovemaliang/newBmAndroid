@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ScrollView
+      android:id="@+id/scrollArea"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      xmlns:zhy="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="历史搜索:"
+            android:textSize="15sp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:id="@+id/search_prompt_searchHis"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_promt_deleteHis_area"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_promt_delete"
+                android:padding="10dp"
+                android:textColor="@color/module_6"
+                android:textSize="20sp"
+                android:id="@+id/search_promt_deleteHis_text"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
+
+        <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/search_prompt_searchHis"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:id="@+id/searchHisRview">-->
+
+        <!--</android.support.v7.widget.RecyclerView>-->
+
+        <com.zhy.view.flowlayout.TagFlowLayout
+            android:id="@+id/searchHisRview"
+            zhy:max_select="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/search_prompt_searchHis"
+            android:layout_marginLeft="20dp"
+            android:padding="20dp">
+        </com.zhy.view.flowlayout.TagFlowLayout>
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="热门搜索:"
+            android:textSize="15sp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:id="@+id/search_prompt_searchHot"
+            android:layout_below="@id/searchHisRview"/>
+
+        <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/search_prompt_searchHot"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:id="@+id/searchHotRview">-->
+
+        <!--</android.support.v7.widget.RecyclerView>-->
+
+        <com.zhy.view.flowlayout.TagFlowLayout
+            android:id="@+id/searchHotRview"
+            zhy:max_select="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@id/search_prompt_searchHot"
+            android:padding="20dp">
+        </com.zhy.view.flowlayout.TagFlowLayout>
+    </RelativeLayout>
+</ScrollView>
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:layout_alignParentBottom="true"
+    android:id="@+id/clipboard_button_area"
+    android:background="@color/module_15">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="粘  贴"
+        android:textColor="@color/module_6"
+        android:textSize="16sp"
+        android:layout_centerInParent="true" />
+
+</RelativeLayout>
+
+</RelativeLayout>
