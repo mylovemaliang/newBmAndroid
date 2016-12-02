@@ -1,6 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<com.zhy.android.percent.support.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-</LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:id="@+id/update_zfb_header">
+
+        <RelativeLayout
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/update_zfb_backArea">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/back_gray"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="修改支付宝"
+            android:textStyle="bold|normal"
+            android:id="@+id/bind_zfb_title"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:orientation="horizontal"
+        android:id="@+id/line1"
+        android:layout_below="@+id/update_zfb_header"
+        android:background="@color/gray"
+        ></LinearLayout>
+
+    <TextView
+        android:id="@+id/update_zfb_account_area"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_marginTopPercent="8%h"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/update_zfb_header"
+        android:text="已绑定支付宝  93644445588@qq.com"
+        android:textSize="16sp" />
+
+
+
+    <com.zhy.android.percent.support.PercentLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        app:layout_marginTopPercent="8%h"
+        android:id="@+id/zfb_new_account_area"
+        android:layout_below="@+id/update_zfb_account_area">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_widthPercent="20%w"
+            android:id="@+id/zfb_new_account_title">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="新支付宝"
+                android:textStyle="normal"
+                android:textSize="16sp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_widthPercent="60%w"
+            app:layout_marginLeftPercent="10%w"
+            android:background="@drawable/textborder"
+            android:id="@+id/zfb_new_account_value_area">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:background="@null"
+                android:hint="请输入新支付宝账号"
+                android:gravity="center"
+                android:textColorHint="@color/gray"
+                android:textSize="16sp"
+                android:layout_marginLeft="20dp"
+                android:id="@+id/zfb_new_account_value"/>
+        </RelativeLayout>
+
+    </com.zhy.android.percent.support.PercentLinearLayout>
+
+
+
+
+
+
+    <com.zhy.android.percent.support.PercentRelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:layout_widthPercent="100%w"
+        app:layout_marginTopPercent="5%h"
+        android:id="@+id/sms_check_area"
+        android:layout_below="@+id/zfb_new_account_area"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/sms_tip_text"
+            app:layout_widthPercent="20%w"
+            android:layout_alignParentLeft="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="短信验证"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+        </RelativeLayout>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_widthPercent="40%w"
+            android:background="@drawable/textborder"
+            android:layout_toRightOf="@+id/sms_tip_text"
+            app:layout_marginLeftPercent="5%w"
+            android:digits="1234567890"
+            android:hint="输入短信验证码"
+            android:gravity="center"
+            android:textColorHint="@color/gray"
+            android:textSize="16sp"
+            android:id="@+id/verificate_value"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_heightPercent="80%h"
+            app:layout_widthPercent="20%w"
+            app:layout_marginLeftPercent="5%w"
+            android:layout_toRightOf="@+id/verificate_value"
+            android:background="@color/module_6"
+            android:layout_centerVertical="true"
+            android:text="发送验证码"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            android:id="@+id/acquire_verification_button" />
+    </com.zhy.android.percent.support.PercentRelativeLayout>
+
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:layout_widthPercent="70%w"
+        app:layout_marginTopPercent="8%h"
+        android:layout_below="@+id/sms_check_area"
+        android:background="@color/module_11"
+        android:text="确认无误,修改"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/commit_button"/>
+
+</com.zhy.android.percent.support.PercentRelativeLayout>

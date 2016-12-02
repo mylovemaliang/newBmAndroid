@@ -8,6 +8,7 @@ import com.alibaba.fastjson.serializer.BooleanCodec;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import cn.fuyoushuo.fqbb.ServiceManager;
 import cn.fuyoushuo.fqbb.commonlib.utils.Constants;
@@ -279,6 +280,82 @@ public class LocalLoginPresent extends BasePresenter{
        );
     }
 
+    /**
+     * 绑定支付宝
+     * @param alipayNo 支付宝号
+     * @param realName 真实名字
+     * @param idCard   身份证号码
+     * @param verifiCode 验证码
+     */
+    public void bindZfb(String alipayNo, String realName, String idCard, String verifiCode, final BindZfbCallBack bindZfbCallBack){
+         if(TextUtils.isEmpty(alipayNo) || TextUtils.isEmpty(realName) || TextUtils.isEmpty(idCard) || TextUtils.isEmpty(verifiCode)){
+                 return;
+         }
+         mSubscriptions.add(ServiceManager.createService(FqbbLocalHttpService.class)
+           .bindZfb(alipayNo,realName,idCard,verifiCode)
+           .subscribeOn(Schedulers.io())
+           .observeOn(AndroidSchedulers.mainThread())
+           .subscribe(new Subscriber<HttpResp>() {
+               @Override
+               public void onCompleted() {
+
+               }
+
+               @Override
+               public void onError(Throwable e) {
+                   bindZfbCallBack.onBindZfbFail("支付宝绑定失败");
+               }
+
+               @Override
+               public void onNext(HttpResp httpResp) {
+                   if(httpResp == null || httpResp.getS() != 1){
+                       bindZfbCallBack.onBindZfbFail(httpResp.getM());
+                   }else{
+                       bindZfbCallBack.onBindZfbSucc();
+                   }
+               }
+           })
+         );
+    }
+
+    /**
+     * 换绑支付宝
+     * @param alipayNo 新的支付宝账号
+     * @param verifiCode 验证码
+     */
+    public void updateZfb(String alipayNo, String verifiCode, final UpdateZfbCallBack updateZfbCallBack){
+        if(TextUtils.isEmpty(alipayNo) || TextUtils.isEmpty(verifiCode)){
+            return;
+        }
+        mSubscriptions.add(ServiceManager.createService(FqbbLocalHttpService.class)
+            .updateZfb(alipayNo,verifiCode)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Subscriber<HttpResp>() {
+
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    updateZfbCallBack.onUpdateZfbFail("支付宝更新失败");
+                }
+
+                @Override
+                public void onNext(HttpResp httpResp) {
+                    if(httpResp == null || httpResp.getS() != 1){
+                        updateZfbCallBack.onUpdateZfbFail(httpResp.getM());
+                    }else{
+                        updateZfbCallBack.onUpdateZfbSucc();
+                    }
+                }
+            })
+        );
+    }
+
+
 
 
 
@@ -339,6 +416,22 @@ public class LocalLoginPresent extends BasePresenter{
         void onUpdatePasswordSucc();
 
         void onUpdatePasswordFail();
+    }
+
+
+    public interface BindZfbCallBack{
+
+        void onBindZfbSucc();
+
+        void onBindZfbFail(String msg);
+
+    }
+
+    public interface UpdateZfbCallBack{
+
+        void onUpdateZfbSucc();
+
+        void onUpdateZfbFail(String msg);
 
     }
 

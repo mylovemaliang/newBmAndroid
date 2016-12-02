@@ -1,6 +1,266 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<com.zhy.android.percent.support.PercentLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:id="@+id/points_tixian_title">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/points_tixian_backArea">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/back_gray"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="积分提现"
+            android:textSize="18sp"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="@color/gray"></View>
+
+    <com.zhy.android.percent.support.PercentLinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/points_tixian_info"
+        android:layout_marginTop="10dp">
+
+        <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                app:layout_widthPercent="33%w"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp"
+                android:background="@color/white">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="可用积分余额"
+                        android:textSize="15sp"
+                        android:id="@+id/tixian_info_useAblePoints_tip"
+                        android:layout_marginTop="10dp"
+                        android:layout_centerHorizontal="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="20sp"
+                        android:layout_below="@+id/tixian_info_useAblePoints_tip"
+                        android:id="@+id/tixian_info_useAblePoints_value"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"/>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                app:layout_widthPercent="34%w"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp"
+                android:background="@color/white">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="当前可兑换"
+                        android:textSize="15sp"
+                        android:id="@+id/tixian_info_duihuan_tip"
+                        android:layout_marginTop="10dp"
+                        android:layout_centerHorizontal="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="20sp"
+                        android:layout_below="@+id/tixian_info_duihuan_tip"
+                        android:id="@+id/tixian_info_duihuan_value"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"/>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                app:layout_widthPercent="33%w"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp"
+                android:background="@color/white">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="本月限额"
+                        android:textSize="15sp"
+                        android:id="@+id/tixian_info_duihuan_max_tip"
+                        android:layout_marginTop="10dp"
+                        android:layout_centerHorizontal="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="800元"
+                        android:textColor="@color/module_11"
+                        android:textSize="20sp"
+                        android:layout_below="@+id/tixian_info_duihuan_max_tip"
+                        android:id="@+id/tixian_info_duihuan_max_value"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"/>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+    </com.zhy.android.percent.support.PercentLinearLayout>
+
+
+    <com.zhy.android.percent.support.PercentLinearLayout
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="35dp"
+        android:layout_marginTop="10dp">
+
+      <TextView
+         android:layout_width="0dp"
+         app:layout_widthPercent="25%w"
+         android:layout_height="match_parent"
+         android:text="提现金额"
+         android:textSize="16sp"
+         android:gravity="center_vertical|right" />
+
+      <EditText
+          android:layout_width="0dp"
+          app:layout_marginLeftPercent="5%w"
+          app:layout_widthPercent="50%w"
+          android:hint="50元起提"
+          android:digits="1234567890"
+          android:textSize="16sp"
+          android:gravity="center"
+          android:layout_height="match_parent"
+          android:background="@drawable/textborder"
+          android:id="@+id/tixian_cash_num" />
+
+       <TextView
+           android:layout_width="0dp"
+           app:layout_marginLeftPercent="5%w"
+           app:layout_widthPercent="15%w"
+           android:layout_height="match_parent"
+           android:text="元"
+           android:textSize="16sp"
+           android:gravity="center_vertical|left" />
+
+    </com.zhy.android.percent.support.PercentLinearLayout>
+
+    <com.zhy.android.percent.support.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:id="@+id/sms_check_area"
+        android:layout_centerHorizontal="true"
+        android:background="@color/white"
+        android:layout_marginTop="10dp">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/sms_tip_text"
+            app:layout_widthPercent="25%w"
+            android:layout_alignParentLeft="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="短信验证"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+        </RelativeLayout>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_widthPercent="40%w"
+            android:background="@drawable/textborder"
+            android:layout_toRightOf="@+id/sms_tip_text"
+            app:layout_marginLeftPercent="5%w"
+            android:digits="1234567890"
+            android:hint="输入短信验证码"
+            android:gravity="center"
+            android:textColorHint="@color/gray"
+            android:textSize="16sp"
+            android:id="@+id/verificate_value"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_heightPercent="80%h"
+            app:layout_widthPercent="20%w"
+            app:layout_marginLeftPercent="5%w"
+            android:layout_toRightOf="@+id/verificate_value"
+            android:background="@color/module_6"
+            android:layout_centerVertical="true"
+            android:text="发送验证码"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            android:id="@+id/acquire_verification_button" />
+    </com.zhy.android.percent.support.PercentRelativeLayout>
+
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:layout_widthPercent="70%w"
+        app:layout_marginLeftPercent="15%w"
+        app:layout_marginTopPercent="4%h"
+        android:background="@color/module_11"
+        android:text="提交申请"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:id="@+id/commit_button"/>
+
+    <TextView
+        android:layout_width="0dp"
+        app:layout_marginTopPercent="10%h"
+        app:layout_widthPercent="80%w"
+        app:layout_marginLeftPercent="10%w"
+        android:layout_height="wrap_content"
+        android:text="1.每月只能体现一次的点点滴滴的顶顶顶顶顶萘胺啊发发发的说法是打发"
+        android:layout_gravity="left"
+        android:id="@+id/tixian_tip_text"/>
+
+
+</com.zhy.android.percent.support.PercentLinearLayout>

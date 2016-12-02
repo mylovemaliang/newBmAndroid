@@ -61,6 +61,25 @@ public interface FqbbLocalHttpService {
     @GET("/point/mpdetail-{pagenum}.htm?pagesize=50")
     Observable<HttpResp> getDhDetails(@Path("pagenum") int pageNum);
 
+    //--------------------------------------------提现与支付宝相关--------------------------------------------------
+
+    //绑定支付宝
+    @GET("/user/mdoBindAlipay.htm")
+    Observable<HttpResp> bindZfb(@Query("alipayNo") String alipayNo,@Query("realName") String realName,@Query("idCard") String idCard,@Query("code") String verifiCode);
+
+    //换绑支付宝
+    @GET("/user/mchangeAlipay.htm")
+    Observable<HttpResp> updateZfb(@Query("alipayNo") String alipayNo,@Query("code") String verifiCode);
+
+    //提现订单分页查询接口
+    @GET("/point/mcashOrder-{pagenum}.htm")
+    Observable<HttpResp> getCashOrders(@Path("pagenum") int pageNum,@Query("queryStatus") Integer queryStatus);
+
+    //提现订单创建
+    @GET("/point/mpcash.htm")
+    Observable<HttpResp> createCashOrders(@Query("cashNum") float cashNum,@Query("code") String code);
 }
+
+
 
 
