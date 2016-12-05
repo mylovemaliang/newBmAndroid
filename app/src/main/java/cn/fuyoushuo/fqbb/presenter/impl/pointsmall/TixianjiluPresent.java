@@ -15,6 +15,7 @@ import cn.fuyoushuo.fqbb.domain.ext.HttpResp;
 import cn.fuyoushuo.fqbb.domain.httpservice.FqbbLocalHttpService;
 import cn.fuyoushuo.fqbb.presenter.impl.BasePresenter;
 import cn.fuyoushuo.fqbb.view.view.pointsmall.DuihuanjiluView;
+import cn.fuyoushuo.fqbb.view.view.pointsmall.TixianjiluView;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -22,19 +23,20 @@ import rx.schedulers.Schedulers;
 /**
  * Created by QA on 2016/11/11.
  */
-public class DuihuanjiluPresent extends BasePresenter {
+public class TixianjiluPresent extends BasePresenter {
 
-    private WeakReference<DuihuanjiluView> duihuanjiluView;
+    private WeakReference<TixianjiluView> tixianjiluView;
 
-    public DuihuanjiluPresent(DuihuanjiluView duihuanjiluView) {
-        this.duihuanjiluView = new WeakReference<DuihuanjiluView>(duihuanjiluView);
+    public TixianjiluPresent(TixianjiluView tixianjiluView) {
+        this.tixianjiluView = new WeakReference<TixianjiluView>(tixianjiluView);
     }
 
-    private DuihuanjiluView getMyView(){
-        return duihuanjiluView.get();
+    private TixianjiluView getMyView(){
+        return tixianjiluView.get();
     }
 
-    public void getDhOrders(final Integer queryStatus, final int pageNum, final boolean isRefresh){
+
+    public void getTixianOrders(final Integer queryStatus, final int pageNum, final boolean isRefresh){
          if(pageNum == 0){
              if(getMyView() != null){
                  getMyView().onLoadDataFail("页数错误");
@@ -42,7 +44,7 @@ public class DuihuanjiluPresent extends BasePresenter {
          }
 
         mSubscriptions.add(ServiceManager.createService(FqbbLocalHttpService.class)
-                .getDhOrders(pageNum,queryStatus)
+                .getCashOrders(pageNum,queryStatus)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<HttpResp>() {
@@ -66,7 +68,7 @@ public class DuihuanjiluPresent extends BasePresenter {
                            }
                        }else{
                            boolean isLastPage = false;
-                           List<DuihuanItem> orders = new ArrayList<DuihuanItem>();
+                           List<TixianjiluItem> orders = new ArrayList<TixianjiluItem>();
                            JSONObject result = new JSONObject(((Map)(httpResp.getR())));
                            if(result != null && !result.isEmpty() && result.containsKey("totalPageNumber")){
                                int totalPageNumber = result.getIntValue("totalPageNumber");
@@ -84,18 +86,17 @@ public class DuihuanjiluPresent extends BasePresenter {
         );
     }
 
-    private void parseDuihuanItem(JSONObject result,List<DuihuanItem> orders){
+    private void parseDuihuanItem(JSONObject result,List<TixianjiluItem> orders){
         if(result == null || result.isEmpty()) return;
         JSONArray listObjs = result.getJSONArray("listObjs");
         if(listObjs == null || listObjs.isEmpty()) return;
         for(int i=0;i<listObjs.size();i++){
             JSONObject item = listObjs.getJSONObject(i);
-            DuihuanItem duihuanItem = new DuihuanItem();
-            duihuanItem.setDateTimeString(item.getString("gmtCreateStr"));
-            duihuanItem.setMobilePhone(item.getString("mobilePhone"));
-            duihuanItem.setOrderDetail(item.getString("orderItemDesc"));
-            duihuanItem.setOrderStatus(item.getInteger("status"));
-            orders.add(duihuanItem);
+            TixianjiluItem tixianItem = new TixianjiluItem();
+            tixianItem.setDateTimeString(item.getString("gmtCreateStr"));
+            tixianItem.setTixianPoints(item.getIntValue("cash"));
+            tixianItem.setOrderStatus(item.getInteger("status"));
+            orders.add(tixianItem);
         }
     }
 }

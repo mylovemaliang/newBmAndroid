@@ -22,6 +22,8 @@ import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import cn.fuyoushuo.fqbb.view.flagment.pointsmall.DuihuanjiluDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.pointsmall.PhoneRechargeDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.pointsmall.PointsDetailDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.pointsmall.TixianDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.pointsmall.TixianjiluDialogFragment;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
@@ -56,6 +58,9 @@ public class PointMallActivity extends BaseActivity{
 
     @Bind(R.id.points_mall_pointsDetail)
     RelativeLayout pointsDetailArea;
+
+    @Bind(R.id.points_mall_tixianjilu)
+    RelativeLayout tixianjiluArea;
 
     private LocalLoginPresent localLoginPresent;
 
@@ -98,6 +103,7 @@ public class PointMallActivity extends BaseActivity{
                     @Override
                     public void call(Void aVoid) {
                         // TODO: 2016/11/7
+                        TixianDialogFragment.newInstance().show(getSupportFragmentManager(),"TixianDialogFragment");
                     }
                 });
         //兑换记录
@@ -116,6 +122,15 @@ public class PointMallActivity extends BaseActivity{
                     public void call(Void aVoid) {
                         // TODO: 2016/11/7
                         PointsDetailDialogFragment.newInstance().show(getSupportFragmentManager(),"PointsDetailDialogFragment");
+                    }
+                });
+        //提现记录
+        RxView.clicks(tixianjiluArea).compose(this.<Void>bindToLifecycle()).throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        // TODO: 2016/11/7
+                        TixianjiluDialogFragment.newInstance().show(getSupportFragmentManager(),"TixianjiluDialogFragment");
                     }
                 });
 

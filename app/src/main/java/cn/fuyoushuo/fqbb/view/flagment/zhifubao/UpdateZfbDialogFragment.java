@@ -2,6 +2,7 @@ package cn.fuyoushuo.fqbb.view.flagment.zhifubao;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -76,6 +77,7 @@ public class UpdateZfbDialogFragment extends RxDialogFragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL,R.style.fullScreenDialog);
         if(getArguments() != null){
             zfbAccount = getArguments().getString("zfbAccount","");
         }
@@ -98,6 +100,15 @@ public class UpdateZfbDialogFragment extends RxDialogFragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        RxView.clicks(backArea).compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .throttleFirst(1000,TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        dismissAllowingStateLoss();
+                    }
+                });
 
         RxTextView.textChanges(newAlipayNoView).compose(this.<CharSequence>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .subscribe(new Action1<CharSequence>() {

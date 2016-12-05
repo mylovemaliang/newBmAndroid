@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.zhy.android.percent.support.PercentLinearLayout
+<android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/points_tixian_refreshview">
+
+    <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+       <com.zhy.android.percent.support.PercentLinearLayout
+           android:orientation="vertical"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -45,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/points_tixian_info"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="20dp">
 
         <android.support.v7.widget.CardView
                 android:layout_width="0dp"
@@ -147,27 +156,34 @@
             </android.support.v7.widget.CardView>
     </com.zhy.android.percent.support.PercentLinearLayout>
 
+   <View
+       android:layout_width="match_parent"
+       android:layout_height="1dip"
+       android:background="@color/gray"
+       android:layout_marginTop="20dp"
+       ></View>
+
 
     <com.zhy.android.percent.support.PercentLinearLayout
         android:layout_width="match_parent"
         android:background="@color/white"
         android:layout_height="35dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="20dp">
 
-      <TextView
-         android:layout_width="0dp"
-         app:layout_widthPercent="25%w"
-         android:layout_height="match_parent"
-         android:text="提现金额"
-         android:textSize="16sp"
-         android:gravity="center_vertical|right" />
+        <TextView
+           android:layout_width="0dp"
+           app:layout_widthPercent="25%w"
+           android:layout_height="match_parent"
+           android:text="提现金额"
+           android:textSize="16sp"
+           android:gravity="center_vertical|right" />
 
-      <EditText
+        <EditText
           android:layout_width="0dp"
           app:layout_marginLeftPercent="5%w"
           app:layout_widthPercent="50%w"
           android:hint="50元起提"
-          android:digits="1234567890"
+          android:digits="1234567890."
           android:textSize="16sp"
           android:gravity="center"
           android:layout_height="match_parent"
@@ -191,7 +207,7 @@
         android:id="@+id/sms_check_area"
         android:layout_centerHorizontal="true"
         android:background="@color/white"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="20dp">
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -245,7 +261,7 @@
         android:layout_height="40dp"
         app:layout_widthPercent="70%w"
         app:layout_marginLeftPercent="15%w"
-        app:layout_marginTopPercent="4%h"
+        android:layout_marginTop="50dp"
         android:background="@color/module_11"
         android:text="提交申请"
         android:textSize="14sp"
@@ -254,13 +270,14 @@
 
     <TextView
         android:layout_width="0dp"
-        app:layout_marginTopPercent="10%h"
-        app:layout_widthPercent="80%w"
-        app:layout_marginLeftPercent="10%w"
+        android:layout_marginTop="80dp"
+        app:layout_widthPercent="70%w"
+        android:textSize="15sp"
+        app:layout_marginLeftPercent="15%w"
         android:layout_height="wrap_content"
-        android:text="1.每月只能体现一次的点点滴滴的顶顶顶顶顶萘胺啊发发发的说法是打发"
         android:layout_gravity="left"
         android:id="@+id/tixian_tip_text"/>
 
-
 </com.zhy.android.percent.support.PercentLinearLayout>
+</ScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>

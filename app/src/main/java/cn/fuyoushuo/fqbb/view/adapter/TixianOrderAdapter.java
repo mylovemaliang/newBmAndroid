@@ -8,25 +8,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.jakewharton.rxbinding.view.RxView;
-
-import java.util.concurrent.TimeUnit;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
-import cn.fuyoushuo.fqbb.commonlib.utils.CommonUtils;
 import cn.fuyoushuo.fqbb.commonlib.utils.DateUtils;
-import cn.fuyoushuo.fqbb.domain.entity.DuihuanItem;
-import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
-import rx.functions.Action1;
+import cn.fuyoushuo.fqbb.domain.entity.TixianjiluItem;
 
 /**
  * Created by QA on 2016/6/27.
  */
-public class DuihuanOrderAdapter extends BaseListAdapter<DuihuanItem>{
+public class TixianOrderAdapter extends BaseListAdapter<TixianjiluItem>{
 
     private int currentPage = 1;
 
@@ -50,7 +42,7 @@ public class DuihuanOrderAdapter extends BaseListAdapter<DuihuanItem>{
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_duihuanjilu_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_tixianjilu_item, parent, false);
         return new ItemViewHolder(view);
     }
 
@@ -59,7 +51,7 @@ public class DuihuanOrderAdapter extends BaseListAdapter<DuihuanItem>{
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         final ItemViewHolder currentHolder = (ItemViewHolder) holder;
-        final DuihuanItem item = getItem(position);
+        final TixianjiluItem item = getItem(position);
         String dateTimeString = item.getDateTimeString();
         if(TextUtils.isEmpty(dateTimeString)){
             currentHolder.dateString.setText("--");
@@ -70,17 +62,8 @@ public class DuihuanOrderAdapter extends BaseListAdapter<DuihuanItem>{
             currentHolder.timeString.setText(split[1]);
         }
 
-        if(!TextUtils.isEmpty(item.getOrderDetail())){
-            currentHolder.orderDetail.setText(item.getOrderDetail());
-        } else{
-            currentHolder.orderDetail.setText("--");
-        }
-
-        if(!TextUtils.isEmpty(item.getMobilePhone())){
-            currentHolder.mobilePhone.setText(item.getMobilePhone());
-        }else{
-            currentHolder.mobilePhone.setText("--");
-        }
+        Integer tixianPoints = item.getTixianPoints();
+        currentHolder.orderDetail.setText("积分提现:"+ String.valueOf(DateUtils.getFormatFloat((float)tixianPoints/100))+"元");
 
         int status = item.getOrderStatus();
         if(status == 2) {
@@ -107,19 +90,16 @@ public class DuihuanOrderAdapter extends BaseListAdapter<DuihuanItem>{
 
     public class ItemViewHolder extends RecyclerView.ViewHolder{
 
-        @Bind(R.id.dh_item_date_string)
+        @Bind(R.id.tixianjilu_item_date_string)
         TextView dateString;
 
-        @Bind(R.id.dh_item_time_string)
+        @Bind(R.id.tixianjilu_item_time_string)
         TextView timeString;
 
-        @Bind(R.id.dh_order_detail)
+        @Bind(R.id.tixianjilu_order_detail)
         TextView orderDetail;
 
-        @Bind(R.id.dh_phone_value)
-        TextView mobilePhone;
-
-        @Bind(R.id.dh_status_string)
+        @Bind(R.id.tixianjilu_status_string)
         Button statusButton;
 
         public ItemViewHolder(final View itemView) {

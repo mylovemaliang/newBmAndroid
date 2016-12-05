@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,70 +25,75 @@ import butterknife.ButterKnife;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.domain.entity.DuihuanItem;
+import cn.fuyoushuo.fqbb.domain.entity.TixianjiluItem;
 import cn.fuyoushuo.fqbb.presenter.impl.pointsmall.DuihuanjiluPresent;
+import cn.fuyoushuo.fqbb.presenter.impl.pointsmall.TixianPresent;
+import cn.fuyoushuo.fqbb.presenter.impl.pointsmall.TixianjiluPresent;
 import cn.fuyoushuo.fqbb.view.Layout.DhOrderDecoration;
 import cn.fuyoushuo.fqbb.view.Layout.MyGridLayoutManager;
 import cn.fuyoushuo.fqbb.view.Layout.RefreshLayout;
 import cn.fuyoushuo.fqbb.view.adapter.DuihuanOrderAdapter;
+import cn.fuyoushuo.fqbb.view.adapter.TixianOrderAdapter;
 import cn.fuyoushuo.fqbb.view.view.pointsmall.DuihuanjiluView;
+import cn.fuyoushuo.fqbb.view.view.pointsmall.TixianjiluView;
 import rx.functions.Action1;
 
 /**
  * Created by QA on 2016/11/7.
  */
-public class DuihuanjiluDialogFragment extends RxDialogFragment implements DuihuanjiluView{
+public class TixianjiluDialogFragment extends RxDialogFragment implements TixianjiluView{
 
 
-    @Bind(R.id.duihuanjilu_backArea)
+    @Bind(R.id.tixianjilu_backArea)
     RelativeLayout backArea;
 
     //全部记录
-    @Bind(R.id.dhjl_allRecord_button)
+    @Bind(R.id.txjl_allRecord_button)
     Button allRecordButton;
 
     //正在审核
-    @Bind(R.id.dhjl_underReview_button)
+    @Bind(R.id.txjl_underReview_button)
     Button underReviewButton;
 
     //已兑换
-    @Bind(R.id.dhjl_exchanged_button)
+    @Bind(R.id.txjl_exchanged_button)
     Button exchangedButton;
 
     //审核失败
-    @Bind(R.id.dhjl_reviewFailed_button)
+    @Bind(R.id.txjl_reviewFailed_button)
     Button reviewFailedButton;
 
-    @Bind(R.id.dhjl_order_finish_button)
+    @Bind(R.id.txjl_order_finish_button)
     Button finishedButton;
 
     //刷新结果页
-    @Bind(R.id.dhjl_result_refreshView)
+    @Bind(R.id.txjl_result_refreshView)
     RefreshLayout resultRefreshView;
 
     //结果页
-    @Bind(R.id.dhjl_result_rview)
+    @Bind(R.id.txjl_result_rview)
     RecyclerView resultRview;
 
-    DuihuanOrderAdapter duihuanOrderAdapter;
+    private boolean isAllLoad = false;
 
-    DuihuanjiluPresent duihuanjiluPresent;
+    TixianOrderAdapter tixianOrderAdapter;
 
-    private boolean isAllLoad;
+    TixianjiluPresent tixianjiluPresent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL,R.style.fullScreenDialog);
-        duihuanjiluPresent = new DuihuanjiluPresent(this);
+        tixianjiluPresent = new TixianjiluPresent(this);
     }
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View inflate = inflater.inflate(R.layout.fragment_pointsmall_duihuanjilu_dialog, container, false);
+        View inflate = inflater.inflate(R.layout.fragment_pointsmall_tixianjilu_dialog, container, false);
         ButterKnife.bind(this,inflate);
-        duihuanOrderAdapter = new DuihuanOrderAdapter();
+        tixianOrderAdapter = new TixianOrderAdapter();
         resultRview.setHasFixedSize(true);
         final MyGridLayoutManager gridLayoutManager = new MyGridLayoutManager(getActivity(),1);
         gridLayoutManager.setSpeedFast();
@@ -97,7 +101,7 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
         gridLayoutManager.setAutoMeasureEnabled(true);
         gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL);
         resultRview.setLayoutManager(gridLayoutManager);
-        resultRview.setAdapter(duihuanOrderAdapter);
+        resultRview.setAdapter(tixianOrderAdapter);
         resultRview.addItemDecoration(new DhOrderDecoration());
         return inflate;
     }
@@ -120,10 +124,10 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
         resultRefreshView.setOnLoadListener(new RefreshLayout.OnLoadListener() {
             @Override
             public void onLoad() {
-                Integer status = duihuanOrderAdapter.getQueryStatus();
-                Integer page = duihuanOrderAdapter.getCurrentPage();
+                Integer status = tixianOrderAdapter.getQueryStatus();
+                Integer page = tixianOrderAdapter.getCurrentPage();
                 if(!isAllLoad){
-                   duihuanjiluPresent.getDhOrders(status, page + 1, false);
+                   tixianjiluPresent.getTixianOrders(status, page + 1, false);
                 }
             }
         });
@@ -131,8 +135,9 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
         resultRefreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Integer status = duihuanOrderAdapter.getQueryStatus();
-                duihuanjiluPresent.getDhOrders(status, 1, true);
+                isAllLoad = false;
+                Integer status = tixianOrderAdapter.getQueryStatus();
+                tixianjiluPresent.getTixianOrders(status,1,true);
                 resultRefreshView.setRefreshing(false);
                 return;
             }
@@ -143,7 +148,7 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                           duihuanjiluPresent.getDhOrders(null,1,true);
+                        tixianjiluPresent.getTixianOrders(null,1,true);
                     }
                 });
 
@@ -152,7 +157,7 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                          duihuanjiluPresent.getDhOrders(2,1,true);
+                          tixianjiluPresent.getTixianOrders(2,1,true);
                     }
                 });
 
@@ -161,7 +166,7 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                          duihuanjiluPresent.getDhOrders(3,1,true);
+                        tixianjiluPresent.getTixianOrders(3,1,true);
                     }
                 });
 
@@ -170,7 +175,7 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                          duihuanjiluPresent.getDhOrders(4,1,true);
+                        tixianjiluPresent.getTixianOrders(4,1,true);
                     }
                 });
 
@@ -179,9 +184,10 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        duihuanjiluPresent.getDhOrders(5,1,true);
+                        tixianjiluPresent.getTixianOrders(5,1,true);
                     }
                 });
+
     }
 
     private void initButtonColor(Integer status){
@@ -226,34 +232,34 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
     @Override
     public void onDestroy() {
         super.onDestroy();
-        duihuanjiluPresent.onDestroy();
+        tixianjiluPresent.onDestroy();
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
-        duihuanjiluPresent.getDhOrders(null,1,false);
+        tixianjiluPresent.getTixianOrders(null,1,false);
         allRecordButton.setTextColor(getResources().getColor(R.color.module_11));
     }
 
 
-    public static DuihuanjiluDialogFragment newInstance() {
+    public static TixianjiluDialogFragment newInstance() {
 
-        DuihuanjiluDialogFragment fragment = new DuihuanjiluDialogFragment();
+        TixianjiluDialogFragment fragment = new TixianjiluDialogFragment();
         return fragment;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        MobclickAgent.onPageStart("pointsMall_duihuanjilu");
+        MobclickAgent.onPageStart("pointsMall_tixianjilu");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        MobclickAgent.onPageEnd("pointsMall_duihuanjilu");
+        MobclickAgent.onPageEnd("pointsMall_tixianjilu");
     }
 
 
@@ -265,10 +271,10 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
     }
 
     @Override
-    public void onLoadDataSuccess(Integer queryStatus, int page, boolean isRefresh, List<DuihuanItem> itemList,boolean isLastPage) {
+    public void onLoadDataSuccess(Integer queryStatus, int page, boolean isRefresh, List<TixianjiluItem> itemList, boolean isLastPage) {
         initButtonColor(queryStatus);
-        if(itemList.isEmpty()) {
-            Toast.makeText(MyApplication.getContext(), "你的兑换记录为空", Toast.LENGTH_SHORT).show();
+        if(itemList.isEmpty()){
+              Toast.makeText(MyApplication.getContext(),"你的兑换记录为空",Toast.LENGTH_SHORT).show();
         }
         if(page == 1){
             isAllLoad = false;
@@ -277,13 +283,13 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
             isAllLoad = true;
         }
         if (isRefresh) {
-            duihuanOrderAdapter.setData(itemList);
+            tixianOrderAdapter.setData(itemList);
         } else {
-            duihuanOrderAdapter.appendDataList(itemList);
+            tixianOrderAdapter.appendDataList(itemList);
         }
-        duihuanOrderAdapter.setQueryStatus(queryStatus);
-        duihuanOrderAdapter.setCurrentPage(page);
-        duihuanOrderAdapter.notifyDataSetChanged();
+        tixianOrderAdapter.setQueryStatus(queryStatus);
+        tixianOrderAdapter.setCurrentPage(page);
+        tixianOrderAdapter.notifyDataSetChanged();
     }
 
 }

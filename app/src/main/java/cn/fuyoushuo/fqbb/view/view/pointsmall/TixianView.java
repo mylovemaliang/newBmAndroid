@@ -5,4 +5,9 @@ package cn.fuyoushuo.fqbb.view.view.pointsmall;
  */
 
 public interface TixianView {
+
+    void onCreateCashOrderSucc();
+
+    void onCreateCashOrderFail();
+
 }

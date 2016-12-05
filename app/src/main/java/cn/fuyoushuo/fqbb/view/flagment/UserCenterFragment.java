@@ -37,6 +37,8 @@ import cn.fuyoushuo.fqbb.view.activity.HelpActivity;
 import cn.fuyoushuo.fqbb.view.activity.PointMallActivity;
 import cn.fuyoushuo.fqbb.view.activity.UserLoginActivity;
 import cn.fuyoushuo.fqbb.view.flagment.pointsmall.PhoneRechargeDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.zhifubao.BindZfbDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.zhifubao.UpdateZfbDialogFragment;
 import cn.fuyoushuo.fqbb.view.view.UserCenterView;
 import rx.functions.Action1;
 
@@ -93,6 +95,9 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
     @Bind(R.id.bind_email)
     TextView bindEmailView;
 
+    @Bind(R.id.bind_zfb)
+    TextView bindAlipay;
+
     @Bind(R.id.update_password)
     TextView updatePasswordView;
 
@@ -101,9 +106,13 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
 
     boolean isEmailBind = false;
 
+    boolean isAlipayBind = false;
+
     private String phoneNum = "";
 
     private String email = "";
+
+    private String alipayNo = "";
 
     private boolean isDataInit = false;
 
@@ -203,6 +212,20 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
                     }
                 });
 
+        RxView.clicks(bindAlipay).compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        // TODO: 2016/11/9 绑定邮箱逻辑
+                        if(!isAlipayBind){
+                            BindZfbDialogFragment.newInstance().show(getFragmentManager(),"BindZfbDialogFragment");
+                        }else{
+                            UpdateZfbDialogFragment.newInstance(alipayNo).show(getFragmentManager(),"UpdateZfbDialogFragment");
+                        }
+                    }
+                });
+
         RxView.clicks(updatePasswordView).compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(new Action1<Void>() {
@@ -240,9 +263,7 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
     @Override
     public void onStart() {
         super.onStart();
-        if(!isDataInit){
-           refreshUserInfo();
-        }
+        refreshUserInfo();
     }
 
     @Override
@@ -279,19 +300,20 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
     @Override
     public void onUserInfoGetSucc(JSONObject result) {
          if(result == null || result.isEmpty()) return;
-         Float validPoint = 0f;
-         Float orderFreezePoint = 0f;
-         Float convertFreezePoint = 0f;
+         Integer validPoint = 0;
+         Integer orderFreezePoint = 0;
+         Integer convertFreezePoint = 0;
          String account = "";
          String email = "";
+         String alipayNo = "";
          if(result.containsKey("validPoint")){
-             validPoint = DateUtils.getFormatFloat(result.getFloatValue("validPoint"));
+             validPoint = result.getIntValue("validPoint");
          }
          if(result.containsKey("orderFreezePoint")){
-             orderFreezePoint = DateUtils.getFormatFloat(result.getFloatValue("orderFreezePoint"));
+             orderFreezePoint =result.getIntValue("orderFreezePoint");
          }
          if(result.containsKey("convertFreezePoint")){
-             convertFreezePoint = DateUtils.getFormatFloat(result.getFloatValue("convertFreezePoint"));
+             convertFreezePoint = result.getIntValue("convertFreezePoint");
          }
          if(result.containsKey("account")){
              account = result.getString("account");
@@ -299,6 +321,10 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
          if(result.containsKey("email")){
               email = result.getString("email");
          }
+         if(result.containsKey("alipay")){
+              alipayNo = result.getString("alipay");
+         }
+
          if(!TextUtils.isEmpty(email)){
              bindEmailView.setText(Html.fromHtml("<font color=\"#ff0000\">解绑邮箱</font>"));
              this.email = email;
@@ -308,6 +334,17 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
              isEmailBind = false;
              this.email = "";
          }
+
+         if(!TextUtils.isEmpty(alipayNo)){
+             bindAlipay.setText(Html.fromHtml("<font color=\"#ff0000\">换绑支付宝</font>"));
+             this.alipayNo = alipayNo;
+             this.isAlipayBind = true;
+         }else{
+             bindAlipay.setText(Html.fromHtml("绑定支付宝<font color=\"#ff0000\">(强烈建议,方便积分提现)</font>"));
+             isAlipayBind = false;
+             this.alipayNo = "";
+         }
+
          this.phoneNum = account;
          currentPoints.setText(String.valueOf(validPoint+orderFreezePoint+convertFreezePoint));
          freezePoints.setText(String.valueOf(orderFreezePoint+convertFreezePoint));

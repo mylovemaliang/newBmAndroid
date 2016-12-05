@@ -441,6 +441,17 @@
             android:id="@+id/bind_email"/>
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="绑定支付宝"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:textSize="15sp"
+                android:singleLine="false"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/bind_zfb"/>
+
+            <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="修改登录密码"

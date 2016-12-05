@@ -69,11 +69,18 @@ public class DuihuanDetailPresent extends BasePresenter {
                                getMyView().onLoadDataFail("");
                            }
                        }else{
+                           boolean isLastPage = false;
                            List<DuihuanDetail> details = new ArrayList<DuihuanDetail>();
                            JSONObject result = new JSONObject(((Map)(httpResp.getR())));
+                           if(result != null && !result.isEmpty() && result.containsKey("totalPageNumber")){
+                               int totalPageNumber = result.getIntValue("totalPageNumber");
+                               if(pageNum >= totalPageNumber){
+                                   isLastPage = true;
+                               }
+                           }
                            parseDuihuanDetail(result,details);
                            if(getMyView() != null){
-                               getMyView().onLoadDataSucc(pageNum,isRefresh,details);
+                               getMyView().onLoadDataSucc(pageNum,isRefresh,details,isLastPage);
                            }
                        }
                     }

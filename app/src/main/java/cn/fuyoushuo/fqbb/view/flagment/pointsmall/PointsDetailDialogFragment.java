@@ -55,6 +55,8 @@ public class PointsDetailDialogFragment extends RxDialogFragment implements Duih
 
     DuihuanDetailPresent duihuanDetailPresent;
 
+    private boolean isAllLoad = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +101,9 @@ public class PointsDetailDialogFragment extends RxDialogFragment implements Duih
             @Override
             public void onLoad() {
                 Integer page = duihuanDetailAdapter.getCurrentPage();
-                duihuanDetailPresent.getDhDetails(page + 1,false);
+                if(!isAllLoad){
+                 duihuanDetailPresent.getDhDetails(page + 1,false);
+                }
             }
         });
 
@@ -151,10 +155,15 @@ public class PointsDetailDialogFragment extends RxDialogFragment implements Duih
     }
 
     @Override
-    public void onLoadDataSucc(int pageNum, boolean isRefresh, List<DuihuanDetail> details) {
-        if(details != null && details.isEmpty()){
-            Toast.makeText(MyApplication.getContext(),"你的积分详情为空",Toast.LENGTH_SHORT).show();
-            return;
+    public void onLoadDataSucc(int pageNum, boolean isRefresh, List<DuihuanDetail> details,boolean isLastPage) {
+        if(details.isEmpty()){
+           Toast.makeText(MyApplication.getContext(),"你的积分详情为空",Toast.LENGTH_SHORT).show();
+        }
+        if(pageNum == 1){
+            isAllLoad = false;
+        }
+        if(isLastPage){
+            isAllLoad = true;
         }
         if (isRefresh) {
             duihuanDetailAdapter.setData(details);

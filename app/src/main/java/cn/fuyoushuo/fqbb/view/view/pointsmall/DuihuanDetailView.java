@@ -11,6 +11,6 @@ public interface DuihuanDetailView {
 
      void onLoadDataFail(String msg);
 
-     void onLoadDataSucc(int pageNum, boolean isRefresh, List<DuihuanDetail> details);
+     void onLoadDataSucc(int pageNum, boolean isRefresh, List<DuihuanDetail> details,boolean isLastPage);
 }
 

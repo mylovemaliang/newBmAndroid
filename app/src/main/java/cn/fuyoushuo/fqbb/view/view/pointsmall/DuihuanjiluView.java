@@ -11,6 +11,6 @@ public interface DuihuanjiluView {
 
      void onLoadDataFail(String msg);
 
-     void onLoadDataSuccess(Integer queryStatus, int page, boolean isRefresh, List<DuihuanItem> itemList);
+     void onLoadDataSuccess(Integer queryStatus, int page, boolean isRefresh, List<DuihuanItem> itemList,boolean isLastPage);
 
 }

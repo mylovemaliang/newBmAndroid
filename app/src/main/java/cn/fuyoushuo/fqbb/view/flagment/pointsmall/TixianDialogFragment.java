@@ -3,17 +3,22 @@ package cn.fuyoushuo.fqbb.view.flagment.pointsmall;
 import android.opengl.EGLDisplay;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
@@ -69,11 +74,17 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
     @Bind(R.id.tixian_tip_text)
     TextView tixianTipView;
 
+    @Bind(R.id.points_tixian_refreshview)
+    SwipeRefreshLayout swipeRefreshLayout;
+
     private String tixianCashString;
 
     private float tixianCashNum;
 
     private String verifiCode;
+
+    //可用积分
+    private Integer localValidPoints;
 
     private long time = 60l;
 
@@ -94,6 +105,7 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL,R.style.fullScreenDialog);
         tixianCashString = "";
         tixianCashNum = 0.00f;
         verifiCode = "";
@@ -114,13 +126,40 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initTipInfo();
+        tixianCashNumView.setInputType(EditorInfo.TYPE_CLASS_PHONE);
+        tixianCashNumView.setFocusable(true);
+        tixianCashNumView.requestFocus();
+        tixianCashNumView.requestFocusFromTouch();
+
+        RxView.clicks(backArea).compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .throttleFirst(1000,TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        dismissAllowingStateLoss();
+                    }
+                });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                    refreshUserInfo(new AfterAcquireUserInfoCallBack() {
+                        @Override
+                        public void onAcquireInfo() {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+            }
+        });
 
         RxTextView.textChangeEvents(tixianCashNumView).compose(this.<TextViewTextChangeEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .subscribe(new Action1<TextViewTextChangeEvent>() {
                     @Override
                     public void call(TextViewTextChangeEvent textViewTextChangeEvent) {
                         CharSequence s = textViewTextChangeEvent.text();
-                        if(!TextUtils.isEmpty(s) || s.toString().contains(".")){
+                        isCashAble = true;
+                        if(!TextUtils.isEmpty(s) && s.toString().contains(".")){
                             //如果点后面有超过三位数值,则删掉最后一位
                             int length=s.length()-s.toString().lastIndexOf(".");
                             if(length>=4){//说明后面有三位数值
@@ -162,7 +201,7 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
                     @Override
                     public void call(Void aVoid) {
                             timeForVerifiCode();
-                            localLoginPresent.getVerifiCode(LoginInfoStore.getIntance().getUserAccount(), "", new LocalLoginPresent.VerifiCodeGetCallBack() {
+                            localLoginPresent.getVerifiCode(LoginInfoStore.getIntance().getUserAccount(),"phone_cash_apply", new LocalLoginPresent.VerifiCodeGetCallBack() {
                                 @Override
                                 public void onVerifiCodeGetSucc(String account) {
                                     Toast.makeText(MyApplication.getContext(),"验证码发送成功,请注意查收",Toast.LENGTH_SHORT).show();
@@ -191,22 +230,28 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
                        }
                        Float f1 = Float.valueOf(tixianCashString);
                        Float f2 = DateUtils.getFormatFloat(f1);
-                       if(f2 > 50f){
-                         Toast.makeText(MyApplication.getContext(),"提现数额不能大于50元",Toast.LENGTH_SHORT).show();
+                       if(f2 < 50f){
+                         Toast.makeText(MyApplication.getContext(),"提现数额不能小于50元",Toast.LENGTH_SHORT).show();
                          return;
-                       }
-                       if(f2 > 0f){
-                           // TODO: 2016/12/2 生成提现订单 
+                       }else{
+                           // TODO: 2016/12/2 生成提现订单
+                           tixianPresent.createCashOrder(f2,verifiCode);
                         }
                     }});
-
-
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
+        commitButton.setClickable(false);
+        commitButton.setBackgroundColor(getResources().getColor(R.color.gray));
+        refreshUserInfo(new AfterAcquireUserInfoCallBack() {
+            @Override
+            public void onAcquireInfo() {
+                return;
+            }
+        });
     }
 
 
@@ -214,10 +259,41 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
     public void onDestroy() {
         super.onDestroy();
         ButterKnife.unbind(this);
-        if(localLoginPresent != null){
+        if(localLoginPresent != null) {
             localLoginPresent.onDestroy();
         }
+        if(tixianPresent != null){
+            tixianPresent.onDestroy();
+        }
     }
+
+
+    public void refreshUserInfo(final AfterAcquireUserInfoCallBack afterAcquireUserInfoCallBack){
+        if(localLoginPresent == null) return;
+        localLoginPresent.getUserInfo(new LocalLoginPresent.UserInfoCallBack() {
+            @Override
+            public void onUserInfoGetSucc(JSONObject result) {
+                 if(result == null || result.isEmpty()) return;
+                 Integer validPoints = 0;
+                 if(result.containsKey("validPoint")){
+                     validPoints = result.getIntValue("validPoint");
+                     localValidPoints = validPoints;
+                 }
+                 userAblePointsView.setText(String.valueOf(validPoints));
+                 Float duihuanCash = DateUtils.getFormatFloat((float)validPoints / 100);
+                 duihuanCashView.setText(String.valueOf(duihuanCash)+"元");
+                 commitButton.setClickable(true);
+                 commitButton.setBackgroundColor(getResources().getColor(R.color.module_11));
+                 afterAcquireUserInfoCallBack.onAcquireInfo();
+            }
+
+            @Override
+            public void onUserInfoGetError() {
+                 Toast.makeText(MyApplication.getContext(),"用户信息获取失败,请下拉重试",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void timeForVerifiCode() {
         verifiAcquireButton.setText("获取验证码(60)");
@@ -248,5 +324,28 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
                 });
     }
 
+    private void initTipInfo(){
+        String tipContent = "1.每月只可提现一次<br>2.50元起提,上限受会员等级影响<br>3.每月25日开放提现,持续到月末<br>4.若支付宝与个人信息不符，无法通过审核";
+        if(tixianTipView != null){
+            tixianTipView.setText(Html.fromHtml(tipContent));
+        }
+    }
 
+
+    //--------------------------------------------实现presenter层回调------------------------------------------------------
+
+    @Override
+    public void onCreateCashOrderSucc() {
+         Toast.makeText(MyApplication.getContext(),"提现成功",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCreateCashOrderFail() {
+         Toast.makeText(MyApplication.getContext(),"提现失败,请重试",Toast.LENGTH_SHORT).show();
+    }
+
+    //---------------------------------------------内部回调-------------------------------------------------------------------
+    private interface AfterAcquireUserInfoCallBack{
+        void onAcquireInfo();
+    }
 }
