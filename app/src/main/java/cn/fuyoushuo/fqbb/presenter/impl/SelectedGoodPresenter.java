@@ -44,6 +44,9 @@ public class SelectedGoodPresenter extends BasePresenter{
      //九块九
      public static final String JKJ_CHANNEL = "9k9";
 
+     //超级返
+     public static final String QQHD_CHANNEL = "qqhd";
+
 
       //获取精选商品
       public void  getSelectedGood(String channel,int toPage,String catIds,Integer level,final SelectGoodGetCallBack selectGoodGetCallBack){

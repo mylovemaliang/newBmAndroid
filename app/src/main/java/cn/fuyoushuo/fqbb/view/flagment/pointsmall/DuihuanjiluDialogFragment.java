@@ -226,6 +226,7 @@ public class DuihuanjiluDialogFragment extends RxDialogFragment implements Duihu
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ButterKnife.unbind(this);
         duihuanjiluPresent.onDestroy();
     }
 

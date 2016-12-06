@@ -1,7 +1,10 @@
 package cn.fuyoushuo.fqbb.view.flagment.login;
 
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -39,6 +42,11 @@ public class FindPassTwoFragment extends BaseFragment implements FindPassTwoView
     @Bind(R.id.commit_button)
     Button commitButton;
 
+    @Bind(R.id.find_pass_2_hidePass_area)
+    ImageView hidePassView;
+
+    private boolean isPassHidden = true;
+
     FindPassTwoPresenter findPassTwoPresent;
 
     @Override
@@ -70,6 +78,23 @@ public class FindPassTwoFragment extends BaseFragment implements FindPassTwoView
                     @Override
                     public void call(Void aVoid) {
                          findPassTwoPresent.doFindPass(accountValue,verifiCodeValue,newPassValue);
+                    }
+                });
+
+        RxView.clicks(hidePassView).compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .throttleFirst(1000,TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        if(isPassHidden){
+                            newPassView.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                            hidePassView.setImageResource(R.mipmap.new_pass);
+                            isPassHidden = false;
+                        }else{
+                            newPassView.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                            hidePassView.setImageResource(R.mipmap.ver_pass);
+                            isPassHidden = true;
+                        }
                     }
                 });
 

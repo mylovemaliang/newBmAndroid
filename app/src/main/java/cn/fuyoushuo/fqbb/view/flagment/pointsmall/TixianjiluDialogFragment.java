@@ -232,6 +232,7 @@ public class TixianjiluDialogFragment extends RxDialogFragment implements Tixian
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ButterKnife.unbind(this);
         tixianjiluPresent.onDestroy();
     }
 

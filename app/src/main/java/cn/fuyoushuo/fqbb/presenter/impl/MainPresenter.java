@@ -2,6 +2,7 @@ package cn.fuyoushuo.fqbb.presenter.impl;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
@@ -16,7 +17,10 @@ import cn.fuyoushuo.fqbb.ServiceManager;
 
 import cn.fuyoushuo.fqbb.domain.entity.FCateItem;
 import cn.fuyoushuo.fqbb.domain.entity.FGoodItem;
+import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
 import cn.fuyoushuo.fqbb.domain.ext.HttpResp;
+import cn.fuyoushuo.fqbb.domain.ext.SearchCondition;
+import cn.fuyoushuo.fqbb.domain.httpservice.AlimamaHttpService;
 import cn.fuyoushuo.fqbb.domain.httpservice.FqbbHttpService;
 import cn.fuyoushuo.fqbb.domain.httpservice.FqbbLocalHttpService;
 import cn.fuyoushuo.fqbb.view.view.MainView;
@@ -106,6 +110,70 @@ public class MainPresenter extends BasePresenter{
     }
 
 
+    //获取首页淘宝商品
+    public void getMTaoBaoGoods(final Integer page,final boolean isRefresh){
+        SearchCondition searchCondition = SearchCondition.newInstance(SearchCondition.search_cate_superfan);
+        searchCondition.updateSearchKeyValue("toPage",page);
+        searchCondition.updateSearchKeyValue("startTkRate",50);
+        searchCondition.updateSearchKeyValue("startPrice",100);
+        Map<String, String> queryMap = searchCondition.getQueryMap();
+        mSubscriptions.add(ServiceManager.createService(AlimamaHttpService.class)
+            .searchHdFanli(queryMap)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Subscriber<JSONObject>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Toast.makeText(MyApplication.getContext(),"网速稍慢,请等待",Toast.LENGTH_SHORT).show();
+                    mMainView.setupTbGoodsView(1,new ArrayList<TaoBaoItemVo>(),isRefresh);
+                }
+
+                @Override
+                public void onNext(JSONObject jsonObject) {
+                    List<TaoBaoItemVo> resultList = new ArrayList<TaoBaoItemVo>();
+                    parseAlimamaHdGoodsList(jsonObject,resultList);
+                    mMainView.setupTbGoodsView(page,resultList,isRefresh);
+                }
+            })
+        );
+
+    }
+
+
+
+    //解析阿里妈妈高返搜索结果
+    private void parseAlimamaHdGoodsList(JSONObject resultObject,List<TaoBaoItemVo> resultList){
+        if(resultObject == null || resultObject.isEmpty()){
+            return;
+        }
+        if(resultList == null){
+            return;
+        }
+        JSONObject data = resultObject.getJSONObject("data");
+        if(data == null || data.isEmpty()) return;
+        JSONArray pageList = data.getJSONArray("pageList");
+        if(pageList == null || pageList.isEmpty()) return;
+        for(Object item : pageList){
+            JSONObject jsonObject = new JSONObject((Map<String, Object>) item);
+            TaoBaoItemVo taoBaoItemVo = new TaoBaoItemVo();
+            taoBaoItemVo.setFanliSearched(true);
+            String title = jsonObject.getString("title");
+            taoBaoItemVo.setTitle(handlerTitle(title));
+            taoBaoItemVo.setPic_path(jsonObject.getString("pictUrl"));
+            taoBaoItemVo.setSold(jsonObject.getInteger("biz30day").toString());
+            taoBaoItemVo.setPrice(jsonObject.getDouble("zkPrice").toString());
+            taoBaoItemVo.setUrl(jsonObject.getString("auctionUrl"));
+            taoBaoItemVo.setTkRate(jsonObject.getFloat("eventRate"));
+            taoBaoItemVo.setTkCommFee(jsonObject.getFloat("tkCommFee"));
+            resultList.add(taoBaoItemVo);
+        }
+    }
+
     /**
      * 获取是否需要提示
      * @param flag
@@ -154,5 +222,13 @@ public class MainPresenter extends BasePresenter{
             }
         }
         edit.commit();
+    }
+
+    private String handlerTitle(String title){
+        if(TextUtils.isEmpty(title)){
+            return title;
+        }
+        title = title.replaceAll("<.*?>","");
+        return title;
     }
 }

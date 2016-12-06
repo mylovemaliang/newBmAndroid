@@ -194,7 +194,7 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
                     intHundred = 800;
                 }
                 if(!BaseActivity.isTablet(mactivity)){
-                    intHundred = 400;
+                    intHundred = 300;
                 }
                 String imgurl = goodItem.getPic_path();
                 imgurl = imgurl.replaceFirst("_[1-9][0-9]{0,2}x[1-9][0-9]{0,2}\\.jpg","");

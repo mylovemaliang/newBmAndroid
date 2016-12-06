@@ -18,6 +18,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.concurrent.TimeUnit;
 
@@ -92,7 +93,7 @@ public class UpdateZfbDialogFragment extends RxDialogFragment{
         View inflate = inflater.inflate(R.layout.view_update_zfb, container, false);
         ButterKnife.bind(this,inflate);
 
-        accountInfoText.setText(Html.fromHtml("已绑定支付宝   <font color=\"#ff0000\">"+zfbAccount+"</font>"));
+        accountInfoText.setText(Html.fromHtml("已绑定支付宝    <font color=\"#ff0000\">"+zfbAccount+"</font>"));
 
         return inflate;
     }
@@ -146,7 +147,7 @@ public class UpdateZfbDialogFragment extends RxDialogFragment{
 
                                 @Override
                                 public void onVerifiCodeGetError(String msg) {
-                                    Toast.makeText(MyApplication.getContext(),"验证码发送失败,请注意查收",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MyApplication.getContext(),"验证码发送失败,请重试",Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                             });
@@ -195,6 +196,18 @@ public class UpdateZfbDialogFragment extends RxDialogFragment{
         }
         ButterKnife.unbind(this);
         super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("updateAlipayNum");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("updateAlipayNum");
     }
 
     private void timeForVerifiCode() {

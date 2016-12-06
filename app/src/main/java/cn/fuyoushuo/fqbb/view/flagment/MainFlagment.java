@@ -48,6 +48,7 @@ import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.commonlib.utils.SeartchPo;
 import cn.fuyoushuo.fqbb.domain.entity.FCateItem;
 import cn.fuyoushuo.fqbb.domain.entity.FGoodItem;
+import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
 import cn.fuyoushuo.fqbb.domain.ext.SearchCondition;
 import cn.fuyoushuo.fqbb.presenter.impl.MainPresenter;
 import cn.fuyoushuo.fqbb.presenter.impl.SelectedGoodPresenter;
@@ -197,7 +198,7 @@ public class MainFlagment extends BaseFragment implements MainView {
                         if(mainPresenter.isNeedTip(1)){
                             setTipDialogIfNeed(1);
                         }else{
-                             SuperfanDialogFragment.newInstance().show(getFragmentManager(),"SuperfanDialogFragment");
+                             JxspDetailDialogFragment.newInstance(SelectedGoodPresenter.QQHD_CHANNEL,"超级返","").show(getFragmentManager(),"JxspDetailDialogFragment");
                         }
                     }
                 });
@@ -312,7 +313,7 @@ public class MainFlagment extends BaseFragment implements MainView {
                     }
                 });
 
-        mainPresenter.getFGoods(0L, 1, false);
+        mainPresenter.getMTaoBaoGoods(1, false);
     }
 
     @Override
@@ -340,18 +341,15 @@ public class MainFlagment extends BaseFragment implements MainView {
         refreshLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
             @Override
             public void onLoad() {
-                Long cateId = fgoodDataAdapter.getCateId();
                 Integer page = fgoodDataAdapter.getCurrentPage();
-                mainPresenter.getFGoods(cateId, page + 1, false);
+                mainPresenter.getMTaoBaoGoods(page + 1, false);
             }
         });
 
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Long cateId = fgoodDataAdapter.getCateId();
-                Integer page = fgoodDataAdapter.getCurrentPage();
-                mainPresenter.getFGoods(cateId, 1, true);
+                mainPresenter.getMTaoBaoGoods(1,true);
                 refreshLayout.setRefreshing(false);
                 return;
             }
@@ -372,38 +370,44 @@ public class MainFlagment extends BaseFragment implements MainView {
         });
         mainBottomRView.setLayoutManager(gridLayoutManager);
         fgoodDataAdapter = new GoodDataAdapter(mainFlagmentHeader);
-        fgoodDataAdapter.setOnLoadImage(new GoodDataAdapter.OnLoad() {
+        fgoodDataAdapter.setOnLoad(new GoodDataAdapter.OnLoad() {
             @Override
-            public void onLoadImage(SimpleDraweeView view, FGoodItem goodItem) {
-                int mScreenWidth = MyApplication.getDisplayMetrics().widthPixels;
-                int intHundred = CommonUtils.getIntHundred(mScreenWidth / 2);
-                if (intHundred > 800) {
+            public void onLoadImage(SimpleDraweeView view, TaoBaoItemVo goodItem) {
+                int mScreenWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth();
+                int intHundred = CommonUtils.getIntHundred(mScreenWidth/2);
+                if(intHundred > 800){
                     intHundred = 800;
                 }
-                if (!BaseActivity.isTablet(mactivity)) {
-                    intHundred = 400;
+                if(!BaseActivity.isTablet(mactivity)){
+                    intHundred = 300;
                 }
-                String url = goodItem.getImageUrl();
-                url = url.replace("180x180", intHundred + "x" + intHundred);
+                String imgurl = goodItem.getPic_path();
+                imgurl = imgurl.replaceFirst("_[1-9][0-9]{0,2}x[1-9][0-9]{0,2}\\.jpg","");
+                imgurl = imgurl+ "_"+intHundred+"x"+intHundred+".jpg";
                 view.setAspectRatio(1.0F);
-                view.setImageURI(Uri.parse(url));
+                view.setImageURI(Uri.parse(imgurl));
             }
 
             @Override
-            public void onGoodItemClick(View clickView, FGoodItem goodItem) {
+            public void onItemClick(View view, TaoBaoItemVo goodItem) {
                 if(mainPresenter.isNeedTip(1)){
                     setTipDialogIfNeed(1);
                 }else {
-                  String url = goodItem.getItemUrl();
-                  MainActivity ma = (MainActivity) getActivity();
-                  //ma.showWebviewFragment(url, false,false);
-                  Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                  intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                  intent.putExtra("bizString","tbGoodDetail");
-                  intent.putExtra("loadUrl", url);
-                  intent.putExtra("forSearchGoodInfo", false);
-                  startActivity(intent);
+                    String url = goodItem.getUrl();
+                    MainActivity ma = (MainActivity) getActivity();
+                    //ma.showWebviewFragment(url, false,false);
+                    Intent intent = new Intent(getActivity(), WebviewActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    intent.putExtra("bizString","tbGoodDetail");
+                    intent.putExtra("loadUrl", url);
+                    intent.putExtra("forSearchGoodInfo", false);
+                    startActivity(intent);
                 }
+            }
+
+            @Override
+            public void onFanliInfoLoaded(View fanliView, TaoBaoItemVo taoBaoItemVo) {
+              return;
             }
         });
         mainBottomRView.setAdapter(fgoodDataAdapter);
@@ -455,28 +459,28 @@ public class MainFlagment extends BaseFragment implements MainView {
         toTopIcon.setTypeface(iconfont);
     }
 
-    //----------------------------view 接口实现-----------------------
+    //----------------------------view 接口实现----------------------------------------------------
 
     @Override
     public void setupFcatesView(List<FCateItem> cateItems) {
-        if(cateItems != null && !cateItems.isEmpty()){
-           cateItems.get(0).setIsRed(true);
-        }
-        //fcatesDataAdapter.setData(cateItems);
-        //fcatesDataAdapter.notifyDataSetChanged();
+
     }
 
 
     @Override
     public void setupFgoodsView(Integer page, Long cateId, List<FGoodItem> goodItems, boolean isRefresh) {
-        if (isRefresh) {
-            fgoodDataAdapter.setData(goodItems);
-        } else {
-            fgoodDataAdapter.appendDataList(goodItems);
-        }
-        fgoodDataAdapter.setCateId(cateId);
-        fgoodDataAdapter.setCurrentPage(page);
-        fgoodDataAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void setupTbGoodsView(Integer page, List<TaoBaoItemVo> goodItems, boolean isRefresh) {
+         if(isRefresh){
+             fgoodDataAdapter.setData(goodItems);
+         }else {
+             fgoodDataAdapter.appendDataList(goodItems);
+         }
+         fgoodDataAdapter.setCurrentPage(page);
+         fgoodDataAdapter.notifyDataSetChanged();
     }
 
     /**

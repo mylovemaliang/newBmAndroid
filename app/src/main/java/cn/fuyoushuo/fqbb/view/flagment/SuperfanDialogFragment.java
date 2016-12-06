@@ -31,6 +31,7 @@ import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.CommonUtils;
 import cn.fuyoushuo.fqbb.domain.entity.FCateItem;
 import cn.fuyoushuo.fqbb.domain.entity.FGoodItem;
+import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
 import cn.fuyoushuo.fqbb.presenter.impl.MainPresenter;
 import cn.fuyoushuo.fqbb.view.Layout.CateItemsDecoration;
 import cn.fuyoushuo.fqbb.view.Layout.MyGridLayoutManager;
@@ -233,6 +234,7 @@ public class SuperfanDialogFragment extends RxDialogFragment implements MainView
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ButterKnife.unbind(this);
         mainPresenter.onDestroy();
     }
 
@@ -275,5 +277,10 @@ public class SuperfanDialogFragment extends RxDialogFragment implements MainView
         fgoodDataAdapter.setCateId(cateId);
         fgoodDataAdapter.setCurrentPage(page);
         fgoodDataAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void setupTbGoodsView(Integer page, List<TaoBaoItemVo> goodItems, boolean isRefresh) {
+
     }
 }

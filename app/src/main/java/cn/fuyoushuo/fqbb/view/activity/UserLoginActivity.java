@@ -235,6 +235,13 @@ public class UserLoginActivity extends BaseActivity{
                     loginOriginFragment.refreshAccount(account);
                     switchContent(mContent,loginOriginFragment);
                 }
+                else if(busEvent instanceof RegisterThreeFragment.LoginSuccAfterRegisterSucc){
+                    Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    intent.putExtra("bizCallBack","MainToUc");
+                    startActivity(intent);
+                    finish();
+                }
             }
         }));
     }

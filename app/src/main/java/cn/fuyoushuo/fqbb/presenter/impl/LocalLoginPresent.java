@@ -31,6 +31,40 @@ import rx.schedulers.Schedulers;
 public class LocalLoginPresent extends BasePresenter{
 
 
+    public void userLogin(final String account, String password, final LocalLoginCallBack loginCallBack){
+        if(TextUtils.isEmpty(account) || TextUtils.isEmpty(password)){
+            return;
+        }
+        String passwordMD5 = MD5.MD5Encode(password+"user_pwd160909!@#");
+        mSubscriptions.add(
+                ServiceManager.createService(FqbbLocalHttpService.class)
+                        .userLogin(account,passwordMD5)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<HttpResp>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                loginCallBack.onLocalLoginFail(account);
+                            }
+
+                            @Override
+                            public void onNext(HttpResp httpResp) {
+                                if (httpResp == null || httpResp.getS() != 1) {
+                                    loginCallBack.onLocalLoginFail(account);
+                                } else {
+                                    loginCallBack.onLocalLoginSucc(account);
+                                }
+                            }
+                        })
+        );
+    }
+
+
     public void isFqbbLocalLogin(final LoginCallBack loginCallBack){
 
         mSubscriptions.add(createLoginInfoObservable()
@@ -432,6 +466,13 @@ public class LocalLoginPresent extends BasePresenter{
         void onUpdateZfbSucc();
 
         void onUpdateZfbFail(String msg);
+    }
+
+    public interface LocalLoginCallBack{
+
+        void onLocalLoginSucc(String account);
+
+        void onLocalLoginFail(String account);
 
     }
 

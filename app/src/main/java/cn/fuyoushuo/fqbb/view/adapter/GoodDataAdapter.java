@@ -16,14 +16,17 @@ import java.util.concurrent.TimeUnit;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.commonlib.utils.CommonUtils;
+import cn.fuyoushuo.fqbb.commonlib.utils.DateUtils;
 import cn.fuyoushuo.fqbb.domain.entity.FGoodItem;
 import cn.fuyoushuo.fqbb.domain.entity.GoodItem;
+import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
 import rx.functions.Action1;
 
 /**
  * Created by QA on 2016/6/27.
  */
-public class GoodDataAdapter extends BaseListAdapter<FGoodItem>{
+public class GoodDataAdapter extends BaseListAdapter<TaoBaoItemVo>{
 
     public static int ITEM_VIEW_TYPE_HEADER = 1;
 
@@ -53,7 +56,7 @@ public class GoodDataAdapter extends BaseListAdapter<FGoodItem>{
 
     private OnLoad onLoad;
 
-    public void setOnLoadImage(OnLoad onLoad){
+    public void setOnLoad(OnLoad onLoad){
         this.onLoad = onLoad;
     }
 
@@ -73,7 +76,7 @@ public class GoodDataAdapter extends BaseListAdapter<FGoodItem>{
         if(viewType == ITEM_VIEW_TYPE_HEADER){
             return new ItemViewHolder(headView,ITEM_VIEW_TYPE_HEADER);
         }
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bottom_recycle_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.myorder_item_good, parent, false);
         return new ItemViewHolder(view,ITEM_VIEW_TYPE_DATA);
     }
 
@@ -85,17 +88,38 @@ public class GoodDataAdapter extends BaseListAdapter<FGoodItem>{
         int realPosition = position-1;
         super.onBindViewHolder(holder, realPosition);
         final ItemViewHolder currentHolder = (ItemViewHolder) holder;
-        final FGoodItem item = getItem(realPosition);
-        currentHolder.titleView.setText(item.getWebSmallTitle());
-        currentHolder.originPrice.setText("￥"+item.getPriceYuan());
-        currentHolder.sellCount.setText("已售"+item.getSoldCount());
-        currentHolder.disCount.setText("返"+item.getFanliPercent());
-        currentHolder.priceSaved.setText("约"+item.getFanliYuan()+"元");
+        final TaoBaoItemVo item = getItem(realPosition);
+
+        String realTitle = CommonUtils.getShortTitle(item.getTitle());
+        currentHolder.titleView.setText(realTitle);
+        currentHolder.orginPriceView.setText("￥"+item.getPrice());
+        currentHolder.sellOutView.setText("已售"+item.getSold()+"件");
         onLoad.onLoadImage(currentHolder.imageView,item);
+
+        if(item.isFanliSearched()){
+            if(null != item.getJfbCount()){
+                if(item.getJfbCount() == 0){
+                    currentHolder.discountView.setText("无返利信息");
+                }else{
+                    currentHolder.discountView.setText("返集分宝 "+item.getJfbCount());
+                }
+                currentHolder.pricesaveView.setVisibility(View.GONE);
+            }else if(null != item.getTkRate()) {
+                currentHolder.discountView.setText("返" + DateUtils.getFormatFloat(item.getTkRate()) + "%");
+                currentHolder.pricesaveView.setVisibility(View.VISIBLE);
+                currentHolder.pricesaveView.setText("约" + DateUtils.getFormatFloat(item.getTkCommFee()) + "元");
+            }else{
+                currentHolder.discountView.setText("无返利信息");
+                currentHolder.pricesaveView.setVisibility(View.GONE);
+            }
+        }else{
+            onLoad.onFanliInfoLoaded(currentHolder.fanliInfo,item);
+        }
+
         RxView.clicks(currentHolder.itemView).throttleFirst(1000, TimeUnit.MILLISECONDS).subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
-                    onLoad.onGoodItemClick(currentHolder.itemView,item);
+                onLoad.onItemClick(currentHolder.itemView,item);
             }
         });
     }
@@ -115,17 +139,19 @@ public class GoodDataAdapter extends BaseListAdapter<FGoodItem>{
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.bottom_item_good_image) SimpleDraweeView imageView;
+        @Bind(R.id.myorder_item_good_image) SimpleDraweeView imageView;
 
-        @Bind(R.id.bottom_item_good_titletext) TextView titleView;
+        @Bind(R.id.myorder_item_good_titletext) TextView titleView;
 
-        @Bind(R.id.bottom_item_good_originprice) TextView originPrice;
+        @Bind(R.id.myorder_item_good_originprice) TextView orginPriceView;
 
-        @Bind(R.id.bottom_item_good_sellcount) TextView sellCount;
+        @Bind(R.id.myorder_item_good_sellcount) TextView sellOutView;
 
-        @Bind(R.id.bottom_item_good_discount) TextView disCount;
+        @Bind(R.id.myorder_item_fanli_info) View fanliInfo;
 
-        @Bind(R.id.bottom_item_good_pricesaved) TextView priceSaved;
+        @Bind(R.id.myorder_item_good_discount) TextView discountView;
+
+        @Bind(R.id.myorder_item_good_pricesaved) TextView pricesaveView;
 
         public ItemViewHolder(final View itemView, int itemType){
             super(itemView);
@@ -136,8 +162,10 @@ public class GoodDataAdapter extends BaseListAdapter<FGoodItem>{
     }
 
     public interface OnLoad{
-        void onLoadImage(SimpleDraweeView view, FGoodItem goodItem);
+        void onLoadImage(SimpleDraweeView view,TaoBaoItemVo goodItem);
 
-        void onGoodItemClick(View clickView,FGoodItem goodItem);
+        void onItemClick(View view,TaoBaoItemVo goodItem);
+
+        void onFanliInfoLoaded(View fanliView,TaoBaoItemVo taoBaoItemVo);
     }
 }

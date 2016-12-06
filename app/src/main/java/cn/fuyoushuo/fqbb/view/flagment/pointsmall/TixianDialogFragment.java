@@ -25,6 +25,7 @@ import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
 import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.concurrent.TimeUnit;
 
@@ -84,7 +85,7 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
     private String verifiCode;
 
     //可用积分
-    private Integer localValidPoints;
+    private Integer localValidPoints = 0;
 
     private long time = 60l;
 
@@ -94,6 +95,9 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
 
     //标识用户输入是否可行
     private boolean isCashAble = true;
+
+    //最大提现额度
+    private float maxTixian = 800f;
 
     public static TixianDialogFragment newInstance() {
         Bundle args = new Bundle();
@@ -230,10 +234,19 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
                        }
                        Float f1 = Float.valueOf(tixianCashString);
                        Float f2 = DateUtils.getFormatFloat(f1);
-                       if(f2 < 50f){
-                         Toast.makeText(MyApplication.getContext(),"提现数额不能小于50元",Toast.LENGTH_SHORT).show();
-                         return;
-                       }else{
+                       if(f2 > maxTixian){
+                          Toast.makeText(MyApplication.getContext(),"提现金额超过最大限额800元",Toast.LENGTH_SHORT).show();
+                          return;
+                       }
+                       else if(f2 < 50f){
+                           Toast.makeText(MyApplication.getContext(),"提现金额必须大于50元",Toast.LENGTH_SHORT).show();
+                           return;
+                       }
+                       else if(f2*100 > localValidPoints){
+                           Toast.makeText(MyApplication.getContext(),"当前可用积分不足",Toast.LENGTH_SHORT).show();
+                           return;
+                       }
+                       else{
                            // TODO: 2016/12/2 生成提现订单
                            tixianPresent.createCashOrder(f2,verifiCode);
                         }
@@ -331,6 +344,17 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("pointsMall_cashTixianPage");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("pointsMall_cashTixianPage");
+    }
 
     //--------------------------------------------实现presenter层回调------------------------------------------------------
 

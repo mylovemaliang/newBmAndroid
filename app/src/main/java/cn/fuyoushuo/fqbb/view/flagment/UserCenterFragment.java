@@ -247,7 +247,6 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
                     }
                 });
 
-        initIconFront();
     }
 
     @Override
@@ -275,8 +274,10 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
     //----------------------------------用于外部调用--------------------------------------------------
 
     public void refreshUserInfo(){
-        userCenterPresenter.getUserInfo();
-        userCenterPresenter.getAlimamaInfo();
+        if(userCenterPresenter != null){
+          userCenterPresenter.getUserInfo();
+          userCenterPresenter.getAlimamaInfo();
+        }
     }
 
     //初始化字体图标
@@ -326,7 +327,7 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
          }
 
          if(!TextUtils.isEmpty(email)){
-             bindEmailView.setText(Html.fromHtml("<font color=\"#ff0000\">解绑邮箱</font>"));
+             bindEmailView.setText("解绑邮箱");
              this.email = email;
              isEmailBind = true;
          }else{
@@ -336,7 +337,7 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
          }
 
          if(!TextUtils.isEmpty(alipayNo)){
-             bindAlipay.setText(Html.fromHtml("<font color=\"#ff0000\">换绑支付宝</font>"));
+             bindAlipay.setText("换绑支付宝");
              this.alipayNo = alipayNo;
              this.isAlipayBind = true;
          }else{

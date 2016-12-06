@@ -142,6 +142,7 @@ public class AlimamaLoginDialogFragment extends DialogFragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ButterKnife.unbind(this);
         if(myWebView != null){
             myWebView.removeAllViews();
             myWebView.destroy();

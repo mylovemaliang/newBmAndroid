@@ -17,20 +17,21 @@
         app:layout_marginLeftPercent="15%w"
         android:id="@+id/register_3_header_area" />
 
-
-
-    <RelativeLayout
+    <com.zhy.android.percent.support.PercentRelativeLayout
         android:layout_width="0dp"
         android:layout_height="50dp"
         app:layout_widthPercent="90%w"
-        android:layout_centerHorizontal="true"
         app:layout_marginTopPercent="3%h"
         android:background="@drawable/textborder"
+        android:id="@+id/register_3_last_area"
         android:layout_below="@+id/register_3_header_area"
-        android:id="@+id/register_3_last_area">
+        android:layout_alignLeft="@+id/commit_button"
+        android:layout_alignStart="@+id/commit_button"
+        android:layout_marginTop="16dp">
 
         <EditText
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            app:layout_widthPercent="80%w"
             android:layout_height="40dp"
             android:layout_centerVertical="true"
             android:background="@null"
@@ -38,18 +39,21 @@
             android:inputType="textPassword"
             android:textColorHint="@color/gray"
             android:textSize="18sp"
-            android:layout_marginLeft="20dp"
+            app:layout_marginLeftPercent="5%w"
             android:id="@+id/password_value"/>
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
+            android:id="@+id/register_3_hidePass_area"
+            android:layout_width="0dp"
+            app:layout_widthPercent="15%w"
+            android:layout_height="40dp"
             android:layout_centerVertical="true"
-            android:src="@mipmap/ver_pass"/>
+            android:src="@mipmap/ver_pass"
+            android:scaleType="center"
+            android:layout_alignParentRight="true" />
 
-    </RelativeLayout>
+    </com.zhy.android.percent.support.PercentRelativeLayout>
+
 
     <Button
         android:layout_width="0dp"

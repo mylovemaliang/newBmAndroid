@@ -87,9 +87,9 @@ public class PhoneRechargeDialogFragment extends RxDialogFragment implements Pho
     //手机充值账号
     private String inputPhoneNumValue = "";
     //可用积分
-    private float useAblePoints = 0f;
+    private int useAblePoints = 0;
     //需要使用的积分
-    private float toUsePoints = 0f;
+    private int toUsePoints = 0;
 
     //当前选中的skuId
     private Long skuId = null;
@@ -138,10 +138,10 @@ public class PhoneRechargeDialogFragment extends RxDialogFragment implements Pho
             public boolean onTagClick(View view, int position, FlowLayout parent) {
                 JSONObject result = phoneRecharges.get(position);
                 if(result != null && !result.isEmpty()){
-                    String needPoints = result.getInteger("price").toString();
+                    int needPoints = result.getIntValue("price");
                     skuId = result.getLong("skuId");
-                    if(!TextUtils.isEmpty(needPoints)){
-                      toUsePoints = Float.valueOf(needPoints);
+                    if(needPoints != 0){
+                      toUsePoints = needPoints;
                       rechargeNeedPoints.setText("所需积分:"+needPoints);
                     }
                 }
@@ -191,6 +191,7 @@ public class PhoneRechargeDialogFragment extends RxDialogFragment implements Pho
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ButterKnife.unbind(this);
         localLoginPresent.onDestroy();
         phoneRechargePresent.onDestroy();
     }
@@ -222,19 +223,19 @@ public class PhoneRechargeDialogFragment extends RxDialogFragment implements Pho
     //初始化用户信息
     private void initUserInfo(JSONObject result){
         if(result == null || result.isEmpty()) return;
-        Float validPoint = 0f;
-        Float orderFreezePoint = 0f;
-        Float convertFreezePoint = 0f;
+        int validPoint = 0;
+        int orderFreezePoint = 0;
+        int convertFreezePoint = 0;
         String account = "";
         if(result.containsKey("validPoint")){
-            validPoint = DateUtils.getFormatFloat(result.getFloatValue("validPoint"));
+            validPoint = result.getIntValue("validPoint");
             useAblePoints = validPoint;
         }
         if(result.containsKey("orderFreezePoint")){
-            orderFreezePoint = DateUtils.getFormatFloat(result.getFloatValue("orderFreezePoint"));
+            orderFreezePoint = result.getIntValue("orderFreezePoint");
         }
         if(result.containsKey("convertFreezePoint")){
-            convertFreezePoint = DateUtils.getFormatFloat(result.getFloatValue("convertFreezePoint"));
+            convertFreezePoint = result.getIntValue("convertFreezePoint");
         }
         if(result.containsKey("account")){
             account = result.getString("account");

@@ -167,18 +167,18 @@ public class PointMallActivity extends BaseActivity{
     //初始化个人信息
     private void initUserInfo(JSONObject result){
         if(result == null || result.isEmpty()) return;
-        Float validPoint = 0f;
-        Float orderFreezePoint = 0f;
-        Float convertFreezePoint = 0f;
+        int validPoint = 0;
+        int orderFreezePoint = 0;
+        int convertFreezePoint = 0;
         String account = "";
         if(result.containsKey("validPoint")){
-            validPoint = DateUtils.getFormatFloat(result.getFloatValue("validPoint"));
+            validPoint = result.getIntValue("validPoint");
         }
         if(result.containsKey("orderFreezePoint")){
-            orderFreezePoint = DateUtils.getFormatFloat(result.getFloatValue("orderFreezePoint"));
+            orderFreezePoint = result.getIntValue("orderFreezePoint");
         }
         if(result.containsKey("convertFreezePoint")){
-            convertFreezePoint = DateUtils.getFormatFloat(result.getFloatValue("convertFreezePoint"));
+            convertFreezePoint = result.getIntValue("convertFreezePoint");
         }
         if(result.containsKey("account")){
             account = result.getString("account");

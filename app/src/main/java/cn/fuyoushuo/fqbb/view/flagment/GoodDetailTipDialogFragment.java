@@ -132,6 +132,7 @@ public class GoodDetailTipDialogFragment extends RxDialogFragment{
 
     @Override
     public void onDestroy() {
+        ButterKnife.unbind(this);
         super.onDestroy();
     }
 

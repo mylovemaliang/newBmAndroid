@@ -204,18 +204,19 @@ public class JxspDetailDialogFragment extends RxDialogFragment {
         tbGoodDataAdapter.setOnLoad(new TbGoodDataAdapter.OnLoad() {
             @Override
             public void onLoadImage(SimpleDraweeView view, TaoBaoItemVo goodItem) {
-                int mScreenWidth = MyApplication.getDisplayMetrics().widthPixels;
-                int intHundred = CommonUtils.getIntHundred(mScreenWidth / 2);
-                if (intHundred > 800) {
+                int mScreenWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth();
+                int intHundred = CommonUtils.getIntHundred(mScreenWidth/2);
+                if(intHundred > 800){
                     intHundred = 800;
                 }
-                if (!BaseActivity.isTablet(getActivity())) {
-                    intHundred = 400;
+                if(!BaseActivity.isTablet(getActivity())){
+                    intHundred = 300;
                 }
-                String url = goodItem.getPic_path();
-                url = url.replace("180x180", intHundred + "x" + intHundred);
+                String imgurl = goodItem.getPic_path();
+                imgurl = imgurl.replaceFirst("_[1-9][0-9]{0,2}x[1-9][0-9]{0,2}\\.jpg","");
+                imgurl = imgurl+ "_"+intHundred+"x"+intHundred+".jpg";
                 view.setAspectRatio(1.0F);
-                view.setImageURI(Uri.parse(url));
+                view.setImageURI(Uri.parse(imgurl));
             }
 
             @Override
@@ -306,6 +307,7 @@ public class JxspDetailDialogFragment extends RxDialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ButterKnife.unbind(this);
         selectedGoodPresenter.onDestroy();
     }
 

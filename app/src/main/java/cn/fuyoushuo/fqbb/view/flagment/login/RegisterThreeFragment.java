@@ -1,8 +1,12 @@
 package cn.fuyoushuo.fqbb.view.flagment.login;
 
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -11,8 +15,11 @@ import com.trello.rxlifecycle.FragmentEvent;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
+import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
+import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
+import cn.fuyoushuo.fqbb.presenter.impl.login.LoginOriginPresenter;
 import cn.fuyoushuo.fqbb.presenter.impl.login.RegisterThreePresenter;
 import cn.fuyoushuo.fqbb.view.flagment.BaseFragment;
 import cn.fuyoushuo.fqbb.view.view.login.RegisterThreeView;
@@ -42,7 +49,14 @@ public class RegisterThreeFragment extends BaseFragment implements RegisterThree
     @Bind(R.id.commit_button)
     Button commitButton;
 
+    @Bind(R.id.register_3_hidePass_area)
+    ImageView hidePassView;
+
     RegisterThreePresenter registerThreePresenter;
+
+    LocalLoginPresent localLoginPresent;
+
+    private boolean isPasswordHidden = true;
 
     @Override
     protected String getPageName() {
@@ -77,6 +91,23 @@ public class RegisterThreeFragment extends BaseFragment implements RegisterThree
                     }
                 });
 
+        RxView.clicks(hidePassView).compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .throttleFirst(1000,TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        if(isPasswordHidden){
+                            isPasswordHidden = false;
+                            passwordView.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                            hidePassView.setImageResource(R.mipmap.new_pass);
+                        }else{
+                            isPasswordHidden = true;
+                            passwordView.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                            hidePassView.setImageResource(R.mipmap.ver_pass);
+                        }
+                    }
+                });
+
 
     }
 
@@ -88,7 +119,12 @@ public class RegisterThreeFragment extends BaseFragment implements RegisterThree
     @Override
     public void onDestroy() {
         super.onDestroy();
-        registerThreePresenter.onDestroy();
+        if(localLoginPresent != null){
+            localLoginPresent.onDestroy();
+        }
+        if(registerThreePresenter != null){
+           registerThreePresenter.onDestroy();
+        }
     }
 
     public static RegisterThreeFragment newInstance() {
@@ -110,14 +146,25 @@ public class RegisterThreeFragment extends BaseFragment implements RegisterThree
     //--------------------------------------------实现　view　层接口----------------------------------
    //当注册成功后的逻辑　
     @Override
-    public void onRegistSuccess(String phoneNum) {
-        RxBus.getInstance().send(new ToLoginAfterRegisterSuccess(phoneNum));
+    public void onRegistSuccess(final String phoneNum) {
+         //自动登录,登录成功跳转用户中心
+         localLoginPresent.userLogin(phoneNum, password, new LocalLoginPresent.LocalLoginCallBack() {
+             @Override
+             public void onLocalLoginSucc(String account) {
+                 RxBus.getInstance().send(new LoginSuccAfterRegisterSucc());
+             }
+
+             @Override
+             public void onLocalLoginFail(String account) {
+                 RxBus.getInstance().send(new ToLoginAfterRegisterSuccess(phoneNum));
+             }
+         });
     }
 
     //当注册失败后的逻辑
     @Override
     public void onRegistFail(String phoneNum, String msg) {
-
+        Toast.makeText(MyApplication.getContext(),msg,Toast.LENGTH_SHORT).show();
     }
 
 
@@ -135,4 +182,6 @@ public class RegisterThreeFragment extends BaseFragment implements RegisterThree
             return phoneNum;
         }
     }
+
+    public class LoginSuccAfterRegisterSucc extends RxBus.BusEvent{}
 }

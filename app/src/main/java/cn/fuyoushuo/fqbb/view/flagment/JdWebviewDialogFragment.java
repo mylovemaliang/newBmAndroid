@@ -390,6 +390,7 @@ public class JdWebviewDialogFragment extends RxDialogFragment implements JdGoodD
         }
         localLoginPresent.onDestroy();
         jdGoodDetailPresenter.onDestroy();
+        ButterKnife.unbind(this);
         super.onDestroy();
     }
 

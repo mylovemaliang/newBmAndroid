@@ -18,6 +18,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
+import com.umeng.analytics.MobclickAgent;
 
 import java.sql.Time;
 import java.util.concurrent.TimeUnit;
@@ -216,7 +217,21 @@ public class BindZfbDialogFragment extends RxDialogFragment {
         if (localLoginPresent != null) {
             localLoginPresent.onDestroy();
         }
+        ButterKnife.unbind(this);
         super.onDestroy();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("bindAlipayNum");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("bindAlipayNum");
     }
 
     private void timeForVerifiCode() {
