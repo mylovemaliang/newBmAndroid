@@ -113,6 +113,7 @@ public class RegisterThreeFragment extends BaseFragment implements RegisterThree
 
     @Override
     protected void initData() {
+        localLoginPresent = new LocalLoginPresent();
         registerThreePresenter = new RegisterThreePresenter(this);
     }
 
