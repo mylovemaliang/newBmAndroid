@@ -132,6 +132,7 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
         super.onViewCreated(view, savedInstanceState);
         initTipInfo();
         tixianCashNumView.setInputType(EditorInfo.TYPE_CLASS_PHONE);
+        verificateValueView.setInputType(EditorInfo.TYPE_CLASS_PHONE);
         tixianCashNumView.setFocusable(true);
         tixianCashNumView.requestFocus();
         tixianCashNumView.requestFocusFromTouch();

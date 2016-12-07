@@ -112,6 +112,7 @@ public class SearchCondition implements Serializable{
         searchItems.put("startPrice",new SearchItem("startPrice",search_type_input,""));
         searchItems.put("endPrice",new SearchItem("endPrice",search_type_input,""));
         searchItems.put("sortType",new SearchItem("sortType",search_type_sort,""));
+        searchItems.put("startBiz30day",new SearchItem("startBiz30day",search_type_choose,""));
     }
 
     //为普通搜索搜索设置查询初始化参数

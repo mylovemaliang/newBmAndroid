@@ -32,7 +32,7 @@ public class Constants {
 
     public static final String ENDPOINT_FQBB_LOCAL = "http://www.fanqianbb.com";
 
-//  public static final String ENDPOINT_FQBB_LOCAL = "http://115.28.77.159:8085";
+//    public static final String ENDPOINT_FQBB_LOCAL = "http://115.28.77.159:8085";
 
 
 

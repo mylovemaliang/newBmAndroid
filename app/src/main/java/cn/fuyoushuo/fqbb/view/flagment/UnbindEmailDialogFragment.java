@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,6 +30,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -93,6 +95,7 @@ public class UnbindEmailDialogFragment extends RxDialogFragment{
         super.onViewCreated(view, savedInstanceState);
 
         emailTextView.setText(emailValue);
+        verifiTextView.setInputType(EditorInfo.TYPE_CLASS_PHONE);
 
         RxTextView.textChanges(verifiTextView).compose(this.<CharSequence>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .subscribe(new Action1<CharSequence>() {
@@ -131,8 +134,9 @@ public class UnbindEmailDialogFragment extends RxDialogFragment{
 
                             @Override
                             public void onUnBindEmailSuccess(String account) {
-                                dismissAllowingStateLoss();
                                 Toast.makeText(MyApplication.getContext(),"邮箱解绑成功",Toast.LENGTH_SHORT).show();
+                                RxBus.getInstance().send(new AfterUnbindEmailSuccEvent());
+                                dismissAllowingStateLoss();
                             }
 
                             @Override
@@ -236,5 +240,8 @@ public class UnbindEmailDialogFragment extends RxDialogFragment{
         }
     }
 
+   //-----------------------------------------------总线事件---------------------------------------------------------------
+
+   public class AfterUnbindEmailSuccEvent extends RxBus.BusEvent{}
 
 }

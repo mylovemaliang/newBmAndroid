@@ -32,6 +32,7 @@ import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import cn.fuyoushuo.fqbb.view.Layout.AppUpdateView;
 import cn.fuyoushuo.fqbb.view.Layout.SafeDrawerLayout;
 import cn.fuyoushuo.fqbb.view.flagment.AlimamaLoginDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.BindEmailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.JdWebviewDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.JxspDetailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.MainFlagment;
@@ -39,10 +40,14 @@ import cn.fuyoushuo.fqbb.view.flagment.MyJifenFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.MyOrderFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SelectedGoodFragment;
 import cn.fuyoushuo.fqbb.view.flagment.TbSearchResFlagment;
+import cn.fuyoushuo.fqbb.view.flagment.UnbindEmailDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.UpdatePasswordDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.order.TbOrderFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SearchPromptFragment;
 import cn.fuyoushuo.fqbb.view.flagment.TixianFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.UserCenterFragment;
+import cn.fuyoushuo.fqbb.view.flagment.zhifubao.BindZfbDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.zhifubao.UpdateZfbDialogFragment;
 import cn.fuyoushuo.fqbb.view.view.MyOrderView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -241,6 +246,21 @@ public class MainActivity extends BaseActivity {
                      intent.putExtra("forSearchGoodInfo",false);
                      intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                      startActivity(intent);
+                 }
+                 else if(busEvent instanceof BindEmailDialogFragment.AfterBindEmailSuccessEvent){
+                     userCenterFragment.refreshUserInfo();
+                 }
+                 else if(busEvent instanceof UnbindEmailDialogFragment.AfterUnbindEmailSuccEvent){
+                     userCenterFragment.refreshUserInfo();
+                 }
+                 else if(busEvent instanceof BindZfbDialogFragment.AfterBindAlipaySuccEvent){
+                     userCenterFragment.refreshUserInfo();
+                 }
+                 else if(busEvent instanceof UpdateZfbDialogFragment.AfterUpdateAlipaySuccEvent){
+                     userCenterFragment.refreshUserInfo();
+                 }
+                 else if(busEvent instanceof UpdatePasswordDialogFragment.AfterUpdatePasswordSuccEvent){
+                     userCenterFragment.refreshUserInfo();
                  }
             }
         }));

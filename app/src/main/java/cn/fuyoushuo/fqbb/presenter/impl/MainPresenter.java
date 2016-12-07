@@ -115,7 +115,7 @@ public class MainPresenter extends BasePresenter{
         SearchCondition searchCondition = SearchCondition.newInstance(SearchCondition.search_cate_superfan);
         searchCondition.updateSearchKeyValue("toPage",page);
         searchCondition.updateSearchKeyValue("startTkRate",50);
-        searchCondition.updateSearchKeyValue("startPrice",100);
+        searchCondition.updateSearchKeyValue("startBiz30day",100);
         Map<String, String> queryMap = searchCondition.getQueryMap();
         mSubscriptions.add(ServiceManager.createService(AlimamaHttpService.class)
             .searchHdFanli(queryMap)

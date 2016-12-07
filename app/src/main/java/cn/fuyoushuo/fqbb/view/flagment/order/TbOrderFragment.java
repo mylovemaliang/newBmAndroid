@@ -168,8 +168,13 @@ public class TbOrderFragment extends BaseInnerFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        loadWebviewPage();
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadWebviewPage();
     }
 
     boolean firstAccess = true;

@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -28,6 +29,7 @@ import butterknife.ButterKnife;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.LoginInfoStore;
+import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -108,6 +110,8 @@ public class BindZfbDialogFragment extends RxDialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        verifiCateValueView.setInputType(EditorInfo.TYPE_CLASS_PHONE);
 
         RxView.clicks(backArea).compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .throttleFirst(1000,TimeUnit.MILLISECONDS)
@@ -192,7 +196,9 @@ public class BindZfbDialogFragment extends RxDialogFragment {
                               localLoginPresent.bindZfb(alipayNoValue, nameValue, idCardValue, verifiCodeValue, new LocalLoginPresent.BindZfbCallBack() {
                                   @Override
                                   public void onBindZfbSucc() {
+                                      RxBus.getInstance().send(new AfterBindAlipaySuccEvent());
                                       Toast.makeText(MyApplication.getContext(), "支付宝绑定成功", Toast.LENGTH_SHORT).show();
+                                      dismissAllowingStateLoss();
                                       return;
                                   }
 
@@ -262,5 +268,9 @@ public class BindZfbDialogFragment extends RxDialogFragment {
                     }
                 });
     }
+
+ //------------------------------------------------总线事件-----------------------------------------------------
+
+  public class AfterBindAlipaySuccEvent extends RxBus.BusEvent{}
 
 }

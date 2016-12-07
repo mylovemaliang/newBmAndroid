@@ -113,14 +113,14 @@ public class JxspDetailDialogFragment extends RxDialogFragment {
             public void onLoad() {
                 // TODO: 2016/11/10 获取下一页数据
                 final int currentPage = tbGoodDataAdapter.getCurrentPage();
-                selectedGoodPresenter.getSelectedGood(currentChannel,currentPage+1,currentCatId, null, new SelectedGoodPresenter.SelectGoodGetCallBack() {
+                selectedGoodPresenter.getSelectedGood(currentChannel,currentPage+1,currentCatId,currentLevel, new SelectedGoodPresenter.SelectGoodGetCallBack() {
                     @Override
                     public void onGetGoodSucc(List<TaoBaoItemVo> goodList, LinkedList<TbCateVo> cateList) {
                         if(tbGoodDataAdapter != null){
                             tbGoodDataAdapter.appendDataList(goodList);
                             tbGoodDataAdapter.notifyDataSetChanged();
+                            tbGoodDataAdapter.setCurrentPage(currentPage+1);
                         }
-                        tbGoodDataAdapter.setCurrentPage(currentPage+1);
                     }
 
                     @Override
@@ -135,13 +135,14 @@ public class JxspDetailDialogFragment extends RxDialogFragment {
             @Override
             public void onRefresh() {
                 // TODO: 2016/11/10 刷新当前页面数据
-                final int currentPage = tbGoodDataAdapter.getCurrentPage();
-                selectedGoodPresenter.getSelectedGood(currentChannel,currentPage,currentCatId,currentLevel, new SelectedGoodPresenter.SelectGoodGetCallBack() {
+                //final int currentPage = tbGoodDataAdapter.getCurrentPage();
+                selectedGoodPresenter.getSelectedGood(currentChannel,1,currentCatId,currentLevel, new SelectedGoodPresenter.SelectGoodGetCallBack() {
                     @Override
                     public void onGetGoodSucc(List<TaoBaoItemVo> goodList, LinkedList<TbCateVo> cateList) {
                         if(tbGoodDataAdapter != null){
                             tbGoodDataAdapter.setData(goodList);
                             tbGoodDataAdapter.notifyDataSetChanged();
+                            tbGoodDataAdapter.setCurrentPage(1);
                         }
                         refreshLayout.setRefreshing(false);
                     }
@@ -177,6 +178,7 @@ public class JxspDetailDialogFragment extends RxDialogFragment {
                         if(tbGoodDataAdapter != null){
                            tbGoodDataAdapter.setData(goodList);
                            tbGoodDataAdapter.notifyDataSetChanged();
+                            tbGoodDataAdapter.setCurrentPage(1);
                         }
                     }
 

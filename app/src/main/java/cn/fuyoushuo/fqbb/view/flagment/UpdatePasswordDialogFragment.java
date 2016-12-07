@@ -29,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -109,6 +110,7 @@ public class UpdatePasswordDialogFragment extends RxDialogFragment{
                                  @Override
                                  public void onUpdatePasswordSucc() {
                                      Toast.makeText(MyApplication.getContext(),"密码更改成功",Toast.LENGTH_SHORT).show();
+                                     RxBus.getInstance().send(new AfterUpdatePasswordSuccEvent());
                                      dismissAllowingStateLoss();
                                  }
 
@@ -180,5 +182,8 @@ public class UpdatePasswordDialogFragment extends RxDialogFragment{
         }
     }
 
+   //----------------------------------------------------总线事件------------------------------------------------------------
+
+   public class AfterUpdatePasswordSuccEvent extends RxBus.BusEvent{}
 
 }

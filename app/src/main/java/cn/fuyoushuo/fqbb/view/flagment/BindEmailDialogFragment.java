@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -88,6 +90,8 @@ public class BindEmailDialogFragment extends RxDialogFragment{
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        verifiTextView.setInputType(EditorInfo.TYPE_CLASS_PHONE);
 
         RxTextView.textChanges(emailTextView).compose(this.<CharSequence>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .subscribe(new Action1<CharSequence>() {
@@ -166,6 +170,7 @@ public class BindEmailDialogFragment extends RxDialogFragment{
                             @Override
                             public void onBindEmailSuccess(String account) {
                                 Toast.makeText(MyApplication.getContext(),"邮箱绑定成功",Toast.LENGTH_SHORT).show();
+                                RxBus.getInstance().send(new AfterBindEmailSuccessEvent());
                                 dismissAllowingStateLoss();
                             }
 
@@ -271,4 +276,8 @@ public class BindEmailDialogFragment extends RxDialogFragment{
            }
        }
    }
+
+  //------------------------------------------------总线事件--------------------------------------------------------
+  public class AfterBindEmailSuccessEvent extends RxBus.BusEvent{}
+
 }

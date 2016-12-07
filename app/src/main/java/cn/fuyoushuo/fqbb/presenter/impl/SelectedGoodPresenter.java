@@ -104,8 +104,30 @@ public class SelectedGoodPresenter extends BasePresenter{
             taoBaoItemVo.setSold(jsonObject.getInteger("biz30day").toString());
             taoBaoItemVo.setPrice(jsonObject.getDouble("zkPrice").toString());
             taoBaoItemVo.setUrl(jsonObject.getString("auctionUrl"));
-            taoBaoItemVo.setTkRate(jsonObject.getFloat("tkRate"));
-            taoBaoItemVo.setTkCommFee(jsonObject.getFloat("tkCommFee"));
+
+            Float itemPrice = null;
+            Float gfRate = jsonObject.getFloat("eventRate");
+            Float gfFeeCount = null;
+
+            Float fxRate = jsonObject.getFloat("tkRate");
+            Float fxFee = jsonObject.getFloat("tkCommFee");
+
+            if(gfRate != null && gfRate > 0){
+                itemPrice = jsonObject.getFloat("zkPrice");
+                if(itemPrice == null){
+                    itemPrice = jsonObject.getFloat("reservePrice");
+                    gfFeeCount = itemPrice*gfRate/100;
+                }else{
+                    gfFeeCount = fxFee;
+                }
+            }
+            if(gfFeeCount != null ){
+                taoBaoItemVo.setTkRate(gfRate);
+                taoBaoItemVo.setTkCommFee(gfFeeCount);
+            }else if(fxFee != null){
+                taoBaoItemVo.setTkRate(fxRate);
+                taoBaoItemVo.setTkCommFee(fxFee);
+            }
             resultList.add(taoBaoItemVo);
         }
     }

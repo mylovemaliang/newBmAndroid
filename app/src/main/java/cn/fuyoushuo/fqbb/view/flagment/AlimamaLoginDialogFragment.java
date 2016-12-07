@@ -128,8 +128,6 @@ public class AlimamaLoginDialogFragment extends DialogFragment{
         //添加webview
         alimamaLoginView.addView(myWebView);
 
-        myWebView.loadUrl(TAOBAOKE_LOGIN_URL);
-
         RxView.clicks(backArea).throttleFirst(1000, TimeUnit.MILLISECONDS)
                 .subscribe(new Action1<Void>() {
                     @Override
@@ -137,6 +135,12 @@ public class AlimamaLoginDialogFragment extends DialogFragment{
                          dismissAllowingStateLoss();
           }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        myWebView.loadUrl(TAOBAOKE_LOGIN_URL);
     }
 
     @Override
