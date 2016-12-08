@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.android.percent.support.PercentRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:id="@+id/user_agreement_headler">
+
+        <RelativeLayout
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/user_agreement_backArea">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/back_gray"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="返钱宝宝用户使用协议"
+            android:textColor="@color/module_11"
+            android:id="@+id/user_agreement_title"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:orientation="horizontal"
+        android:id="@+id/line1"
+        android:layout_below="@+id/user_agreement_headler"
+        android:background="@color/gray"
+        ></LinearLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        app:layout_widthPercent="100%w"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/line1"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="2dp"
+            android:lineSpacingMultiplier="1.5"
+            android:id="@+id/user_agreement_text" />
+
+    </ScrollView>
+
+
+
+</com.zhy.android.percent.support.PercentRelativeLayout>

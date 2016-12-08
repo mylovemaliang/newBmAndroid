@@ -2,14 +2,17 @@ package cn.fuyoushuo.fqbb.view.flagment.login;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -25,6 +28,8 @@ import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import cn.fuyoushuo.fqbb.presenter.impl.login.RegisterOnePresenter;
 import cn.fuyoushuo.fqbb.view.flagment.BaseFragment;
+import cn.fuyoushuo.fqbb.view.flagment.UserAgreementDialogFragment;
+import cn.fuyoushuo.fqbb.view.listener.MyTagHandler;
 import cn.fuyoushuo.fqbb.view.view.login.RegisterOneView;
 import rx.functions.Action1;
 
@@ -41,6 +46,9 @@ public class RegisterOneFragment extends BaseFragment implements RegisterOneView
 
     @Bind(R.id.commit_button)
     Button commitButton;
+
+    @Bind(R.id.userAgreement_tip)
+    TextView userAgreementTipView;
 
     private String phoneNum = "88888888888";
 
@@ -103,6 +111,15 @@ public class RegisterOneFragment extends BaseFragment implements RegisterOneView
                 });
 
         phoneNumText.setInputType(InputType.TYPE_CLASS_PHONE);
+        userAgreementTipView.setText(Html.fromHtml("• 注册或登录即视为同意<font color=\"red\"><userAgree>《返钱宝宝用户使用协议》</userAgree></font>",null,
+                new MyTagHandler("userAgree", new MyTagHandler.OnClickTag() {
+                    @Override
+                    public void onClick() {
+                        UserAgreementDialogFragment.newInstance().show(getFragmentManager(),"UserAgreementDialogFragment");
+                    }
+                })));
+        userAgreementTipView.setHighlightColor(getResources().getColor(android.R.color.transparent));
+        userAgreementTipView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override

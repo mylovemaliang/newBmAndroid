@@ -49,5 +49,17 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/commit_button"/>
 
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_widthPercent="90%w"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/commit_button"
+        android:layout_marginTop="30dp"
+        android:textSize="14sp"
+        android:textStyle="normal"
+        android:text="• 注册或登录即视为同意《返钱宝宝用户使用协议》"
+        android:id="@+id/userAgreement_tip" />
+
 
 </com.zhy.android.percent.support.PercentRelativeLayout>
