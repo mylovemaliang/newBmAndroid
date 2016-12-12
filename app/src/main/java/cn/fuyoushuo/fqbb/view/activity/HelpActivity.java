@@ -2,6 +2,7 @@ package cn.fuyoushuo.fqbb.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,7 +134,7 @@ public class HelpActivity extends BaseActivity {
              this.finish();
         }
 
-        if(currentUrl.contains("www.fanqianbb.com/mfwq") && !currentUrl.contains("www.fanqianbb.com/mfwq/fwqlist.html")){
+        if(!TextUtils.isEmpty(currentUrl) && currentUrl.contains("www.fanqianbb.com/mfwq") && !currentUrl.contains("www.fanqianbb.com/mfwq/fwqlist.html")){
             helpWebview.goBack();
             return;
         }else{
