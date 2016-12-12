@@ -118,6 +118,7 @@ public class FindPassTwoFragment extends BaseFragment implements FindPassTwoView
 
     //----------------------------------------外部调用----------------------------------------------------
     public void refreshView(String accountValue,String verifiCodeValue){
+        if(isDetched) return;
         this.accountValue = accountValue;
         this.verifiCodeValue = verifiCodeValue;
     }

@@ -274,7 +274,7 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
     //----------------------------------用于外部调用--------------------------------------------------
 
     public void refreshUserInfo(){
-        if(userCenterPresenter != null){
+        if(!isDetched && userCenterPresenter != null){
           userCenterPresenter.getUserInfo();
           userCenterPresenter.getAlimamaInfo();
         }

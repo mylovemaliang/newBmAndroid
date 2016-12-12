@@ -134,6 +134,7 @@ public class RegisterThreeFragment extends BaseFragment implements RegisterThree
     }
 
     public void refreshView(String phoneNum,String verifiCode){
+        if(isDetched) return;
         this.phoneNum = phoneNum;
         this.verifiCode = verifiCode;
     }

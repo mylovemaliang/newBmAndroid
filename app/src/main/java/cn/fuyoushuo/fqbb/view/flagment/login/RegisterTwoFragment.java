@@ -132,8 +132,8 @@ public class RegisterTwoFragment extends BaseFragment {
 
     //刷新当前的手机号
     public void refreshPhoneNum(String phoneNum) {
+        if(isDetched) return;
         this.phoneNum = phoneNum;
-
     }
 
     @Override

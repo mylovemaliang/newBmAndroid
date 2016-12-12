@@ -1,5 +1,7 @@
 package cn.fuyoushuo.fqbb.view.flagment;
 
+import android.content.Context;
+import android.hardware.input.InputManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -17,6 +20,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.jakewharton.rxbinding.view.RxView;
+import com.trello.rxlifecycle.FragmentEvent;
+import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.concurrent.TimeUnit;
@@ -33,7 +38,7 @@ import rx.functions.Action1;
  * 阿里妈妈登录页面
  * Created by QA on 2016/10/27.
  */
-public class AlimamaLoginDialogFragment extends DialogFragment{
+public class AlimamaLoginDialogFragment extends RxDialogFragment{
 
 
     @Bind(R.id.alimama_login_backArea)
@@ -129,11 +134,16 @@ public class AlimamaLoginDialogFragment extends DialogFragment{
         alimamaLoginView.addView(myWebView);
 
         RxView.clicks(backArea).throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                         dismissAllowingStateLoss();
-          }
+                        InputMethodManager inputMethodManager = (InputMethodManager) MyApplication.getMyapplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (inputMethodManager.isActive()) {
+                            inputMethodManager.hideSoftInputFromWindow(backArea.getApplicationWindowToken(),0);
+                        }
+                        dismissAllowingStateLoss();
+           }
         });
     }
 

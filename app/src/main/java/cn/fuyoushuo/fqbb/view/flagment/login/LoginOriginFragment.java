@@ -136,6 +136,7 @@ public class LoginOriginFragment extends BaseFragment implements LoginOriginView
 
 
     public void refreshAccount(String phoneNum){
+        if(isDetched) return;
         accountValue = phoneNum;
 
     }

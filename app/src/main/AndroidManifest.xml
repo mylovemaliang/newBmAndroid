@@ -28,6 +28,7 @@
             android:name=".view.activity.LauncherActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,6 +45,7 @@
             android:name=".view.activity.AppstartActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize">
 
             <!-- <intent-filter> -->
@@ -57,6 +59,7 @@
             android:name=".view.activity.SearchActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/SearchActivityTheme"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".view.activity.UserLoginActivity"
@@ -67,26 +70,31 @@
             android:name=".view.activity.PointMallActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|adjustResize" />
         <activity
             android:name=".view.activity.MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
         <activity
             android:name=".view.activity.WebviewActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
         <activity
             android:name=".view.activity.HelpActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
         <activity
             android:name=".view.activity.ConfigActivity"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
 
         <meta-data

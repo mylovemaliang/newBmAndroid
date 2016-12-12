@@ -27,6 +27,8 @@ public abstract class BaseFragment extends RxFragment {
 
     protected boolean isInit = false;
 
+    protected boolean isDetched = true;
+
     public BaseFragment() {
         // Required empty public constructor
     }
@@ -68,6 +70,17 @@ public abstract class BaseFragment extends RxFragment {
         return inflateView;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        isDetched = false;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        isDetched = true;
+    }
 
     protected  void initView(View inflateView){};
 

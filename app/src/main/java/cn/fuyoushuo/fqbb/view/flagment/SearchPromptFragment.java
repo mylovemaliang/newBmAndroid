@@ -389,6 +389,7 @@ public class SearchPromptFragment extends BaseFragment implements SearchPromptVi
 
     //刷新当前view
     public void reflashView(SeartchPo po){
+        if(isDetched) return;
         String searchType = po.getSearchType();
         String q = po.getQ();
         seartchPo.setSearchType(searchType);
@@ -413,7 +414,6 @@ public class SearchPromptFragment extends BaseFragment implements SearchPromptVi
         }
     }
 
-
     //--------------------------------------------关于历史记录的操作--------------------------------------------
 
     /**
@@ -421,6 +421,7 @@ public class SearchPromptFragment extends BaseFragment implements SearchPromptVi
      * @return
      */
     public String getLastestHistory(){
+        if(isDetched) return "";
         String searchHistory = getSearchHistory();
         if(!TextUtils.isEmpty(searchHistory)){
             List<String> strings = CommonUtils.toStringList(searchHistory);
@@ -471,6 +472,7 @@ public class SearchPromptFragment extends BaseFragment implements SearchPromptVi
 
     //清除历史记录
     public void clearHisItems() {
+         if(isDetched) return;
          cleanHistory();
          searchPromtOriginFragment.refreshHisData(new ArrayList<String>());
     }
@@ -536,6 +538,7 @@ public class SearchPromptFragment extends BaseFragment implements SearchPromptVi
     }
 
     public void initPromtOrigin(){
+        if(isDetched) return;
         String searchHistory = getSearchHistory();
         List<String> items = CommonUtils.toStringList(searchHistory);
         searchPromtOriginFragment.refreshHisData(items);
@@ -544,6 +547,7 @@ public class SearchPromptFragment extends BaseFragment implements SearchPromptVi
 
     //初始化原始状态
     public void initToOrigin(){
+        if(isDetched) return;
         this.seartchPo = new SeartchPo();
         searchText.setText("");
         initPromtOrigin();
@@ -552,6 +556,7 @@ public class SearchPromptFragment extends BaseFragment implements SearchPromptVi
 
     //初始化剪切板内容
     public void copyFromChipboard(){
+        if(isDetched) return;
         boolean isHasClipBoard = clipboardManager.hasPrimaryClip();
         if(!isHasClipBoard){
             Toast.makeText(MyApplication.getContext(),"剪切板暂无内容",Toast.LENGTH_SHORT).show();

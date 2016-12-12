@@ -209,6 +209,7 @@ public class SearchFlagment extends BaseFragment{
     //--------------------------------组装搜索条件------------------------------------------------------
     //刷新flagment view
     public void refreshSearchView(SeartchPo po){
+        if(isDetched) return;
         String q = po.getQ();
         this.q = q;
         if(isInit){
@@ -254,6 +255,7 @@ public class SearchFlagment extends BaseFragment{
     }
 
     public void initToOrigin() {
+        if(isDetched) return;
         dispatchWhenToInit();
         if(viewPager != null){
             //回到初始位置
