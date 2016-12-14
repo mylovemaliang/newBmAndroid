@@ -21,6 +21,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -35,6 +36,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.umeng.analytics.MobclickAgent;
 
+import org.w3c.dom.Text;
+
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -47,13 +50,28 @@ import java.util.Map;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.commonlib.utils.okhttp.PersistentCookieStore;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
+import cn.fuyoushuo.fqbb.view.flagment.AlimamaLoginDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.BindEmailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.GoodDetailTipDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.JxspDetailDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.MainFlagment;
+import cn.fuyoushuo.fqbb.view.flagment.UnbindEmailDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.UpdatePasswordDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.UserCenterFragment;
+import cn.fuyoushuo.fqbb.view.flagment.zhifubao.BindZfbDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.zhifubao.UpdateZfbDialogFragment;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 public class WebviewActivity extends BaseActivity {
 
     public static final String VOLLEY_TAG_NAME = "webview_activity";
+
+    private CompositeSubscription mSubscriptions;
 
     public WebView myWebView;
 
@@ -107,6 +125,12 @@ public class WebviewActivity extends BaseActivity {
 
     private LinearLayout tipArea;
 
+    private TextView funText;
+
+    private FrameLayout centerFrameLayout;
+
+    private int funCode = 0; // 0:代表默认功能  1:我的订单未登录
+
     //是否从商品搜索页转发过来
     private boolean isFromGoodSearch = false;
 
@@ -139,6 +163,9 @@ public class WebviewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_webview);
+
+        mSubscriptions = new CompositeSubscription();
+        initBusEventListen();
 
         webviewTitleText = (TextView) this.findViewById(R.id.webviewTitleText);
         webviewToHome = (TextView) this.findViewById(R.id.webviewToHome);
@@ -173,6 +200,18 @@ public class WebviewActivity extends BaseActivity {
                         GoodDetailTipDialogFragment.newInstance(text.toString()).show(getSupportFragmentManager(), "GoodDetailTipDialogFragment");
                     }
                 }
+            }
+        });
+
+        centerFrameLayout = (FrameLayout) this.findViewById(R.id.wv_frameLayout);
+
+        funText = (TextView) this.findViewById(R.id.webview_fun_text);
+        funText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 if(funCode == 1){
+                     AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_MY_TAOBAO_PAGE).show(getSupportFragmentManager(),"AlimamaLoginDialogFragment");
+                 }
             }
         });
 
@@ -230,9 +269,10 @@ public class WebviewActivity extends BaseActivity {
                     }
                     //http://h5.m.taobao.com/awp/base/order.htm?itemId=535027728789&item_num_id=535027728789&_input_charset=utf-8&buyNow=true&v=0&quantity=1&skuId=3193002206132&exParams=%7B%22id%22%3A%22535027728789%22%2C%22fqbb%22%3A%221%22%7D
                     //https://buy.m.tmall.com/order/confirmOrderWap.htm?enc=%E2%84%A2&buyNow=true&_input_charset=utf-8&itemId=533800099546&skuId=3184727994633&quantity=1&divisionCode=310100&x-itemid=533800099546&x-uid=589338408
+                    https://h5.m.taobao.com/cart/order.html?skuId=3263426004240&quantity=1&itemId=530144742802&buyNow=true&exParams=%7B%22id%22%3A%22530144742802%22%2C%22fqbb%22%3A%221%22%7D&spm=a1z3i.7c.0.i7c
                     //进入淘宝下单页面需要判断阿里妈妈是否在线
-                    if(url.replace("http://","").replace("https://","").startsWith("h5.m.taobao.com/awp/base/order.htm") ||
-                       isTmallOrderPage(url) ){
+                    if(url.replace("http://","").replace("https://","").startsWith("h5.m.taobao.com/cart/order.html") ||
+                       isTmallOrderPage(url)){
                         TaobaoInterPresenter.judgeAlimamaLogin(new TaobaoInterPresenter.LoginCallback() {
                            @Override
                            public void hasLoginCallback() {
@@ -259,7 +299,7 @@ public class WebviewActivity extends BaseActivity {
                         return true;
                     }
 
-                    if(isTaobaoItemDetail(url)){//是商品详情页
+                     if(isTaobaoItemDetail(url)){//是商品详情页
                         relatedGoodUrl = url.replace("&fqbb=1","");
                         webviewBottom.setVisibility(View.VISIBLE);
 
@@ -282,12 +322,14 @@ public class WebviewActivity extends BaseActivity {
                                 return false;
                             }
                         }
-                    } else if((url.startsWith("https://login.m.taobao.com/login.htm") || url.startsWith("https://login.tmall.com"))
-                            && !url.contains("http://login.taobao.com/member/login.jhtml?style=common&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm")
-                            && !url.contains("https://login.m.taobao.com/login.htm?redirectURL=http://login.taobao.com/member/taobaoke/login.htm")){
-                            showLoginPage();
-                            return true;
-                    }else{
+                    }
+//                     else if((url.startsWith("https://login.m.taobao.com/login.htm") || url.startsWith("https://login.tmall.com"))
+//                            && !url.contains("http://login.taobao.com/member/login.jhtml?style=common&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm")
+//                            && !url.contains("https://login.m.taobao.com/login.htm?redirectURL=http://login.taobao.com/member/taobaoke/login.htm")){
+//                            showLoginPage();
+//                            return true;
+//                    }
+                     else{
                         cleanCurrentItemId();
                         webviewBottom.setVisibility(View.GONE);
                     }
@@ -418,33 +460,33 @@ public class WebviewActivity extends BaseActivity {
                     doGoBack = false;
                 }
 
-                if(url.startsWith("http://www.alimama.com/index.htm") || url.startsWith("http://www.alimama.com/index.htm")
-                        || url.startsWith("http://media.alimama.com/account/overview.htm")
-                        || url.startsWith("https://www.alimama.com/index.htm") || url.startsWith("https://www.alimama.com/index.htm")
-                        || url.startsWith("https://media.alimama.com/account/overview.htm")){//已登录
-                    if(loginPreUrl!=null){
-                        TaobaoInterPresenter.saveLoginCookie(url);
-
-                        if(isTaobaoItemDetail(loginPreUrl)){//是商品详情页
-                            String itemIdStr = getParamsMapByUrlStr(loginPreUrl).get("id");
-                            Long newItemId = 0l;
-                            if(itemIdStr!=null){
-                                newItemId = Long.parseLong(itemIdStr.trim());
-                                currentItemId = newItemId;
-                                currentItemUrl = loginPreUrl.replace("&fqbb=1", "");
-                            }
-
-                            getItemFanliInfo(currentItemId);
-                        }else{
-                            if(myWebView != null){
-                                myWebView.loadUrl(loginPreUrl);
-                            }
-                        }
-
-                        loginPreUrl = null;
-                        loginAlimama.setVisibility(View.GONE);
-                    }
-                }
+//                if(url.startsWith("http://www.alimama.com/index.htm") || url.startsWith("http://www.alimama.com/index.htm")
+//                        || url.startsWith("http://media.alimama.com/account/overview.htm")
+//                        || url.startsWith("https://www.alimama.com/index.htm") || url.startsWith("https://www.alimama.com/index.htm")
+//                        || url.startsWith("https://media.alimama.com/account/overview.htm")){//已登录
+//                    if(loginPreUrl!=null){
+//                        TaobaoInterPresenter.saveLoginCookie(url);
+//
+//                        if(isTaobaoItemDetail(loginPreUrl)){//是商品详情页
+//                            String itemIdStr = getParamsMapByUrlStr(loginPreUrl).get("id");
+//                            Long newItemId = 0l;
+//                            if(itemIdStr!=null){
+//                                newItemId = Long.parseLong(itemIdStr.trim());
+//                                currentItemId = newItemId;
+//                                currentItemUrl = loginPreUrl.replace("&fqbb=1", "");
+//                            }
+//
+//                            getItemFanliInfo(currentItemId);
+//                        }else{
+//                            if(myWebView != null){
+//                                myWebView.loadUrl(loginPreUrl);
+//                            }
+//                        }
+//
+//                        loginPreUrl = null;
+//                        loginAlimama.setVisibility(View.GONE);
+//                    }
+//                }
                 String js = "var rmadjs = document.createElement(\"script\");";
                 js += "rmadjs.src=\"//www.fanqianbb.com/static/mobile/rmad.js\";";
                 js += "document.body.appendChild(rmadjs);";
@@ -459,7 +501,8 @@ public class WebviewActivity extends BaseActivity {
             public void onClick(View v) {
                 if(myWebView!=null){
                   loginPreUrl = myWebView.getUrl();
-                  showLoginPage();
+                  //showLoginPage();
+                  AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_TB_GOOD_DETAIL).show(getSupportFragmentManager(),"AlimamaLoginDialogFragment");
                 }
             }
         });
@@ -566,6 +609,42 @@ public class WebviewActivity extends BaseActivity {
         }
     }
 
+    //初始化总线事件监听
+    private void initBusEventListen(){
+        mSubscriptions.add(RxBus.getInstance().toObserverable().compose(this.<RxBus.BusEvent>bindToLifecycle()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<RxBus.BusEvent>() {
+            @Override
+            public void call(RxBus.BusEvent busEvent) {
+                if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToTbGoodDetailEvent){
+                    if(myWebView == null) return;
+                    if(loginPreUrl!=null){
+                        if(isTaobaoItemDetail(loginPreUrl)){//是商品详情页
+                            String itemIdStr = getParamsMapByUrlStr(loginPreUrl).get("id");
+                            Long newItemId = 0l;
+                            if(itemIdStr!=null){
+                                newItemId = Long.parseLong(itemIdStr.trim());
+                                currentItemId = newItemId;
+                                currentItemUrl = loginPreUrl.replace("&fqbb=1", "");
+                            }
+                            getItemFanliInfo(currentItemId);
+                        }else{
+                            if(myWebView != null){
+                                myWebView.loadUrl(loginPreUrl);
+                            }
+                        }
+                        loginPreUrl = null;
+                        loginAlimama.setVisibility(View.GONE);
+                    }
+                }
+                else if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToMyTaobaoEvent){
+                    if(myWebView == null) return;
+                    centerFrameLayout.setVisibility(View.GONE);
+                    funCode = 0;
+                    myWebView.loadUrl(myTaobaoPageUrl);
+                }
+            }
+        }));
+    }
+
     @Override
     protected void onResume() {
         if("tbGoodDetail".equals(bizString)){
@@ -610,7 +689,28 @@ public class WebviewActivity extends BaseActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 loginPreUrl = preWebViewUrl;
-                showLoginPage();
+                //showLoginPage();
+                AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_TB_GOOD_DETAIL).show(getSupportFragmentManager(),"AlimamaLoginDialogFragment");
+                //关闭自身
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+    private void showMyTaobaoLoginDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(WebviewActivity.this);
+        builder.setMessage("登录淘宝才能查看我的淘宝.");
+
+        builder.setCancelable(true);
+        builder.setPositiveButton("去淘宝登录", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                loginPreUrl = myTaobaoPageUrl;
+                //showLoginPage();
+                AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_MY_TAOBAO_PAGE).show(getSupportFragmentManager(),"AlimamaLoginDialogFragment");
+                //关闭自身
+                dialog.dismiss();
             }
         });
         builder.create().show();
@@ -729,6 +829,9 @@ public class WebviewActivity extends BaseActivity {
 
     protected void onDestroy() {
         TaobaoInterPresenter.cancelTagedRuquests(VOLLEY_TAG_NAME);
+        if(mSubscriptions != null && mSubscriptions.hasSubscriptions()){
+            mSubscriptions.unsubscribe();
+        }
         if(myWebView!=null){
             ViewGroup viewGroup = (ViewGroup) myWebView.getParent();
             if(viewGroup!=null){
@@ -1076,15 +1179,20 @@ public class WebviewActivity extends BaseActivity {
             @Override
             public void hasLoginCallback() {
                 if(myWebView!=null){
+                    centerFrameLayout.setVisibility(View.GONE);
+                    funCode = 0;
                     myWebView.loadUrl(myTaobaoPageUrl);
                 }
             }
 
             @Override
             public void nologinCallback() {
-                if(myWebView!=null){
-                    myWebView.loadUrl(TaobaoInterPresenter.TAOBAOKE_LOGINURL);
-                }
+//                if(myWebView!=null){
+//                    myWebView.loadUrl(TaobaoInterPresenter.TAOBAOKE_LOGINURL);
+//                }
+                  centerFrameLayout.setVisibility(View.VISIBLE);
+                  funCode = 1;
+                  //showMyTaobaoLoginDialog();
             }
 
             @Override

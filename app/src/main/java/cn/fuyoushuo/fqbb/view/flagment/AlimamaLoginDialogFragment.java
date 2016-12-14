@@ -5,13 +5,16 @@ import android.hardware.input.InputManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -19,6 +22,12 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.alibaba.fastjson.JSONObject;
+import com.github.lzyzsd.jsbridge.BridgeHandler;
+import com.github.lzyzsd.jsbridge.BridgeUtil;
+import com.github.lzyzsd.jsbridge.BridgeWebView;
+import com.github.lzyzsd.jsbridge.BridgeWebViewClient;
+import com.github.lzyzsd.jsbridge.CallBackFunction;
 import com.jakewharton.rxbinding.view.RxView;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
@@ -30,7 +39,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.commonlib.utils.LoginInfoStore;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
+import cn.fuyoushuo.fqbb.commonlib.utils.UserInfoStore;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import rx.functions.Action1;
 
@@ -47,7 +58,7 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
     @Bind(R.id.alimama_login_webview_area)
     ViewGroup alimamaLoginView;
 
-    WebView myWebView;
+    BridgeWebView myWebView;
 
     int fromCode;
 
@@ -55,6 +66,18 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
 
     //从 用户中心 过来
     public static final int FROM_USER_CENTER = 1;
+
+    //从 淘宝天猫详情页 过来
+    public static final int FROM_TB_GOOD_DETAIL = 2;
+
+    //从 淘宝订单页面 过来
+    public static final int FROM_TB_ORDER_PAGE = 3;
+
+    //从 提现页面 过来
+    public static final int FROM_TIXIAN_PAGE = 4;
+
+    //从 我的淘宝 过来
+    public static final int FROM_MY_TAOBAO_PAGE = 5;
 
 
     public static AlimamaLoginDialogFragment newInstance(int fromCode){
@@ -87,11 +110,12 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //初始化本页面的webview
-        myWebView = new WebView(MyApplication.getContext());
+        myWebView = new BridgeWebView(MyApplication.getContext());
         myWebView.getSettings().setJavaScriptEnabled(true);
         //myWebView.getSettings().setBuiltInZoomControls(true);//是否显示缩放按钮，默认false
         myWebView.getSettings().setSupportZoom(true);//是否可以缩放，默认true
         myWebView.getSettings().setDomStorageEnabled(true);
+        myWebView.getSettings().setAllowFileAccess(true);
 
         myWebView.getSettings().setUseWideViewPort(true);// 设置此属性，可任意比例缩放。大视图模式
         myWebView.getSettings().setLoadWithOverviewMode(true);// 和setUseWideViewPort(true)一起解决网页自适应问题
@@ -106,7 +130,26 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             CookieManager.getInstance().setAcceptThirdPartyCookies(myWebView, true);
 
-        myWebView.setWebViewClient(new WebViewClient(){
+        myWebView.registerHandler("rememberUserInfo", new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                Log.d("jsCallBack",data);
+                //每次注册提交的信息保存下来
+                if(!TextUtils.isEmpty(data)){
+                    JSONObject result = JSONObject.parseObject(data);
+                    String userName = result.getString("username");
+                    String password = result.getString("password");
+                    boolean rempwd = result.getBooleanValue("rempwd");
+                    UserInfoStore userInfoStore = new UserInfoStore();
+                    userInfoStore.setAliUserName(userName);
+                    userInfoStore.setAliPassword(password);
+                    userInfoStore.setRemAliInfo(rempwd);
+                    LoginInfoStore.getIntance().writeUserInfo(userInfoStore);
+                }
+            }
+        });
+
+        myWebView.setWebViewClient(new BridgeWebViewClient(myWebView){
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -114,11 +157,12 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
                      view.loadUrl(url);
                      return true;
                  }
-                 return false;
+                 return super.shouldOverrideUrlLoading(view,url);
             }
 
             @Override
             public void onPageFinished(final WebView view, String url) {
+                super.onPageFinished(view,url);
                 if(url.startsWith("http://www.alimama.com/index.htm")
                     || url.startsWith("http://media.alimama.com/account/overview.htm")
                     || url.startsWith("http://media.alimama.com/account/account.htm")){ // 已登录
@@ -127,8 +171,13 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
                     view.stopLoading();
                     afterSaveCookies();
                 }
-            }
-        });
+                //加载需要回调的JS
+                BridgeUtil.webViewLoadLocalJs(view,"autoRemPass.js");
+//              String js = "var rmadjs = document.createElement(\"script\");";
+//              js += "rmadjs.innerHTML="+"\'"+jsContent+"\'";
+//              js += "document.body.appendChild(rmadjs);";
+//              view.loadUrl("javascript:"+js);
+            }});
 
         //添加webview
         alimamaLoginView.addView(myWebView);
@@ -151,12 +200,23 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
     public void onStart() {
         super.onStart();
         myWebView.loadUrl(TAOBAOKE_LOGIN_URL);
+        if(myWebView != null){
+            myWebView.callHandler("fillUserInfo", LoginInfoStore.getIntance().getAliInfoJson(), new CallBackFunction() {
+                @Override
+                public void onCallBack(String data) {
+
+                }
+            });
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         ButterKnife.unbind(this);
+        if(alimamaLoginView != null){
+            alimamaLoginView.removeView(myWebView);
+        }
         if(myWebView != null){
             myWebView.removeAllViews();
             myWebView.destroy();
@@ -166,8 +226,24 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
     private void afterSaveCookies(){
         if(fromCode == 0) return;
         switch (fromCode){
-           case FROM_USER_CENTER :
+           case FROM_USER_CENTER:
                RxBus.getInstance().send(new AlimamaLoginToUserCenterEvent());
+               dismissAllowingStateLoss();
+               break;
+            case FROM_TB_GOOD_DETAIL:
+               RxBus.getInstance().send(new AlimamaLoginToTbGoodDetailEvent());
+               dismissAllowingStateLoss();
+               break;
+            case FROM_MY_TAOBAO_PAGE:
+               RxBus.getInstance().send(new AlimamaLoginToMyTaobaoEvent());
+               dismissAllowingStateLoss();
+               break;
+            case FROM_TB_ORDER_PAGE:
+               RxBus.getInstance().send(new AlimamaLoginToTbOrderEvent());
+               dismissAllowingStateLoss();
+               break;
+            case FROM_TIXIAN_PAGE:
+               RxBus.getInstance().send(new AlimamaLoginToTixianEvent());
                dismissAllowingStateLoss();
                break;
            default:
@@ -189,5 +265,13 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
 
     //---------------------------------实现总线事件----------------------------------------------------
     public class AlimamaLoginToUserCenterEvent extends RxBus.BusEvent{}
+
+    public class AlimamaLoginToTbGoodDetailEvent extends RxBus.BusEvent{}
+
+    public class AlimamaLoginToMyTaobaoEvent extends RxBus.BusEvent{}
+
+    public class AlimamaLoginToTbOrderEvent extends RxBus.BusEvent{}
+
+    public class AlimamaLoginToTixianEvent extends RxBus.BusEvent{}
 
 }

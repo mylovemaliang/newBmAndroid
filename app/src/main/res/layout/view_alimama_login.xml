@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:text="淘宝登录"
+            android:textColor="@color/module_6"
             android:id="@+id/alimama_login_title"
             android:layout_centerInParent="true"/>
     </RelativeLayout>

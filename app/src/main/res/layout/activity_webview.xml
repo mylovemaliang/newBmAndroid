@@ -55,6 +55,12 @@
 		</LinearLayout>
 	</RelativeLayout>
 
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="1dip"
+		android:orientation="horizontal"
+		android:background="@color/gray"></LinearLayout>
+
 	<!--
 	<LinearLayout android:id="@+id/tb_h5page_webview"
 		android:layout_width="wrap_content"
@@ -68,12 +74,42 @@
 			/>
 	</LinearLayout>-->
 
-	<WebView android:id="@+id/tb_h5page_webview"
-		android:layout_width="fill_parent"
+    <RelativeLayout
+		android:layout_width="match_parent"
 		android:layout_height="0dip"
-		android:focusable="false"
-		android:layout_weight="1.0"
-		/>
+		android:layout_weight="1.0">
+
+		<WebView
+			android:id="@+id/tb_h5page_webview"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:focusable="false" />
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/white"
+			android:id="@+id/wv_frameLayout"
+			android:visibility="gone">
+
+			<RelativeLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
+
+				<TextView
+					android:id="@+id/webview_fun_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_centerInParent="true"
+					android:background="@drawable/red_text_border"
+					android:text="去登录淘宝!"
+					android:textSize="15sp"
+					android:textColor="@color/module_11"
+					/>
+
+			</RelativeLayout>
+		</FrameLayout>
+	</RelativeLayout>
 
 	<RelativeLayout android:id="@+id/webviewFragBottom"
 		android:orientation="horizontal"
@@ -237,4 +273,5 @@
 				android:src="@mipmap/good_tip" />
 		</LinearLayout>
 	</RelativeLayout>
+
 </LinearLayout>

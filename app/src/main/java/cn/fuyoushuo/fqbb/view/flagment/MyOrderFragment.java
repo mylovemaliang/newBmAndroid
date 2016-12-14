@@ -98,7 +98,13 @@ public class MyOrderFragment extends BaseFragment{
     }
 
     public void reflashLocalOrder(){
+        if(isDetched) return;
         ((LocalOrderFragment)(fragmentMap.get("localOrder"))).loadWebview();
+    }
+
+    public void reflashTbOrder(){
+        if(isDetched) return;
+        ((TbOrderFragment)(fragmentMap.get("tbOrder"))).loadWebviewPage();
     }
 
     static class MyPageAdapter extends FragmentPagerAdapter {

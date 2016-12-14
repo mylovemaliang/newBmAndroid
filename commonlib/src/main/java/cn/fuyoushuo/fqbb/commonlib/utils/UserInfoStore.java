@@ -10,6 +10,12 @@ public class UserInfoStore implements Serializable {
 
         private String userId;
 
+        private String aliUserName;
+
+        private String aliPassword;
+
+        private boolean isRemAliInfo = false;
+
         public String getToken() {
             return token;
         }
@@ -33,4 +39,28 @@ public class UserInfoStore implements Serializable {
         public void setUserId(String userId) {
             this.userId = userId;
         }
-    }
+
+        public String getAliPassword() {
+            return aliPassword;
+        }
+
+        public void setAliPassword(String aliPassword) {
+            this.aliPassword = aliPassword;
+        }
+
+        public String getAliUserName() {
+            return aliUserName;
+        }
+
+        public void setAliUserName(String aliUserName) {
+            this.aliUserName = aliUserName;
+        }
+
+        public boolean isRemAliInfo() {
+            return isRemAliInfo;
+        }
+
+        public void setRemAliInfo(boolean remAliInfo) {
+            isRemAliInfo = remAliInfo;
+        }
+}

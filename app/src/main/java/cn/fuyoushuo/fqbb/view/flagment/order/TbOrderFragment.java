@@ -1,5 +1,7 @@
 package cn.fuyoushuo.fqbb.view.flagment.order;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -24,7 +27,9 @@ import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import cn.fuyoushuo.fqbb.view.activity.MainActivity;
+import cn.fuyoushuo.fqbb.view.activity.UserLoginActivity;
 import cn.fuyoushuo.fqbb.view.activity.WebviewActivity;
+import cn.fuyoushuo.fqbb.view.flagment.AlimamaLoginDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.BaseInnerFragment;
 
 public class TbOrderFragment extends BaseInnerFragment {
@@ -45,6 +50,10 @@ public class TbOrderFragment extends BaseInnerFragment {
 
     boolean noLoginIntercept = false;
 
+    FrameLayout funArea;
+
+    TextView funText;
+
     @Override
     protected String getPageName() {
         return "tb_orderSearch";
@@ -61,6 +70,17 @@ public class TbOrderFragment extends BaseInnerFragment {
         parentActivity = (MainActivity) getActivity();
 
         reflashMyOrderLl = (LinearLayout) view.findViewById(R.id.reflashMyOrderLl);
+
+        funArea = (FrameLayout) view.findViewById(R.id.tb_myOrder_FrameLayout);
+
+        funText = (TextView) view.findViewById(R.id.my_order_fun_text);
+
+        funText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_TB_ORDER_PAGE).show(getActivity().getSupportFragmentManager(),"AlimamaLoginDialogFragment");
+            }
+        });
 
         webviewArea = (RelativeLayout) view.findViewById(R.id.tb_order_wv_area);
 
@@ -201,7 +221,9 @@ public class TbOrderFragment extends BaseInnerFragment {
         TaobaoInterPresenter.judgeAlimamaLogin(new TaobaoInterPresenter.LoginCallback() {
             @Override
             public void hasLoginCallback() {
+
                 if(myorderWebview!=null){
+                    funArea.setVisibility(View.GONE);
                     myorderTitleText.setText("查询订单");
                     myorderWebview.loadUrl(myOrderUrl);
                 }
@@ -209,10 +231,7 @@ public class TbOrderFragment extends BaseInnerFragment {
 
             @Override
             public void nologinCallback() {
-                if(myorderWebview!=null){
-                    myorderTitleText.setText("淘宝账户登录");
-                    myorderWebview.loadUrl(TaobaoInterPresenter.TAOBAOKE_LOGINURL);
-                }
+                 showTbLoginTip();
             }
 
             @Override
@@ -220,6 +239,25 @@ public class TbOrderFragment extends BaseInnerFragment {
 
             }
         },VOLLEY_TAG_NAME);
+    }
+
+    private void showTbLoginTip(){
+        funArea.setVisibility(View.VISIBLE);
+    }
+
+    private void showLocalLoginDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("淘宝登录状态下才能查看淘宝订单信息!");
+
+        builder.setCancelable(true);
+        builder.setPositiveButton("去淘宝登录", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_TB_ORDER_PAGE).show(getActivity().getSupportFragmentManager(),"AlimamaLoginDialogFragment");
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
     }
 
     public void clearWebview(){

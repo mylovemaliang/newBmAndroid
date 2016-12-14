@@ -39,6 +39,7 @@ import cn.fuyoushuo.fqbb.view.flagment.MainFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.MyJifenFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.MyOrderFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SelectedGoodFragment;
+import cn.fuyoushuo.fqbb.view.flagment.SilentLoginTbFragment;
 import cn.fuyoushuo.fqbb.view.flagment.TbSearchResFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.UnbindEmailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.UpdatePasswordDialogFragment;
@@ -46,6 +47,7 @@ import cn.fuyoushuo.fqbb.view.flagment.order.TbOrderFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SearchPromptFragment;
 import cn.fuyoushuo.fqbb.view.flagment.TixianFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.UserCenterFragment;
+import cn.fuyoushuo.fqbb.view.flagment.pointsmall.TixianDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.zhifubao.BindZfbDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.zhifubao.UpdateZfbDialogFragment;
 import cn.fuyoushuo.fqbb.view.view.MyOrderView;
@@ -111,6 +113,8 @@ public class MainActivity extends BaseActivity {
 
     UserCenterFragment userCenterFragment;
 
+    SilentLoginTbFragment silentLoginTbFragment;
+
     int currentShowBizPage = 0;  //0  首页    1 精选商品    2 我的订单    3 个人中心
 
     int preShowBizPage;
@@ -143,6 +147,7 @@ public class MainActivity extends BaseActivity {
         initBusEventListen();
         initAutoFanli();
         getUpdateInfo(true);
+        //silentLoginTbFragment.autoLogin();
     }
 
     public void getUpdateInfo(boolean b){
@@ -262,6 +267,15 @@ public class MainActivity extends BaseActivity {
                  else if(busEvent instanceof UpdatePasswordDialogFragment.AfterUpdatePasswordSuccEvent){
                      userCenterFragment.refreshUserInfo();
                  }
+                 else if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToTbOrderEvent){
+                     myOrderFlagment.reflashTbOrder();
+                 }
+                 else if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToTixianEvent){
+                     Fragment tixianFlagment = getSupportFragmentManager().findFragmentByTag("TixianFlagment");
+                     if(tixianFlagment != null && !tixianFlagment.isDetached()){
+                         ((TixianFlagment)tixianFlagment).loadWebviewPage();
+                     }
+                 }
             }
         }));
     }
@@ -274,6 +288,7 @@ public class MainActivity extends BaseActivity {
         myOrderFlagment = MyOrderFragment.newInstance();
         //myJifenFlagment = new MyJifenFlagment();
         selectedGoodFragment = SelectedGoodFragment.newInstance();
+        silentLoginTbFragment = SilentLoginTbFragment.newInstance();
 
         fragmentList.add(mainFlagment);
         fragmentList.add(selectedGoodFragment);
@@ -285,6 +300,7 @@ public class MainActivity extends BaseActivity {
         mContent = mainFlagment;
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_area,mainFlagment).show(mainFlagment);
+        fragmentTransaction.add(R.id.main_area,silentLoginTbFragment).hide(silentLoginTbFragment);
 //        fragmentTransaction.add(R.id.main_area,selectedGoodFragment).hide(selectedGoodFragment);
 //        fragmentTransaction.add(R.id.main_area,myOrderFlagment).hide(myOrderFlagment);
 //        fragmentTransaction.add(R.id.main_area,userCenterFragment).hide(userCenterFragment);

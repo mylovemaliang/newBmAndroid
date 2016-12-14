@@ -35,12 +35,43 @@
             android:textColor="@color/detailPercent"/>
     </RelativeLayout>
 
-    <RelativeLayout android:id="@+id/tb_order_wv_area"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:focusable="false"
-        android:layout_weight="1.0"
-        />
+        android:layout_weight="1.0">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/tb_order_wv_area"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:visibility="gone"
+            android:id="@+id/tb_myOrder_FrameLayout">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="去登录淘宝!"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/my_order_fun_text"
+                    android:textColor="@color/module_11"
+                    android:background="@drawable/red_text_border"
+                    android:textSize="15sp"/>
+            </RelativeLayout>
+        </FrameLayout>
+
+
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="fill_parent"

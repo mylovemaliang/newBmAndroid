@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * 用于单例保存用户信息
  * Created by QA on 2016/10/31.
@@ -42,6 +44,14 @@ public class LoginInfoStore {
          if(!TextUtils.isEmpty(userInfoStore.getUserId())){
              edit.putString("userId",userInfoStore.getUserId());
         }
+        if(!TextUtils.isEmpty(userInfoStore.getAliUserName())){
+             edit.putString("aliUserName",userInfoStore.getAliUserName());
+        }
+        if(!TextUtils.isEmpty(userInfoStore.getAliPassword())){
+             edit.putString("aliPassword",userInfoStore.getAliPassword());
+        }
+        //是否记住阿里账号信息
+        edit.putBoolean("isRemAliInfo",userInfoStore.isRemAliInfo());
         edit.commit();
     }
 
@@ -53,6 +63,7 @@ public class LoginInfoStore {
         edit.commit();
     }
 
+    //获取我们自己的用户信息
     public UserInfoStore getUserInfoStore(){
         String sessionId = sharedPreferences.getString("sessionId","");
         String token = sharedPreferences.getString("token","");
@@ -64,6 +75,18 @@ public class LoginInfoStore {
         userInfoStore.setSessionId(sessionId);
         userInfoStore.setToken(token);
         userInfoStore.setUserId(userId);
+        return userInfoStore;
+    }
+
+    //获取的阿里登录信息
+    public UserInfoStore getAliInfoStore(){
+        String userName = sharedPreferences.getString("aliUserName","");
+        String passWord = sharedPreferences.getString("aliPassword","");
+        boolean isRemAliInfo = sharedPreferences.getBoolean("isRemAliInfo",false);
+        UserInfoStore userInfoStore = new UserInfoStore();
+        userInfoStore.setAliUserName(userName);
+        userInfoStore.setAliPassword(passWord);
+        userInfoStore.setRemAliInfo(isRemAliInfo);
         return userInfoStore;
     }
 
@@ -89,6 +112,28 @@ public class LoginInfoStore {
         }
         if(sharedPreferences.contains("login_account")){
             edit.remove("login_account");
+        }
+        edit.commit();
+    }
+
+    public String getAliInfoJson(){
+        JSONObject result = new JSONObject();
+        result.put("username",sharedPreferences.getString("aliUserName",""));
+        result.put("password",sharedPreferences.getString("aliPassword",""));
+        result.put("rempwd",sharedPreferences.getBoolean("isRemAliInfo",false));
+        return result.toJSONString();
+    }
+
+    public void cleanAliInfo(){
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        if(sharedPreferences.contains("aliUserName")){
+            edit.remove("aliUserName");
+        }
+        if(sharedPreferences.contains("aliPassword")){
+            edit.remove("aliPassword");
+        }
+        if(sharedPreferences.contains("isRemAliInfo")){
+            edit.remove("isRemAliInfo");
         }
         edit.commit();
     }

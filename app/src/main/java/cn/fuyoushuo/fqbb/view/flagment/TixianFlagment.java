@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -45,6 +46,10 @@ public class TixianFlagment extends RxDialogFragment {
 
     RelativeLayout closeArea;
 
+    FrameLayout funArea;
+
+    TextView funText;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +60,16 @@ public class TixianFlagment extends RxDialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view =  inflater.inflate(R.layout.flagment_tixian, container, false);
         parentActivity = (MainActivity) getActivity();
+
+        funArea = (FrameLayout) view.findViewById(R.id.tixian_FrameLayout);
+        funText = (TextView) view.findViewById(R.id.tixian_fun_text);
+
+        funText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_TIXIAN_PAGE).show(getFragmentManager(),"AlimamaLoginDialogFragment");
+            }
+        });
 
         reflashTixianLl = (LinearLayout) view.findViewById(R.id.reflashTixianLl);
         reflashTixianLl.setOnClickListener(new View.OnClickListener() {
@@ -112,11 +127,11 @@ public class TixianFlagment extends RxDialogFragment {
                         return true;
                     }*/
                     if(replaceUrl.equals("www.alimama.com/member/login.htm")){//用户登录过了，然后退出了阿里妈妈，那么刷新会到登录页；这个时候就需要跳到我们的阿里妈妈登录页
-                        mytixianWebview.loadUrl(TaobaoInterPresenter.TAOBAOKE_LOGINURL);
-                        tixianTitleText.setText("淘宝账户登录");
+//                        mytixianWebview.loadUrl(TaobaoInterPresenter.TAOBAOKE_LOGINURL);
+//                        tixianTitleText.setText("淘宝账户登录");
+                        showTbLoginTip();
                         return true;
                     }
-
                     return false;
                 }else{
                     return true;
@@ -173,6 +188,7 @@ public class TixianFlagment extends RxDialogFragment {
             @Override
             public void hasLoginCallback() {
                 if(mytixianWebview!=null){
+                    funArea.setVisibility(View.GONE);
                     tixianTitleText.setText("淘宝联盟");
                     mytixianWebview.loadUrl(tixianPageUrl);
                 }
@@ -180,10 +196,7 @@ public class TixianFlagment extends RxDialogFragment {
 
             @Override
             public void nologinCallback() {
-                if(mytixianWebview!=null){
-                    tixianTitleText.setText("淘宝账户登录");
-                    mytixianWebview.loadUrl(TaobaoInterPresenter.TAOBAOKE_LOGINURL);
-                }
+                showTbLoginTip();
             }
 
             @Override
@@ -191,6 +204,10 @@ public class TixianFlagment extends RxDialogFragment {
 
             }
         },VOLLEY_TAG_NAME);
+    }
+
+    private void showTbLoginTip(){
+        funArea.setVisibility(View.VISIBLE);
     }
 
     public void clearWebview(){
