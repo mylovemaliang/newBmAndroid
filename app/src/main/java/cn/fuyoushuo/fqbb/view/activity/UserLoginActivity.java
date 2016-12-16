@@ -44,9 +44,9 @@ public class UserLoginActivity extends BaseActivity{
 
     RegisterOneFragment registerOneFragment;
 
-    RegisterTwoFragment registerTwoFragment;
+    //RegisterTwoFragment registerTwoFragment;
 
-    RegisterThreeFragment registerThreeFragment;
+    //RegisterThreeFragment registerThreeFragment;
 
     private CompositeSubscription mSubscriptions;
 
@@ -88,7 +88,7 @@ public class UserLoginActivity extends BaseActivity{
                     @Override
                     public void call(Void aVoid) {
                         if (inputMethodManager.isActive()) {
-                            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                            inputMethodManager.hideSoftInputFromWindow(headTitle.getWindowToken(), 0);
                         }
                         Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -99,6 +99,8 @@ public class UserLoginActivity extends BaseActivity{
                         finish();
                     }
                 });
+
+        headTitle.setText("注册返钱宝宝");
     }
 
 
@@ -112,12 +114,12 @@ public class UserLoginActivity extends BaseActivity{
 
         registerOneFragment = RegisterOneFragment.newInstance();
 
-        registerTwoFragment = RegisterTwoFragment.newInstance();
+        //registerTwoFragment = RegisterTwoFragment.newInstance();
 
-        registerThreeFragment = RegisterThreeFragment.newInstance();
+        //registerThreeFragment = RegisterThreeFragment.newInstance();
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.login_fragment_area,loginOriginFragment,LoginOriginFragment.TAG_NAME);
+        fragmentTransaction.add(R.id.login_fragment_area,registerOneFragment,RegisterOneFragment.TAG_NAME);
 //        fragmentTransaction.add(R.id.login_fragment_area,findPassOneFragment,FindPassOneFragment.TAG_NAME);
 //        fragmentTransaction.add(R.id.login_fragment_area,findPassTwoFragment,FindPassTwoFragment.TAG_NAME);
 //        fragmentTransaction.add(R.id.login_fragment_area,registerOneFragment,RegisterOneFragment.TAG_NAME);
@@ -125,14 +127,14 @@ public class UserLoginActivity extends BaseActivity{
 //        fragmentTransaction.add(R.id.login_fragment_area,registerThreeFragment,RegisterThreeFragment.TAG_NAME);
 
         //初始化 fragment 状态
-        fragmentTransaction.show(loginOriginFragment);
+        fragmentTransaction.show(registerOneFragment);
 //        fragmentTransaction.hide(findPassOneFragment);
 //        fragmentTransaction.hide(findPassTwoFragment);
 //        fragmentTransaction.hide(registerOneFragment);
 //        fragmentTransaction.hide(registerTwoFragment);
 //        fragmentTransaction.hide(registerThreeFragment);
 
-        mContent = loginOriginFragment;
+        mContent = registerOneFragment;
 
         //提交fragment 事务
         fragmentTransaction.commitAllowingStateLoss();
@@ -160,28 +162,19 @@ public class UserLoginActivity extends BaseActivity{
             public void call(RxBus.BusEvent busEvent) {
                 if(busEvent instanceof LoginOriginFragment.ToRegisterOneEvent){
                     // TODO: 2016/10/28
-                    headTitle.setText("注册");
+                    headTitle.setText("注册返钱宝宝");
                     switchContent(mContent,registerOneFragment);
                 }
                 else if(busEvent instanceof LoginOriginFragment.ToFindPassOneEvent){
                     headTitle.setText("找回密码");
                     switchContent(mContent,findPassOneFragment);
                 }
-                else if(busEvent instanceof RegisterOneFragment.ToRegisterTwoEvent){
-                    RegisterOneFragment.ToRegisterTwoEvent event = (RegisterOneFragment.ToRegisterTwoEvent) busEvent;
-                    String phoneNum = event.getPhoneNum();
-                    registerTwoFragment.refreshPhoneNum(phoneNum);
-                    switchContent(mContent,registerTwoFragment);
+                else if(busEvent instanceof RegisterOneFragment.ToLoginOriginEvent){
+                    headTitle.setText("登录返钱宝宝");
+                    switchContent(mContent,loginOriginFragment);
                 }
-                else if(busEvent instanceof RegisterTwoFragment.ToRegisterThreeEvent){
-                    RegisterTwoFragment.ToRegisterThreeEvent event = (RegisterTwoFragment.ToRegisterThreeEvent) busEvent;
-                    String phoneNum = event.getPhoneNum();
-                    String verifiCode = event.getVerifiCode();
-                    registerThreeFragment.refreshView(phoneNum,verifiCode);
-                    switchContent(mContent,registerThreeFragment);
-                }
-                else if(busEvent instanceof RegisterThreeFragment.ToLoginAfterRegisterSuccess){
-                    RegisterThreeFragment.ToLoginAfterRegisterSuccess event = (RegisterThreeFragment.ToLoginAfterRegisterSuccess) busEvent;
+                else if(busEvent instanceof RegisterOneFragment.ToLoginAfterRegisterSuccess){
+                    RegisterOneFragment.ToLoginAfterRegisterSuccess event = (RegisterOneFragment.ToLoginAfterRegisterSuccess) busEvent;
                     String phoneNum = event.getPhoneNum();
                     loginOriginFragment.refreshAccount(phoneNum);
                     switchContent(mContent,loginOriginFragment);
@@ -235,7 +228,7 @@ public class UserLoginActivity extends BaseActivity{
                     loginOriginFragment.refreshAccount(account);
                     switchContent(mContent,loginOriginFragment);
                 }
-                else if(busEvent instanceof RegisterThreeFragment.LoginSuccAfterRegisterSucc){
+                else if(busEvent instanceof RegisterOneFragment.LoginSuccAfterRegisterSucc){
                     Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     intent.putExtra("bizCallBack","MainToUc");

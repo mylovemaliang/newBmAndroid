@@ -72,6 +72,46 @@ public class RegisterOnePresenter extends BasePresenter {
     }
 
 
+    public void registUser(final String phoneNum, String password, String verifiCode){
+        if(TextUtils.isEmpty(phoneNum) || TextUtils.isEmpty(password) || TextUtils.isEmpty(verifiCode)){
+            return;
+        }
+        mSubscriptions.add(ServiceManager.createService(FqbbLocalHttpService.class)
+                .registerUser(phoneNum,password,verifiCode)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<HttpResp>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if(getMyView() != null){
+                            getMyView().onRegistFail(phoneNum,"注册发生错误,请重试");
+                        }
+                    }
+
+                    @Override
+                    public void onNext(HttpResp httpResp) {
+                        if(httpResp != null){
+                            if(httpResp.getS() != null && httpResp.getS() == 1){
+                                if(getMyView() != null){
+                                    getMyView().onRegistSuccess(phoneNum);
+                                }
+                            }else{
+                                if(getMyView() != null){
+                                    getMyView().onRegistFail(phoneNum,httpResp.getM());
+                                }
+                            }
+                        }
+                    }
+                })
+        );
+    }
+
+
 
 
 }

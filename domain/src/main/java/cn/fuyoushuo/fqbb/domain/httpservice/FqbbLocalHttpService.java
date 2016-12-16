@@ -1,7 +1,10 @@
 package cn.fuyoushuo.fqbb.domain.httpservice;
 
+import org.json.JSONObject;
+
 import cn.fuyoushuo.fqbb.domain.ext.HttpResp;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -78,6 +81,15 @@ public interface FqbbLocalHttpService {
     //提现订单创建
     @GET("/point/mpcash.htm")
     Observable<HttpResp> createCashOrders(@Query("cashNum") float cashNum,@Query("code") String code);
+
+   //---------------------------------------------统计----------------------------------------------------------------------
+   //点击时间记录
+   @GET("/mc.gif?d=android")
+   Observable<Object> clickCount(@Query("b") int biz,@Query("u") String idMd5,@Query("ur") String id,@Query("c") String channel,@Query("v") int versionCode,@Query("os") String osName,@Query("ov") String osVersion);
+
+   //记录时长
+   @GET("/mt.gif?d=android")
+   Observable<Object> timeCount(@Query("b") int biz, @Query("u") String idMd5, @Query("ur") String id, @Query("c") String channel, @Query("v") int versionCode, @Query("os") String osName, @Query("ov") String osVersion, @Query("st") long time);
 }
 
 

@@ -49,13 +49,13 @@ public class SelectedGoodPresenter extends BasePresenter{
 
 
       //获取精选商品
-      public void  getSelectedGood(String channel,int toPage,String catIds,Integer level,final SelectGoodGetCallBack selectGoodGetCallBack){
+      public void  getSelectedGood(String channel,int toPage,String catIds,Integer level,String sortType,final SelectGoodGetCallBack selectGoodGetCallBack){
           if(TextUtils.isEmpty(channel)){
                  selectGoodGetCallBack.onGetGoodFail("没有查到相关商品");
                  return;
           }
           mSubscriptions.add(ServiceManager.createService(AlimamaHttpService.class)
-                  .searchSelectedGood(channel,channel,toPage,catIds,level)
+                  .searchSelectedGood(channel,channel,toPage,catIds,level,sortType)
                   .subscribeOn(Schedulers.io())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(new Subscriber<JSONObject>() {

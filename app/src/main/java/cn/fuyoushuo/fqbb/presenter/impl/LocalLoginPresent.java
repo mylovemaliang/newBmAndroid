@@ -231,7 +231,7 @@ public class LocalLoginPresent extends BasePresenter{
      */
     public void validateData(final String account, int frag, final DataValidataCallBack dataValidataCallBack){
           if(TextUtils.isEmpty(account)){
-               return;
+              dataValidataCallBack.onValidataFail("数据格式有误");
           }
           if(frag == 1 && !DataCheckUtils.isPhoneLegal(account)){
               dataValidataCallBack.onValidataFail("数据格式有误");

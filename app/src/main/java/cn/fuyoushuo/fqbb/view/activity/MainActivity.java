@@ -348,21 +348,23 @@ public class MainActivity extends BaseActivity {
                         break;
 
                  case R.id.rb_user_center:
-                      localLoginPresent.isFqbbLocalLogin(new LocalLoginPresent.LoginCallBack() {
-                          @Override
-                          public void localLoginSuccess() {
-                              changeView(USER_CENTER_INDEX);
-                              //userCenterFragment.refreshUserInfo();
-                              currentShowBizPage = USER_CENTER_INDEX;
-                          }
-
-                          @Override
-                          public void localLoginFail() {
-                               Intent intent = new Intent(MainActivity.this,UserLoginActivity.class);
-                               intent.putExtra("biz","MainToUc");
-                               startActivity(intent);
-                          }
-                      });
+                       changeView(USER_CENTER_INDEX);
+                       currentShowBizPage = USER_CENTER_INDEX;
+//                      localLoginPresent.isFqbbLocalLogin(new LocalLoginPresent.LoginCallBack() {
+//                          @Override
+//                          public void localLoginSuccess() {
+//                              changeView(USER_CENTER_INDEX);
+//                              //userCenterFragment.refreshUserInfo();
+//                              currentShowBizPage = USER_CENTER_INDEX;
+//                          }
+//
+//                          @Override
+//                          public void localLoginFail() {
+//                               Intent intent = new Intent(MainActivity.this,UserLoginActivity.class);
+//                               intent.putExtra("biz","MainToUc");
+//                               startActivity(intent);
+//                          }
+//                      });
                       break;
 
                     case R.id.rbjxsc:

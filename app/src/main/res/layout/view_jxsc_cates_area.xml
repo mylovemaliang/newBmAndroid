@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:zhy="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="200dp"
+      android:background="@color/white"
+      >
+
+     <com.zhy.view.flowlayout.TagFlowLayout
+        android:id="@+id/jxsc_search_cates_area"
+        zhy:max_select="1"
+        zhy:auto_select_effect="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:padding="10dp">
+    </com.zhy.view.flowlayout.TagFlowLayout>
+  </ScrollView>
+
+  <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:background="#50323232"
+     android:orientation="vertical"
+     android:id="@+id/search_right_below_backGroup"/>
+
+</LinearLayout>

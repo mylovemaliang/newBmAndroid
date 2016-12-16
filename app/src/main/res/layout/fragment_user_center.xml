@@ -56,7 +56,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
             android:layout_centerVertical="true"
-            android:visibility="visible">
+            android:visibility="gone">
             <TextView
                 android:id="@+id/alimama_login_icon"
                 android:layout_width="wrap_content"
@@ -482,6 +482,7 @@
       android:layout_below="@+id/fun_area"
       android:layout_marginTop="10dp"
       app:cardCornerRadius="10dp"
+      android:visibility="gone"
       android:background="@color/white">
     <RelativeLayout
         android:layout_width="match_parent"

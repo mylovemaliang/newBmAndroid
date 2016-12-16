@@ -2,6 +2,9 @@ package cn.fuyoushuo.fqbb;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -81,7 +84,7 @@ public class ServiceManager {
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(getEndPoint(t))
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setLenient().create()))
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .client(clientBuilder.build())
                     .build();

@@ -1,8 +1,5 @@
 package cn.fuyoushuo.fqbb.presenter.impl;
 
-import android.util.Log;
-
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -15,23 +12,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import cn.fuyoushuo.fqbb.ServiceManager;
-import cn.fuyoushuo.fqbb.commonlib.utils.CommonUtils;
 import cn.fuyoushuo.fqbb.commonlib.utils.LoginInfoStore;
 import cn.fuyoushuo.fqbb.domain.ext.HttpResp;
 import cn.fuyoushuo.fqbb.domain.httpservice.FqbbLocalHttpService;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter.LoginCallback;
-import cn.fuyoushuo.fqbb.view.flagment.SearchPromptFragment;
 import cn.fuyoushuo.fqbb.view.view.UserCenterView;
-import okhttp3.OkHttpClient;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -57,6 +49,12 @@ public class UserCenterPresenter extends BasePresenter{
     public void getUserInfo(){
         mSubscriptions.add(ServiceManager.createService(FqbbLocalHttpService.class)
                .getUserInfo()
+               .switchMap(new Func1<HttpResp, Observable<HttpResp>>() {
+                   @Override
+                   public Observable<HttpResp> call(HttpResp httpResp) {
+                       return Observable.just(httpResp);
+                   }
+               })
                .subscribeOn(Schedulers.io())
                .observeOn(AndroidSchedulers.mainThread())
                .subscribe(new Subscriber<HttpResp>() {
@@ -133,6 +131,12 @@ public class UserCenterPresenter extends BasePresenter{
            @Override
            public void hasLoginCallback() {
                mSubscriptions.add(createAlimamaInfoObservable()
+                       .switchMap(new Func1<JSONObject, Observable<JSONObject>>() {
+                           @Override
+                           public Observable<JSONObject> call(JSONObject jsonObject) {
+                               return Observable.just(jsonObject);
+                           }
+                       })
                        .subscribeOn(Schedulers.io())
                        .observeOn(AndroidSchedulers.mainThread())
                        .subscribe(new Subscriber<JSONObject>() {

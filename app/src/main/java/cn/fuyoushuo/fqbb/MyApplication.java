@@ -27,6 +27,7 @@ import java.util.Stack;
 
 import cn.fuyoushuo.fqbb.commonlib.utils.Constants;
 import cn.fuyoushuo.fqbb.commonlib.utils.LoginInfoStore;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.view.crash.CrashHandler;
 
 /**
@@ -73,6 +74,7 @@ public class MyApplication extends Application{
         CrashHandler.getInstance().init(this);
         //用户登录信息管理
         LoginInfoStore.getIntance().init(this);
+        LocalStatisticInfo.getIntance().init(this);
         //禁用默认的统计机制
         MobclickAgent.setDebugMode(false);
         MobclickAgent.openActivityDurationTrack(false);

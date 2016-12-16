@@ -52,6 +52,9 @@ import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.DateUtils;
 import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.JdGoodDetailPresenter;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import cn.fuyoushuo.fqbb.view.activity.UserLoginActivity;
@@ -119,6 +122,8 @@ public class JdWebviewDialogFragment extends RxDialogFragment implements JdGoodD
 
     private boolean isFanliState = false;
 
+    private PageSession pageSession;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,6 +134,7 @@ public class JdWebviewDialogFragment extends RxDialogFragment implements JdGoodD
             this.currentLoadGoodUrl = "";
             this.currentItemId = "";
         }
+        pageSession = new PageSession(LocalStatisticConstants.JD);
         fromWhere = getArguments().getString("fromWhere","main");
         setStyle(DialogFragment.STYLE_NORMAL, R.style.fullScreenDialog);
         localLoginPresent = new LocalLoginPresent();
@@ -570,12 +576,14 @@ public class JdWebviewDialogFragment extends RxDialogFragment implements JdGoodD
     @Override
     public void onResume() {
         super.onResume();
+        LocalStatisticInfo.getIntance().onPageStart(this.pageSession);
         MobclickAgent.onPageStart("jdHomeH5Page");
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        LocalStatisticInfo.getIntance().onPageEnd(this.pageSession);
         MobclickAgent.onPageEnd("jdHomeH5Page");
     }
 

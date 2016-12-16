@@ -25,8 +25,11 @@ import butterknife.Bind;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.CommonUtils;
+import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
 import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
 import cn.fuyoushuo.fqbb.domain.entity.TbCateVo;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.SelectedGoodPresenter;
 import cn.fuyoushuo.fqbb.view.Layout.CateItemsDecoration;
 import cn.fuyoushuo.fqbb.view.Layout.SelectedGoodsDecoration;
@@ -115,6 +118,8 @@ public class SelectedGoodFragment extends BaseFragment{
         return isLoaded;
     }
 
+    private PageSession pageSession;
+
     @Override
     protected String getPageName() {
         return "jxscPage";
@@ -127,7 +132,8 @@ public class SelectedGoodFragment extends BaseFragment{
 
     @Override
     protected void initData() {
-       selectGoodPresent = new SelectedGoodPresenter();
+        pageSession = new PageSession(LocalStatisticConstants.JXSC);
+        selectGoodPresent = new SelectedGoodPresenter();
     }
 
 
@@ -490,7 +496,7 @@ public class SelectedGoodFragment extends BaseFragment{
     //刷新整体的结果页
     public void refreshResult(){
         //刷新特价
-        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.TEHUI_CHANNEL, 1, null,null,new SelectedGoodPresenter.SelectGoodGetCallBack() {
+        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.TEHUI_CHANNEL, 1,null,null,"",new SelectedGoodPresenter.SelectGoodGetCallBack() {
             @Override
             public void onGetGoodSucc(List<TaoBaoItemVo> goodList, LinkedList<TbCateVo> cateList) {
                  if(tehuiAdapter != null) {
@@ -505,7 +511,7 @@ public class SelectedGoodFragment extends BaseFragment{
             }
         });
         //刷新女装
-        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.NZJH_CHANNEL, 1, null, null, new SelectedGoodPresenter.SelectGoodGetCallBack() {
+        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.NZJH_CHANNEL, 1, null, null,"",new SelectedGoodPresenter.SelectGoodGetCallBack() {
             @Override
             public void onGetGoodSucc(List<TaoBaoItemVo> goodList, LinkedList<TbCateVo> cateList) {
                 if(nzAdapter != null){
@@ -521,7 +527,7 @@ public class SelectedGoodFragment extends BaseFragment{
         });
 
         //刷新男装
-        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.IFI_CHANNEL, 1,"50344007",1,new SelectedGoodPresenter.SelectGoodGetCallBack() {
+        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.IFI_CHANNEL, 1,"50344007",1,"",new SelectedGoodPresenter.SelectGoodGetCallBack() {
             @Override
             public void onGetGoodSucc(List<TaoBaoItemVo> goodList, LinkedList<TbCateVo> cateList) {
                 if(lzAdapter != null){
@@ -537,7 +543,7 @@ public class SelectedGoodFragment extends BaseFragment{
         });
 
         //刷新美食
-        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.HCH_CHANNEL, 1, null, null, new SelectedGoodPresenter.SelectGoodGetCallBack() {
+        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.HCH_CHANNEL, 1, null, null,"",new SelectedGoodPresenter.SelectGoodGetCallBack() {
             @Override
             public void onGetGoodSucc(List<TaoBaoItemVo> goodList, LinkedList<TbCateVo> cateList) {
                 if(meishiAdapter != null){
@@ -553,7 +559,7 @@ public class SelectedGoodFragment extends BaseFragment{
         });
 
         //刷新家居
-        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.JYJ_CHANNEL, 1, null, null, new SelectedGoodPresenter.SelectGoodGetCallBack() {
+        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.JYJ_CHANNEL, 1, null, null,"",new SelectedGoodPresenter.SelectGoodGetCallBack() {
             @Override
             public void onGetGoodSucc(List<TaoBaoItemVo> goodList, LinkedList<TbCateVo> cateList) {
                 if(jiajuAdapter != null){
@@ -569,7 +575,7 @@ public class SelectedGoodFragment extends BaseFragment{
         });
 
         //刷新运动
-        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.KDC_CHANNEL, 1, null, null, new SelectedGoodPresenter.SelectGoodGetCallBack() {
+        selectGoodPresent.getSelectedGood(SelectedGoodPresenter.KDC_CHANNEL, 1, null, null,"",new SelectedGoodPresenter.SelectGoodGetCallBack() {
             @Override
             public void onGetGoodSucc(List<TaoBaoItemVo> goodList, LinkedList<TbCateVo> cateList) {
                 if(sportAdapter != null){
@@ -584,6 +590,34 @@ public class SelectedGoodFragment extends BaseFragment{
             }
         });
         isLoaded = true;
+    }
+
+   //----------------------------------------统计相关-----------------------------------------------------
+
+   @Override
+   public void onHiddenChanged(boolean hidden) {
+       super.onHiddenChanged(hidden);
+       if(!hidden){
+           LocalStatisticInfo.getIntance().onPageStart(this.pageSession);
+       }else{
+           LocalStatisticInfo.getIntance().onPageEnd(this.pageSession);
+       }
+   }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!this.isHidden()){
+            LocalStatisticInfo.getIntance().onPageStart(this.pageSession);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(!this.isHidden()){
+            LocalStatisticInfo.getIntance().onPageEnd(this.pageSession);
+        }
     }
 
 

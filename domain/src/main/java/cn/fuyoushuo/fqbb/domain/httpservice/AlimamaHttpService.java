@@ -41,6 +41,6 @@ public interface AlimamaHttpService {
      * @return
      */
    @GET("/items/channel/{channelValue}.json?perPageSize=10")
-   Observable<JSONObject> searchSelectedGood(@Path("channelValue") String channel1,@Query("channel") String channel2,@Query("toPage") int toPage,@Query("catIds") String cateIds,@Query("level") Integer level);
+   Observable<JSONObject> searchSelectedGood(@Path("channelValue") String channel1,@Query("channel") String channel2,@Query("toPage") int toPage,@Query("catIds") String cateIds,@Query("level") Integer level,@Query("sortType") String sortType);
 
 }

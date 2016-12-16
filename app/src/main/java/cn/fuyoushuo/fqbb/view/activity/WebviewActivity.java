@@ -50,8 +50,11 @@ import java.util.Map;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.commonlib.utils.okhttp.PersistentCookieStore;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import cn.fuyoushuo.fqbb.view.flagment.AlimamaLoginDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.BindEmailDialogFragment;
@@ -157,6 +160,8 @@ public class WebviewActivity extends BaseActivity {
     public boolean isFromGoodSearch() {
         return isFromGoodSearch;
     }
+
+    private PageSession pageSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -589,6 +594,8 @@ public class WebviewActivity extends BaseActivity {
         if(TextUtils.isEmpty(bizString)){
             bizString = "";
         }
+        //初始化页面会话
+        initPageSession();
 
         if(loadUrl.equals(myTaobaoPageUrl)){
             initTaobaoItemId = -1l;
@@ -645,8 +652,23 @@ public class WebviewActivity extends BaseActivity {
         }));
     }
 
+    private void initPageSession(){
+        if("myTaoBao".equals(bizString)){
+            pageSession = new PageSession(LocalStatisticConstants.MY_TAOBAO);
+        }
+        else if("taobao".equals(bizString)){
+            pageSession = new PageSession(LocalStatisticConstants.TAO_BAO);
+        }
+        else if("tmall".equals(bizString)){
+            pageSession = new PageSession(LocalStatisticConstants.TMALL);
+        }
+    }
+
     @Override
     protected void onResume() {
+        if(pageSession != null){
+            LocalStatisticInfo.getIntance().onPageStart(this.pageSession);
+        }
         if("tbGoodDetail".equals(bizString)){
              MobclickAgent.onPageStart("tbGoodDetail_wv");
         }
@@ -665,6 +687,9 @@ public class WebviewActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
+        if(pageSession != null){
+            LocalStatisticInfo.getIntance().onPageEnd(this.pageSession);
+        }
         if("tbGoodDetail".equals(bizString)){
             MobclickAgent.onPageEnd("tbGoodDetail_wv");
         }

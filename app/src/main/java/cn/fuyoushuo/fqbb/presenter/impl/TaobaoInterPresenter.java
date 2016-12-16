@@ -132,7 +132,7 @@ public class TaobaoInterPresenter {
                             loginCallback.judgeErrorCallback();
                             return;
                         }
-
+                        if(jsonObj == null) return;
                         JSONObject dataJsonObj = jsonObj.getJSONObject("data");
                         if(dataJsonObj!=null){
                             Log.d("isLogin Callback Data", dataJsonObj.toString());

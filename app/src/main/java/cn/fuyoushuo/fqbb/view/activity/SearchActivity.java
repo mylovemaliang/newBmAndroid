@@ -8,9 +8,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.commonlib.utils.SeartchPo;
 import cn.fuyoushuo.fqbb.domain.ext.SearchCondition;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.view.flagment.JdWebviewDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SearchFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.SearchPromptFragment;
@@ -48,6 +51,8 @@ public class SearchActivity extends BaseActivity {
         return currentFlag;
     }
 
+    private PageSession pageSession;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +61,7 @@ public class SearchActivity extends BaseActivity {
         searchFlagment = SearchFlagment.newInstance();
         searchPromptFragment = SearchPromptFragment.newInstance();
         fragmentManager = getSupportFragmentManager();
+        pageSession = new PageSession(LocalStatisticConstants.SEARCH);
         initFragments();
         initBusEventListen();
     }
@@ -219,10 +225,16 @@ public class SearchActivity extends BaseActivity {
         super.onAttachFragment(fragment);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalStatisticInfo.getIntance().onPageStart(this.pageSession);
+    }
 
     @Override
     protected void onPause() {
         super.onPause();
+        LocalStatisticInfo.getIntance().onPageEnd(this.pageSession);
     }
 
     @Override

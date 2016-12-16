@@ -1,5 +1,7 @@
 package cn.fuyoushuo.fqbb.view.flagment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -30,7 +32,11 @@ import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.DateUtils;
 import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
+import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import cn.fuyoushuo.fqbb.presenter.impl.UserCenterPresenter;
 import cn.fuyoushuo.fqbb.view.activity.ConfigActivity;
 import cn.fuyoushuo.fqbb.view.activity.HelpActivity;
@@ -116,6 +122,15 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
 
     private boolean isDataInit = false;
 
+    private boolean isAccountClickable = false;
+
+    private boolean isAliPayClickable = false;
+
+    private boolean isLocalLogin = false;
+
+    private PageSession pageSession;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -160,8 +175,12 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                         Intent intent = new Intent(mactivity, PointMallActivity.class);
-                         startActivity(intent);
+                         if(isLocalLogin){
+                           Intent intent = new Intent(mactivity, PointMallActivity.class);
+                           startActivity(intent);
+                         }else{
+                           showLocalLoginDialog();
+                         }
                     }
                 });
         //帮助中心
@@ -203,6 +222,10 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
+                        if(!isLocalLogin){
+                            showLocalLoginDialog();
+                            return;
+                        }
                         // TODO: 2016/11/9 绑定邮箱逻辑
                         if(!isEmailBind){
                           BindEmailDialogFragment.newInstance().show(getFragmentManager(),"BindEmailDialogFragment");
@@ -217,6 +240,10 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
+                        if(!isLocalLogin){
+                            showLocalLoginDialog();
+                            return;
+                        }
                         // TODO: 2016/11/9 绑定邮箱逻辑
                         if(!isAlipayBind){
                             BindZfbDialogFragment.newInstance().show(getFragmentManager(),"BindZfbDialogFragment");
@@ -231,6 +258,10 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
+                        if(!isLocalLogin){
+                            showLocalLoginDialog();
+                            return;
+                        }
                         // TODO: 2016/11/9 修改密码逻辑
                         UpdatePasswordDialogFragment.newInstance().show(getFragmentManager(),"UpdatePasswordDialogFragment");
                     }
@@ -247,10 +278,36 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
                     }
                 });
 
+        RxView.clicks(accountView).compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        if(!isAccountClickable) return;
+                        // TODO: 2016/11/9 账号点击功能
+                        Intent intent = new Intent(getActivity(), UserLoginActivity.class);
+                        intent.putExtra("biz","MainToUc");
+                        startActivity(intent);
+                    }
+                });
+
+        RxView.clicks(useableCount).compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        if(!isAliPayClickable) return;
+                        // TODO: 2016/11/9 阿里妈妈点击登录
+                        AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_USER_CENTER)
+                                .show(getFragmentManager(),"AlimamaLoginDialogFragment");
+                    }
+                });
+
     }
 
     @Override
     protected void initData() {
+      pageSession = new PageSession(LocalStatisticConstants.USER_CENTER);
       userCenterPresenter = new UserCenterPresenter(this);
     }
 
@@ -287,6 +344,52 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
     }
 
 
+ //--------------------------------------------统计相关-----------------------------------------------------
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if(!hidden){
+            LocalStatisticInfo.getIntance().onPageStart(pageSession);
+        }else{
+            LocalStatisticInfo.getIntance().onPageEnd(pageSession);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!this.isHidden()){
+            LocalStatisticInfo.getIntance().onPageStart(pageSession);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(!this.isHidden()){
+            LocalStatisticInfo.getIntance().onPageEnd(pageSession);
+        }
+    }
+
+    private void showLocalLoginDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("需要登录才能进行操作!");
+
+        builder.setCancelable(true);
+        builder.setPositiveButton("去登录", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(getActivity(), UserLoginActivity.class);
+                intent.putExtra("biz", "MainToUc");
+                startActivity(intent);
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+
    //------------------------------------view 层回调--------------------------------------------------
 
     @Override
@@ -294,7 +397,11 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
         currentPoints.setText("--");
         freezePoints.setText("--");
         useablePoints.setText("--");
-        accountView.setText("--");
+        accountView.setText("登录/注册");
+        accountView.setTextColor(getResources().getColor(R.color.module_11));
+        isAccountClickable = true;
+        isLocalLogin = false;
+        logoutArea.setVisibility(View.GONE);
         userCenterRefreshView.setRefreshing(false);
     }
 
@@ -350,7 +457,12 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
          currentPoints.setText(String.valueOf(validPoint+orderFreezePoint+convertFreezePoint));
          freezePoints.setText(String.valueOf(orderFreezePoint+convertFreezePoint));
          useablePoints.setText(String.valueOf(validPoint));
+         //账号信息的处理
+         logoutArea.setVisibility(View.VISIBLE);
          accountView.setText(account);
+         accountView.setTextColor(currentPoints.getCurrentTextColor());
+         isAccountClickable = false;
+         isLocalLogin = true;
          userCenterRefreshView.setRefreshing(false);
          isDataInit = true;
     }
@@ -365,10 +477,13 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
     @Override
     public void onAlimamaLoginFail() {
         //Toast.makeText(MyApplication.getContext(),"请稍后重新登录阿里妈妈",Toast.LENGTH_SHORT).show();
-        alimamaLogin.setVisibility(View.VISIBLE);
+        //alimamaLogin.setVisibility(View.VISIBLE);
         thisMonth20Count.setText("--");
         nextMonth20Count.setText("--");
-        useableCount.setText("--");
+        useableCount.setText("登录查看");
+        useableCount.setTextSize(15);
+        useableCount.setTextColor(getResources().getColor(R.color.module_11));
+        isAliPayClickable = true;
         userCenterRefreshView.setRefreshing(false);
     }
 
@@ -383,6 +498,9 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
            }
            if(result.containsKey("currentMoney")){
                useableCount.setText(result.getString("currentMoney"));
+               useableCount.setTextColor(nextMonth20Count.getCurrentTextColor());
+               useableCount.setTextSize(20);
+               isAliPayClickable = false;
            }
        }
        alimamaLogin.setVisibility(View.GONE);
@@ -391,7 +509,7 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
 
     @Override
     public void onAlimamaLoginError() {
-        Toast.makeText(MyApplication.getContext(),"请稍后重新登录阿里妈妈",Toast.LENGTH_SHORT).show();
+        Toast.makeText(MyApplication.getContext(),"请重新下拉刷新数据",Toast.LENGTH_SHORT).show();
         thisMonth20Count.setText("--");
         nextMonth20Count.setText("--");
         useableCount.setText("--");

@@ -67,7 +67,7 @@
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/LoginActivityTheme"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustUnspecified|adjustResize" />
+            android:windowSoftInputMode="adjustUnspecified|adjustResize|stateHidden" />
         <activity
             android:name=".view.activity.PointMallActivity"
             android:configChanges="orientation|keyboardHidden"

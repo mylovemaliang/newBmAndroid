@@ -150,17 +150,17 @@ public class RegisterThreeFragment extends BaseFragment implements RegisterThree
     @Override
     public void onRegistSuccess(final String phoneNum) {
          //自动登录,登录成功跳转用户中心
-         localLoginPresent.userLogin(phoneNum, password, new LocalLoginPresent.LocalLoginCallBack() {
-             @Override
-             public void onLocalLoginSucc(String account) {
-                 RxBus.getInstance().send(new LoginSuccAfterRegisterSucc());
-             }
-
-             @Override
-             public void onLocalLoginFail(String account) {
-                 RxBus.getInstance().send(new ToLoginAfterRegisterSuccess(phoneNum));
-             }
-         });
+//         localLoginPresent.userLogin(phoneNum, password, new LocalLoginPresent.LocalLoginCallBack() {
+//            @Override
+//            public void onLocalLoginSucc(String account) {
+//                RxBus.getInstance().send(new LoginSuccAfterRegisterSucc());
+//            }
+//
+//            @Override
+//            public void onLocalLoginFail(String account) {
+//                RxBus.getInstance().send(new ToLoginAfterRegisterSuccess(phoneNum));
+//            }
+//        });
     }
 
     //当注册失败后的逻辑
@@ -172,18 +172,18 @@ public class RegisterThreeFragment extends BaseFragment implements RegisterThree
 
    //----------------------------------------总线EVENT定义------------------------------------------
 
-    public class ToLoginAfterRegisterSuccess extends RxBus.BusEvent{
-
-        private String phoneNum;
-
-        public ToLoginAfterRegisterSuccess(String phoneNum) {
-            this.phoneNum = phoneNum;
-        }
-
-        public String getPhoneNum() {
-            return phoneNum;
-        }
-    }
-
-    public class LoginSuccAfterRegisterSucc extends RxBus.BusEvent{}
+//    public class ToLoginAfterRegisterSuccess extends RxBus.BusEvent{
+//
+//        private String phoneNum;
+//
+//        public ToLoginAfterRegisterSuccess(String phoneNum) {
+//            this.phoneNum = phoneNum;
+//        }
+//
+//        public String getPhoneNum() {
+//            return phoneNum;
+//        }
+//    }
+//
+//    public class LoginSuccAfterRegisterSucc extends RxBus.BusEvent{}
 }
