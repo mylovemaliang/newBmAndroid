@@ -80,11 +80,12 @@ public class MyOrderFlagment extends Fragment {
                             || replaceUrl.startsWith("detail.tmall.com/item.htm")
                             || replaceUrl.startsWith("www.taobao.com/market/ju/detail_wap.php")
                             ){//是商品详情页
-                        Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        intent.putExtra("loadUrl", url);
-                        intent.putExtra("forSearchGoodInfo", false);
-                        startActivity(intent);
+//                        Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                        intent.putExtra("loadUrl", url);
+//                        intent.putExtra("forSearchGoodInfo", false);
+//                        startActivity(intent);
+                        TbWvDialogFragment.newInstance("tbGoodDetail",url,false).show(getFragmentManager(),"TbWvDialogFragment");
                         return true;
                     }
 

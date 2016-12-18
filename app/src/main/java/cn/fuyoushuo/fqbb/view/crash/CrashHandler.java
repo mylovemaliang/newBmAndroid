@@ -63,7 +63,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler  {
             intent.putExtra("isCrash",true);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             if(topActivity != null && topActivity instanceof WebviewActivity){
-                intent.putExtra("loadUrl",((WebviewActivity) topActivity).getOriginLoadUrl());
+                //intent.putExtra("loadUrl",((WebviewActivity) topActivity).getOriginLoadUrl());
             }else if(topActivity != null && topActivity instanceof SearchActivity){
 
             }

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -69,7 +70,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by QA on 2016/12/16.
  */
 
-public class TbWvDialogFragment extends RxDialogFragment {
+public class TbWvDialogFragment extends RxDialogFragment{
 
     public static final String VOLLEY_TAG_NAME = "TbwvDialogFragment";
 
@@ -149,6 +150,9 @@ public class TbWvDialogFragment extends RxDialogFragment {
     //保存最初加载的URL
     private String originLoadUrl = "";
 
+    //加载的URL
+    private String loadUrl = "";
+
     //保存当前页面的业务类型
     private String bizString;
 
@@ -162,10 +166,27 @@ public class TbWvDialogFragment extends RxDialogFragment {
 
     private PageSession pageSession;
 
+
+    public static TbWvDialogFragment newInstance(String bizString,String loadUrl,boolean isFromGoodSearch){
+        Bundle args = new Bundle();
+        TbWvDialogFragment fragment = new TbWvDialogFragment();
+        args.putString("bizString",bizString);
+        args.putString("loadUrl",loadUrl);
+        args.putBoolean("isFromGoodSearch",isFromGoodSearch);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSubscriptions = new CompositeSubscription();
+        if(getArguments() != null){
+            bizString = getArguments().getString("bizString","");
+            loadUrl = getArguments().getString("loadUrl","");
+            isFromGoodSearch = getArguments().getBoolean("isFromGoodSearch",false);
+        }
+        setStyle(DialogFragment.STYLE_NORMAL,R.style.fullScreenDialog);
         initBusEventListen();
     }
 
@@ -231,7 +252,7 @@ public class TbWvDialogFragment extends RxDialogFragment {
             @Override
             public void onClick(View v) {
                 if(funCode == 1){
-                    AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_MY_TAOBAO_PAGE).show(getSupportFragmentManager(),"AlimamaLoginDialogFragment");
+                    AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_MY_TAOBAO_PAGE).show(getFragmentManager(),"AlimamaLoginDialogFragment");
                 }
             }
         });
@@ -600,27 +621,23 @@ public class TbWvDialogFragment extends RxDialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Intent in = getIntent();
-        String loadUrl = in.getStringExtra("loadUrl");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         originLoadUrl = loadUrl;
         if(loadUrl.startsWith("//")){
             loadUrl = "http:"+loadUrl;
         }
-        isFromGoodSearch = in.getBooleanExtra("forSearchGoodInfo", false);
         if(isFromGoodSearch){
             webviewToHome.setText("返回搜索列表");
         }else{
             webviewToHome.setText("返回宝宝主页");
         }
-
-        bizString = in.getStringExtra("bizString");
-        if(TextUtils.isEmpty(bizString)){
-            bizString = "";
-        }
         //初始化页面会话
         initPageSession();
-
-        if(loadUrl.equals(myTaobaoPageUrl)){
+        if("myTaoBao".equals(bizString)){
             initTaobaoItemId = -1l;
             isLoginForMyTaobao();
         }else{

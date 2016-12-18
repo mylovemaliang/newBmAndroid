@@ -41,6 +41,7 @@ import cn.fuyoushuo.fqbb.view.flagment.MyOrderFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SelectedGoodFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SilentLoginTbFragment;
 import cn.fuyoushuo.fqbb.view.flagment.TbSearchResFlagment;
+import cn.fuyoushuo.fqbb.view.flagment.TbWvDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.UnbindEmailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.UpdatePasswordDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.order.TbOrderFragment;
@@ -244,13 +245,14 @@ public class MainActivity extends BaseActivity {
                  else if(busEvent instanceof JxspDetailDialogFragment.JxscToGoodInfoEvent){
                      JxspDetailDialogFragment.JxscToGoodInfoEvent event = (JxspDetailDialogFragment.JxscToGoodInfoEvent) busEvent;
                     /*Intent intent = new Intent(SearchActivity.this, MainActivity.class);
-                    intent.putExtra("goodUrl",event.getGoodUrl());*/
-                     Intent intent = new Intent(MainActivity.this, WebviewActivity.class);
-                     intent.putExtra("bizString","tbGoodDetail");
-                     intent.putExtra("loadUrl",event.getGoodUrl());
-                     intent.putExtra("forSearchGoodInfo",false);
-                     intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                     startActivity(intent);
+                      intent.putExtra("goodUrl",event.getGoodUrl());*/
+                     //Intent intent = new Intent(MainActivity.this, WebviewActivity.class);
+                     //intent.putExtra("bizString","tbGoodDetail");
+                     //intent.putExtra("loadUrl",event.getGoodUrl());
+                     //intent.putExtra("forSearchGoodInfo",false);
+                     //intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                     TbWvDialogFragment.newInstance("tbGoodDetail",event.getGoodUrl(),false).show(getSupportFragmentManager(),"TbWvDialogFragment");
+                     //startActivity(intent);
                  }
                  else if(busEvent instanceof BindEmailDialogFragment.AfterBindEmailSuccessEvent){
                      userCenterFragment.refreshUserInfo();
@@ -486,14 +488,14 @@ public class MainActivity extends BaseActivity {
         //tixianButton.setChecked(true);
     }
 
-    public void showMyTaobaoPage(){
-        Intent intent = new Intent(MainActivity.this, WebviewActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        intent.putExtra("loadUrl", "https://h5.m.taobao.com/mlapp/mytaobao.html#mlapp-mytaobao");
-        intent.putExtra("forSearchGoodInfo", false);
-        intent.putExtra("bizString","myTaoBao");
-        startActivity(intent);
-    }
+//    public void showMyTaobaoPage(){
+//        Intent intent = new Intent(MainActivity.this, WebviewActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//        intent.putExtra("loadUrl", "https://h5.m.taobao.com/mlapp/mytaobao.html#mlapp-mytaobao");
+//        intent.putExtra("forSearchGoodInfo", false);
+//        intent.putExtra("bizString","myTaoBao");
+//        startActivity(intent);
+//    }
 
     @Override
     protected void onDestroy() {

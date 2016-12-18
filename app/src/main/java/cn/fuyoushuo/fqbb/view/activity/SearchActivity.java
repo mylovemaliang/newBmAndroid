@@ -18,6 +18,7 @@ import cn.fuyoushuo.fqbb.view.flagment.JdWebviewDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SearchFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.SearchPromptFragment;
 import cn.fuyoushuo.fqbb.view.flagment.TbSearchResFlagment;
+import cn.fuyoushuo.fqbb.view.flagment.TbWvDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.searchpromt.SearchPromtOriginFragment;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -188,12 +189,13 @@ public class SearchActivity extends BaseActivity {
                     TbSearchResFlagment.toGoodInfoEvent event = (TbSearchResFlagment.toGoodInfoEvent) busEvent;
                     /*Intent intent = new Intent(SearchActivity.this, MainActivity.class);
                     intent.putExtra("goodUrl",event.getGoodUrl());*/
-                    Intent intent = new Intent(SearchActivity.this, WebviewActivity.class);
-                    intent.putExtra("loadUrl",event.getGoodUrl());
-                    intent.putExtra("forSearchGoodInfo",true);
-                    intent.putExtra("bizString","tbGoodDetail");
-                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(intent);
+                    //Intent intent = new Intent(SearchActivity.this, WebviewActivity.class);
+//                    intent.putExtra("loadUrl",event.getGoodUrl());
+//                    intent.putExtra("forSearchGoodInfo",true);
+//                    intent.putExtra("bizString","tbGoodDetail");
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                    startActivity(intent);
+                      TbWvDialogFragment.newInstance("tbGoodDetail",event.getGoodUrl(),true).show(getSupportFragmentManager(),"TbWvDialogFragment");
                 }
                 if(busEvent instanceof SearchPromtOriginFragment.RefreshSearchPromtOriginEvent){
                     searchPromptFragment.initPromtOrigin();

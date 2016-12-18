@@ -170,12 +170,13 @@ public class SuperfanDialogFragment extends RxDialogFragment implements MainView
                 MainActivity ma = (MainActivity) getActivity();
                 //ma.showWebviewFragment(url, false,false);
 
-                Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("bizString","tbGoodDetail");
-                intent.putExtra("loadUrl", url);
-                intent.putExtra("forSearchGoodInfo", false);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                intent.putExtra("bizString","tbGoodDetail");
+//                intent.putExtra("loadUrl", url);
+//                intent.putExtra("forSearchGoodInfo", false);
+//                startActivity(intent);
+                TbWvDialogFragment.newInstance("tbGoodDetail",url,false).show(getFragmentManager(),"TbWvDialogFragment");
             }
         });
         bottomRview.addOnScrollListener(

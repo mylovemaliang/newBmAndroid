@@ -166,12 +166,13 @@ public class SelectedGoodFragment extends BaseFragment{
             @Override
             public void onItemClick(View view, TaoBaoItemVo goodItem) {
                 String url = goodItem.getUrl();
-                Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("bizString","tbGoodDetail");
-                intent.putExtra("loadUrl", url);
-                intent.putExtra("forSearchGoodInfo", false);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                intent.putExtra("bizString","tbGoodDetail");
+//                intent.putExtra("loadUrl", url);
+//                intent.putExtra("forSearchGoodInfo", false);
+//                startActivity(intent);
+                  TbWvDialogFragment.newInstance("tbGoodDetail",url,false).show(getFragmentManager(),"TbWvDialogFragment");
             }
         });
         tehuiRview.setAdapter(tehuiAdapter);
@@ -203,12 +204,13 @@ public class SelectedGoodFragment extends BaseFragment{
             @Override
             public void onItemClick(View view, TaoBaoItemVo goodItem) {
                 String url = goodItem.getUrl();
-                Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("bizString","tbGoodDetail");
-                intent.putExtra("loadUrl", url);
-                intent.putExtra("forSearchGoodInfo", false);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                intent.putExtra("bizString","tbGoodDetail");
+//                intent.putExtra("loadUrl", url);
+//                intent.putExtra("forSearchGoodInfo", false);
+//                startActivity(intent);
+                TbWvDialogFragment.newInstance("tbGoodDetail",url,false).show(getFragmentManager(),"TbWvDialogFragment");
             }
         });
         nzRview.setAdapter(nzAdapter);
@@ -240,12 +242,13 @@ public class SelectedGoodFragment extends BaseFragment{
             @Override
             public void onItemClick(View view, TaoBaoItemVo goodItem) {
                 String url = goodItem.getUrl();
-                Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("bizString","tbGoodDetail");
-                intent.putExtra("loadUrl", url);
-                intent.putExtra("forSearchGoodInfo", false);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                intent.putExtra("bizString","tbGoodDetail");
+//                intent.putExtra("loadUrl", url);
+//                intent.putExtra("forSearchGoodInfo", false);
+//                startActivity(intent);
+                TbWvDialogFragment.newInstance("tbGoodDetail",url,false).show(getFragmentManager(),"TbWvDialogFragment");
             }
         });
         lzRview.setAdapter(lzAdapter);
@@ -277,12 +280,13 @@ public class SelectedGoodFragment extends BaseFragment{
             @Override
             public void onItemClick(View view, TaoBaoItemVo goodItem) {
                 String url = goodItem.getUrl();
-                Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("bizString","tbGoodDetail");
-                intent.putExtra("loadUrl", url);
-                intent.putExtra("forSearchGoodInfo", false);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                intent.putExtra("bizString","tbGoodDetail");
+//                intent.putExtra("loadUrl", url);
+//                intent.putExtra("forSearchGoodInfo", false);
+//                startActivity(intent);
+                TbWvDialogFragment.newInstance("tbGoodDetail",url,false).show(getFragmentManager(),"TbWvDialogFragment");
             }
         });
         meishiRview.setAdapter(meishiAdapter);
@@ -314,12 +318,13 @@ public class SelectedGoodFragment extends BaseFragment{
             @Override
             public void onItemClick(View view, TaoBaoItemVo goodItem) {
                 String url = goodItem.getUrl();
-                Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("bizString","tbGoodDetail");
-                intent.putExtra("loadUrl", url);
-                intent.putExtra("forSearchGoodInfo", false);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                intent.putExtra("bizString","tbGoodDetail");
+//                intent.putExtra("loadUrl", url);
+//                intent.putExtra("forSearchGoodInfo", false);
+//                startActivity(intent);
+                TbWvDialogFragment.newInstance("tbGoodDetail",url,false).show(getFragmentManager(),"TbWvDialogFragment");
             }
         });
         jiajuRview.setAdapter(jiajuAdapter);
@@ -351,12 +356,13 @@ public class SelectedGoodFragment extends BaseFragment{
             @Override
             public void onItemClick(View view, TaoBaoItemVo goodItem) {
                 String url = goodItem.getUrl();
-                Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("bizString","tbGoodDetail");
-                intent.putExtra("loadUrl", url);
-                intent.putExtra("forSearchGoodInfo", false);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                intent.putExtra("bizString","tbGoodDetail");
+//                intent.putExtra("loadUrl", url);
+//                intent.putExtra("forSearchGoodInfo", false);
+//                startActivity(intent);
+                TbWvDialogFragment.newInstance("tbGoodDetail",url,false).show(getFragmentManager(),"TbWvDialogFragment");
             }
         });
         sportRview.setAdapter(sportAdapter);

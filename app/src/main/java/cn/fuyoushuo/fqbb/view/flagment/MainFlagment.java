@@ -269,10 +269,11 @@ public class MainFlagment extends BaseFragment implements MainView {
                         if(mainPresenter.isNeedTip(1)){
                             setTipDialogIfNeed(1);
                         }else {
-                            Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                            intent.putExtra("bizString","taobao");
-                            intent.putExtra("loadUrl","https://m.taobao.com");
-                            startActivity(intent);
+//                            Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                            intent.putExtra("bizString","taobao");
+//                            intent.putExtra("loadUrl","https://m.taobao.com");
+//                            startActivity(intent);
+                              TbWvDialogFragment.newInstance("taobao","https://m.taobao.com",false).show(getFragmentManager(),"TbWvDialogFragment");
                         }
                     }
                 });
@@ -288,10 +289,11 @@ public class MainFlagment extends BaseFragment implements MainView {
                         if(mainPresenter.isNeedTip(1)){
                             setTipDialogIfNeed(1);
                         }else {
-                            Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                            intent.putExtra("loadUrl","https://www.tmall.com/?from=m");
-                            intent.putExtra("bizString","tmall");
-                            startActivity(intent);
+//                            Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                            intent.putExtra("loadUrl","https://www.tmall.com/?from=m");
+//                            intent.putExtra("bizString","tmall");
+//                            startActivity(intent);
+                              TbWvDialogFragment.newInstance("tmall","https://www.tmall.com/?from=m",false).show(getFragmentManager(),"TbWvDialogFragment");
                         }
                     }
                 });
@@ -304,12 +306,13 @@ public class MainFlagment extends BaseFragment implements MainView {
                     public void call(Void aVoid) {
                         MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.HOME_MYTAOBAO_BTN);
                         // TODO: 2016/11/14
-                        Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        intent.putExtra("loadUrl", "https://h5.m.taobao.com/mlapp/mytaobao.html#mlapp-mytaobao");
-                        intent.putExtra("forSearchGoodInfo", false);
-                        intent.putExtra("bizString","myTaoBao");
-                        startActivity(intent);
+//                        Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                        intent.putExtra("loadUrl", "https://h5.m.taobao.com/mlapp/mytaobao.html#mlapp-mytaobao");
+//                        intent.putExtra("forSearchGoodInfo", false);
+//                        intent.putExtra("bizString","myTaoBao");
+//                        startActivity(intent);
+                          TbWvDialogFragment.newInstance("myTaoBao","https://h5.m.taobao.com/mlapp/mytaobao.html#mlapp-mytaobao",false).show(getFragmentManager(),"TbWvDialogFragment");
                     }
                 });
 
@@ -396,12 +399,13 @@ public class MainFlagment extends BaseFragment implements MainView {
                     String url = goodItem.getUrl();
                     MainActivity ma = (MainActivity) getActivity();
                     //ma.showWebviewFragment(url, false,false);
-                    Intent intent = new Intent(getActivity(), WebviewActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    intent.putExtra("bizString","tbGoodDetail");
-                    intent.putExtra("loadUrl", url);
-                    intent.putExtra("forSearchGoodInfo", false);
-                    startActivity(intent);
+//                    Intent intent = new Intent(getActivity(), WebviewActivity.class);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                    intent.putExtra("bizString","tbGoodDetail");
+//                    intent.putExtra("loadUrl", url);
+//                    intent.putExtra("forSearchGoodInfo", false);
+//                    startActivity(intent);
+                      TbWvDialogFragment.newInstance("tbGoodDetail",url,false).show(getFragmentManager(),"TbWvDialogFragment");
                 }
             }
 
