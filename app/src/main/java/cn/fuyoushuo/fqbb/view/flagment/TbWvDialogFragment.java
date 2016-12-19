@@ -41,6 +41,7 @@ import com.github.lzyzsd.jsbridge.BridgeUtil;
 import com.github.lzyzsd.jsbridge.BridgeWebView;
 import com.github.lzyzsd.jsbridge.BridgeWebViewClient;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
+import com.github.lzyzsd.jsbridge.DefaultHandler;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
@@ -76,7 +77,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
     private CompositeSubscription mSubscriptions;
 
-    public BridgeWebView myWebView;
+    private BridgeWebView myWebView;
 
     private Button loginAlimama;//登录按钮
 
@@ -266,7 +267,6 @@ public class TbWvDialogFragment extends RxDialogFragment{
             myWebView.setLayoutParams(lp);
             webviewLl.addView(myWebView);
         }*/
-
         myWebView.getSettings().setJavaScriptEnabled(true);
         //myWebView.getSettings().setBuiltInZoomControls(true);//是否显示缩放按钮，默认false
         myWebView.getSettings().setSupportZoom(true);//是否可以缩放，默认true
@@ -289,7 +289,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
         myWebView.registerHandler("rememberUserInfo",new BridgeHandler() {
             @Override
             public void handler(String data, CallBackFunction function) {
-                 Log.d("rememberUserInfo",data);
+                Log.d("rememberUserInfo",data);
             }
         });
 
@@ -319,7 +319,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                     }
                     //http://h5.m.taobao.com/awp/base/order.htm?itemId=535027728789&item_num_id=535027728789&_input_charset=utf-8&buyNow=true&v=0&quantity=1&skuId=3193002206132&exParams=%7B%22id%22%3A%22535027728789%22%2C%22fqbb%22%3A%221%22%7D
                     //https://buy.m.tmall.com/order/confirmOrderWap.htm?enc=%E2%84%A2&buyNow=true&_input_charset=utf-8&itemId=533800099546&skuId=3184727994633&quantity=1&divisionCode=310100&x-itemid=533800099546&x-uid=589338408
-                    https://h5.m.taobao.com/cart/order.html?skuId=3263426004240&quantity=1&itemId=530144742802&buyNow=true&exParams=%7B%22id%22%3A%22530144742802%22%2C%22fqbb%22%3A%221%22%7D&spm=a1z3i.7c.0.i7c
+                    //https://h5.m.taobao.com/cart/order.html?skuId=3263426004240&quantity=1&itemId=530144742802&buyNow=true&exParams=%7B%22id%22%3A%22530144742802%22%2C%22fqbb%22%3A%221%22%7D&spm=a1z3i.7c.0.i7c
                     //进入淘宝下单页面需要判断阿里妈妈是否在线
                     if(url.replace("http://","").replace("https://","").startsWith("h5.m.taobao.com/cart/order.html") ||
                             isTmallOrderPage(url)){
@@ -383,9 +383,9 @@ public class TbWvDialogFragment extends RxDialogFragment{
                         cleanCurrentItemId();
                         webviewBottom.setVisibility(View.GONE);
                     }
-                    return false;
+                    return super.shouldOverrideUrlLoading(view,url);
                 }else{
-                    return true;
+                    return super.shouldOverrideUrlLoading(view,url);
                 }
             }
             //兼容 android 5.0 以上
