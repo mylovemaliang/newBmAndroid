@@ -1,8 +1,10 @@
 package cn.fuyoushuo.fqbb.view.flagment;
 
+import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -25,6 +27,8 @@ import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 public class SilentLoginTbFragment extends RxFragment{
 
      BridgeWebView myWebView;
+
+     private boolean isDetched = true;
 
      public static final String TAOBAOKE_LOGIN_URL = "http://login.taobao.com/member/login.jhtml?style=common&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true&disableQuickLogin=true&qq-pf-to=pcqq.discussion";
 
@@ -74,7 +78,9 @@ public class SilentLoginTbFragment extends RxFragment{
                 super.onPageFinished(view,url);
                 if(url.startsWith("http://www.alimama.com/index.htm")
                         || url.startsWith("http://media.alimama.com/account/overview.htm")
-                        || url.startsWith("http://media.alimama.com/account/account.htm")){ // 已登录
+                        || url.startsWith("http://media.alimama.com/account/account.htm")){
+                    Log.i("autoLogin","aready autoLogin");
+                    // 已登录
                     //保存淘宝登录的COOKIE
                     TaobaoInterPresenter.saveLoginCookie(url);
                     view.stopLoading();
@@ -92,16 +98,29 @@ public class SilentLoginTbFragment extends RxFragment{
                         });
                     }
                 },1000);
+              }else{
+                    Log.i("autoLogin","login failed");
               }
             }});
     }
 
     //自动登录
     public void autoLogin(){
-        if(myWebView != null){
+        if(!isDetched && myWebView != null){
             myWebView.loadUrl(TAOBAOKE_LOGIN_URL);
-
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        isDetched = false;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        isDetched = true;
     }
 
     @Override

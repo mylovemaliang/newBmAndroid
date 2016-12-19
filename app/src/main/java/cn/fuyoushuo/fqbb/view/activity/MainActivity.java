@@ -6,16 +6,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import com.jakewharton.rxbinding.view.RxView;
-import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,40 +17,34 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import cn.fuyoushuo.fqbb.MyApplication;
-import cn.fuyoushuo.fqbb.PreLoadService;
 import cn.fuyoushuo.fqbb.R;
-import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.presenter.impl.AutoFanliPresenter;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
+import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import cn.fuyoushuo.fqbb.view.Layout.AppUpdateView;
-import cn.fuyoushuo.fqbb.view.Layout.SafeDrawerLayout;
 import cn.fuyoushuo.fqbb.view.flagment.AlimamaLoginDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.BindEmailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.JdWebviewDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.JxspDetailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.MainFlagment;
-import cn.fuyoushuo.fqbb.view.flagment.MyJifenFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.MyOrderFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SelectedGoodFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SilentLoginTbFragment;
-import cn.fuyoushuo.fqbb.view.flagment.TbSearchResFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.TbWvDialogFragment;
+import cn.fuyoushuo.fqbb.view.flagment.TixianFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.UnbindEmailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.UpdatePasswordDialogFragment;
-import cn.fuyoushuo.fqbb.view.flagment.order.TbOrderFragment;
-import cn.fuyoushuo.fqbb.view.flagment.SearchPromptFragment;
-import cn.fuyoushuo.fqbb.view.flagment.TixianFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.UserCenterFragment;
-import cn.fuyoushuo.fqbb.view.flagment.pointsmall.TixianDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.zhifubao.BindZfbDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.zhifubao.UpdateZfbDialogFragment;
-import cn.fuyoushuo.fqbb.view.view.MyOrderView;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 public class MainActivity extends BaseActivity {
+
+    public static final String VOLLEY_TAG_NAME = "main_activity";
 
     @Bind(R.id.bottomRadioGroupLayout)
     public LinearLayout bottomRgLayout;
@@ -148,7 +136,6 @@ public class MainActivity extends BaseActivity {
         initBusEventListen();
         initAutoFanli();
         getUpdateInfo(true);
-        //silentLoginTbFragment.autoLogin();
     }
 
     public void getUpdateInfo(boolean b){
@@ -222,63 +209,114 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    //每一小时触发一次
+    private void initAutoTbLoginListen(){
+        mSubscriptions.add(rx.Observable.interval(0,60,TimeUnit.MINUTES)
+             .observeOn(AndroidSchedulers.mainThread())
+             .subscribe(new Subscriber<Long>() {
+                 @Override
+                 public void onCompleted() {
+
+                 }
+
+                 @Override
+                 public void onError(Throwable e) {
+
+                 }
+
+                 @Override
+                 public void onNext(Long aLong) {
+                     TaobaoInterPresenter.judgeAlimamaLogin(new TaobaoInterPresenter.LoginCallback() {
+                         @Override
+                         public void hasLoginCallback() {
+                            return;
+                         }
+
+                         @Override
+                         public void nologinCallback() {
+                             if(silentLoginTbFragment != null){
+                                 silentLoginTbFragment.autoLogin();
+                             }
+                         }
+
+                         @Override
+                         public void judgeErrorCallback() {
+                              return;
+                         }
+                     },VOLLEY_TAG_NAME);
+                 }
+             }));
+    }
+
     private void initBusEventListen(){
-        mSubscriptions.add(RxBus.getInstance().toObserverable().observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<RxBus.BusEvent>() {
+        mSubscriptions.add(RxBus.getInstance().toObserverable().compose(this.<RxBus.BusEvent>bindToLifecycle()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<RxBus.BusEvent>() {
+
             @Override
-            public void call(RxBus.BusEvent busEvent) {
-                 if(busEvent instanceof MainFlagment.SearchTextClickEvent){
-                     // TODO: 2016/7/5
-                     Intent intent = new Intent(MainActivity.this,SearchActivity.class);
-                     intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                     intent.putExtra("intentFromMain",true);
-                     startActivity(intent);
-                 }
-                 else if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToUserCenterEvent){
-                     // TODO: 2016/11/2
-                     userCenterFragment.refreshUserInfo();
-                 }
-                 else if(busEvent instanceof UserCenterFragment.LogoutToMainEvent){
-                     changeView(MAIN_FRAGMENT_INDEX);
-                     currentShowBizPage = MAIN_FRAGMENT_INDEX;
-                     mainButton.setChecked(true);
-                 }
-                 else if(busEvent instanceof JxspDetailDialogFragment.JxscToGoodInfoEvent){
-                     JxspDetailDialogFragment.JxscToGoodInfoEvent event = (JxspDetailDialogFragment.JxscToGoodInfoEvent) busEvent;
+            public void onCompleted() {
+                 return;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                  //默认的异常拦截
+                  return;
+            }
+
+            @Override
+            public void onNext(RxBus.BusEvent busEvent) {
+                if(busEvent instanceof MainFlagment.SearchTextClickEvent){
+                    // TODO: 2016/7/5
+                    Intent intent = new Intent(MainActivity.this,SearchActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    intent.putExtra("intentFromMain",true);
+                    startActivity(intent);
+                }
+                else if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToUserCenterEvent){
+                    // TODO: 2016/11/2
+                    userCenterFragment.refreshUserInfo();
+                }
+                else if(busEvent instanceof UserCenterFragment.LogoutToMainEvent){
+                    userCenterFragment.refreshUserInfo();
+//                    changeView(MAIN_FRAGMENT_INDEX);
+//                    currentShowBizPage = MAIN_FRAGMENT_INDEX;
+//                    mainButton.setChecked(true);
+                }
+                else if(busEvent instanceof JxspDetailDialogFragment.JxscToGoodInfoEvent){
+                    JxspDetailDialogFragment.JxscToGoodInfoEvent event = (JxspDetailDialogFragment.JxscToGoodInfoEvent) busEvent;
                     /*Intent intent = new Intent(SearchActivity.this, MainActivity.class);
                       intent.putExtra("goodUrl",event.getGoodUrl());*/
-                     //Intent intent = new Intent(MainActivity.this, WebviewActivity.class);
-                     //intent.putExtra("bizString","tbGoodDetail");
-                     //intent.putExtra("loadUrl",event.getGoodUrl());
-                     //intent.putExtra("forSearchGoodInfo",false);
-                     //intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                     TbWvDialogFragment.newInstance("tbGoodDetail",event.getGoodUrl(),false).show(getSupportFragmentManager(),"TbWvDialogFragment");
-                     //startActivity(intent);
-                 }
-                 else if(busEvent instanceof BindEmailDialogFragment.AfterBindEmailSuccessEvent){
-                     userCenterFragment.refreshUserInfo();
-                 }
-                 else if(busEvent instanceof UnbindEmailDialogFragment.AfterUnbindEmailSuccEvent){
-                     userCenterFragment.refreshUserInfo();
-                 }
-                 else if(busEvent instanceof BindZfbDialogFragment.AfterBindAlipaySuccEvent){
-                     userCenterFragment.refreshUserInfo();
-                 }
-                 else if(busEvent instanceof UpdateZfbDialogFragment.AfterUpdateAlipaySuccEvent){
-                     userCenterFragment.refreshUserInfo();
-                 }
-                 else if(busEvent instanceof UpdatePasswordDialogFragment.AfterUpdatePasswordSuccEvent){
-                     userCenterFragment.refreshUserInfo();
-                 }
-                 else if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToTbOrderEvent){
-                     myOrderFlagment.reflashTbOrder();
-                 }
-                 else if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToTixianEvent){
-                     Fragment tixianFlagment = getSupportFragmentManager().findFragmentByTag("TixianFlagment");
-                     if(tixianFlagment != null && !tixianFlagment.isDetached()){
-                         ((TixianFlagment)tixianFlagment).loadWebviewPage();
-                     }
-                 }
-            }
+                    //Intent intent = new Intent(MainActivity.this, WebviewActivity.class);
+                    //intent.putExtra("bizString","tbGoodDetail");
+                    //intent.putExtra("loadUrl",event.getGoodUrl());
+                    //intent.putExtra("forSearchGoodInfo",false);
+                    //intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    TbWvDialogFragment.newInstance("tbGoodDetail",event.getGoodUrl(),false).show(getSupportFragmentManager(),"TbWvDialogFragment");
+                    //startActivity(intent);
+                }
+                else if(busEvent instanceof BindEmailDialogFragment.AfterBindEmailSuccessEvent){
+                    userCenterFragment.refreshUserInfo();
+                }
+                else if(busEvent instanceof UnbindEmailDialogFragment.AfterUnbindEmailSuccEvent){
+                    userCenterFragment.refreshUserInfo();
+                }
+                else if(busEvent instanceof BindZfbDialogFragment.AfterBindAlipaySuccEvent){
+                    userCenterFragment.refreshUserInfo();
+                }
+                else if(busEvent instanceof UpdateZfbDialogFragment.AfterUpdateAlipaySuccEvent){
+                    userCenterFragment.refreshUserInfo();
+                }
+                else if(busEvent instanceof UpdatePasswordDialogFragment.AfterUpdatePasswordSuccEvent){
+                    userCenterFragment.refreshUserInfo();
+                }
+                else if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToTbOrderEvent){
+                    myOrderFlagment.reflashTbOrder();
+                }
+                else if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToTixianEvent){
+                    Fragment tixianFlagment = getSupportFragmentManager().findFragmentByTag("TixianFlagment");
+                    if(tixianFlagment != null && !tixianFlagment.isDetached()){
+                        ((TixianFlagment)tixianFlagment).loadWebviewPage();
+                    }
+                }}
         }));
     }
 
@@ -497,9 +535,18 @@ public class MainActivity extends BaseActivity {
 //        startActivity(intent);
 //    }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //自动登录
+        initAutoTbLoginListen();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        TaobaoInterPresenter.cancelTagedRuquests(VOLLEY_TAG_NAME);
         if(localLoginPresent != null){
             localLoginPresent.onDestroy();
         }

@@ -2,7 +2,6 @@ package cn.fuyoushuo.fqbb.view.flagment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -16,7 +15,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -59,9 +57,7 @@ import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.commonlib.utils.okhttp.PersistentCookieStore;
 import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
-import cn.fuyoushuo.fqbb.view.activity.MainActivity;
-import cn.fuyoushuo.fqbb.view.activity.SearchActivity;
-import cn.fuyoushuo.fqbb.view.activity.WebviewActivity;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
@@ -658,9 +654,19 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
     //初始化总线事件监听
     private void initBusEventListen(){
-        mSubscriptions.add(RxBus.getInstance().toObserverable().compose(this.<RxBus.BusEvent>bindToLifecycle()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<RxBus.BusEvent>() {
+        mSubscriptions.add(RxBus.getInstance().toObserverable().compose(this.<RxBus.BusEvent>bindToLifecycle()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<RxBus.BusEvent>() {
             @Override
-            public void call(RxBus.BusEvent busEvent) {
+            public void onCompleted() {
+                return;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                return;
+            }
+
+            @Override
+            public void onNext(RxBus.BusEvent busEvent) {
                 if(busEvent instanceof AlimamaLoginDialogFragment.AlimamaLoginToTbGoodDetailEvent){
                     if(myWebView == null) return;
                     if(loginPreUrl!=null){

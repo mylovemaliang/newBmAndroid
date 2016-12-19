@@ -20,8 +20,8 @@ import cn.fuyoushuo.fqbb.view.flagment.SearchPromptFragment;
 import cn.fuyoushuo.fqbb.view.flagment.TbSearchResFlagment;
 import cn.fuyoushuo.fqbb.view.flagment.TbWvDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.searchpromt.SearchPromtOriginFragment;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -162,9 +162,19 @@ public class SearchActivity extends BaseActivity {
 
     //初始化事件总线
     private void initBusEventListen(){
-        mSubscriptions.add(RxBus.getInstance().toObserverable().observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<RxBus.BusEvent>() {
+        mSubscriptions.add(RxBus.getInstance().toObserverable().compose(this.<RxBus.BusEvent>bindToLifecycle()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<RxBus.BusEvent>() {
             @Override
-            public void call(RxBus.BusEvent busEvent) {
+            public void onCompleted() {
+                return;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                return;
+            }
+
+            @Override
+            public void onNext(RxBus.BusEvent busEvent) {
                 if (busEvent instanceof SearchFlagment.toSearchPromptFragmentEvent) {
                     SearchFlagment.toSearchPromptFragmentEvent event = (SearchFlagment.toSearchPromptFragmentEvent) busEvent;
                     searchPromptFragment.bindFromFlagment(SearchPromptFragment.SEARCH_FLAGMENT);
@@ -195,7 +205,7 @@ public class SearchActivity extends BaseActivity {
 //                    intent.putExtra("bizString","tbGoodDetail");
 //                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 //                    startActivity(intent);
-                      TbWvDialogFragment.newInstance("tbGoodDetail",event.getGoodUrl(),true).show(getSupportFragmentManager(),"TbWvDialogFragment");
+                    TbWvDialogFragment.newInstance("tbGoodDetail",event.getGoodUrl(),true).show(getSupportFragmentManager(),"TbWvDialogFragment");
                 }
                 if(busEvent instanceof SearchPromtOriginFragment.RefreshSearchPromtOriginEvent){
                     searchPromptFragment.initPromtOrigin();

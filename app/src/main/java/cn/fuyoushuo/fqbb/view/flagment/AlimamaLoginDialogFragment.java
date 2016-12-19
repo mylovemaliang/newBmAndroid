@@ -1,11 +1,9 @@
 package cn.fuyoushuo.fqbb.view.flagment;
 
 import android.content.Context;
-import android.hardware.input.InputManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,13 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.lzyzsd.jsbridge.BridgeHandler;
@@ -171,8 +165,10 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
                     view.stopLoading();
                     afterSaveCookies();
                 }
-                //加载需要回调的JS
-                BridgeUtil.webViewLoadLocalJs(view,"autoRemPass.js");
+                if(!url.equals("https://login.m.taobao.com/login.htm?_input_charset=utf-8")){
+                   //加载需要回调的JS
+                   BridgeUtil.webViewLoadLocalJs(view,"autoRemPass.js");
+                }
 //              String js = "var rmadjs = document.createElement(\"script\");";
 //              js += "rmadjs.innerHTML="+"\'"+jsContent+"\'";
 //              js += "document.body.appendChild(rmadjs);";

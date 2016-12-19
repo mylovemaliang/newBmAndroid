@@ -6,26 +6,21 @@ import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.view.RxView;
-
-import org.apache.log4j.chainsaw.Main;
 
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
-import cn.fuyoushuo.fqbb.view.flagment.BaseFragment;
 import cn.fuyoushuo.fqbb.view.flagment.login.FindPassOneFragment;
 import cn.fuyoushuo.fqbb.view.flagment.login.FindPassTwoFragment;
 import cn.fuyoushuo.fqbb.view.flagment.login.LoginOriginFragment;
 import cn.fuyoushuo.fqbb.view.flagment.login.RegisterOneFragment;
-import cn.fuyoushuo.fqbb.view.flagment.login.RegisterThreeFragment;
-import cn.fuyoushuo.fqbb.view.flagment.login.RegisterTwoFragment;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
@@ -157,9 +152,19 @@ public class UserLoginActivity extends BaseActivity{
 
     //初始化事件总线
     private void initBusEventListen(){
-        mSubscriptions.add(RxBus.getInstance().toObserverable().observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<RxBus.BusEvent>() {
+        mSubscriptions.add(RxBus.getInstance().toObserverable().compose(this.<RxBus.BusEvent>bindToLifecycle()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<RxBus.BusEvent>() {
             @Override
-            public void call(RxBus.BusEvent busEvent) {
+            public void onCompleted() {
+                return;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                return;
+            }
+
+            @Override
+            public void onNext(RxBus.BusEvent busEvent) {
                 if(busEvent instanceof LoginOriginFragment.ToRegisterOneEvent){
                     // TODO: 2016/10/28
                     headTitle.setText("注册返钱宝宝");
@@ -181,46 +186,46 @@ public class UserLoginActivity extends BaseActivity{
                 }
                 else if(busEvent instanceof LoginOriginFragment.LoginSuccessEvent){
                     if("".equals(biz)){
-                         Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
-                         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                         startActivity(intent);
-                         finish();
-                     }
-                     else if("MainToUc".equals(biz)){
-                         Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
-                         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                         intent.putExtra("bizCallBack","MainToUc");
-                         startActivity(intent);
-                         finish();
-                     }
-                     else if("MainToLocalOrder".equals(biz)){
-                         Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
-                         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                         intent.putExtra("bizCallBack","MainToLocalOrder");
-                         startActivity(intent);
-                         finish();
-                     }
-                     else if("MainToJdWv".equals(biz)){
-                         Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
-                         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                         intent.putExtra("bizCallBack","MainToJdWv");
-                         startActivity(intent);
-                         finish();
-                     }
-                     else if("SearchToJdWv".equals(biz)){
-                          Intent intent = new Intent(UserLoginActivity.this,SearchActivity.class);
-                          intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                          intent.putExtra("bizCallBack","SearchToJdWv");
-                          startActivity(intent);
-                          finish();
+                        Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        startActivity(intent);
+                        finish();
+                    }
+                    else if("MainToUc".equals(biz)){
+                        Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        intent.putExtra("bizCallBack","MainToUc");
+                        startActivity(intent);
+                        finish();
+                    }
+                    else if("MainToLocalOrder".equals(biz)){
+                        Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        intent.putExtra("bizCallBack","MainToLocalOrder");
+                        startActivity(intent);
+                        finish();
+                    }
+                    else if("MainToJdWv".equals(biz)){
+                        Intent intent = new Intent(UserLoginActivity.this,MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        intent.putExtra("bizCallBack","MainToJdWv");
+                        startActivity(intent);
+                        finish();
+                    }
+                    else if("SearchToJdWv".equals(biz)){
+                        Intent intent = new Intent(UserLoginActivity.this,SearchActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        intent.putExtra("bizCallBack","SearchToJdWv");
+                        startActivity(intent);
+                        finish();
                     }
                 }
                 else if(busEvent instanceof FindPassOneFragment.ToFindPassTwoEvent){
-                     FindPassOneFragment.ToFindPassTwoEvent event = (FindPassOneFragment.ToFindPassTwoEvent) busEvent;
-                     String account = event.getAccount();
-                     String verifiCode = event.getVerifidataCode();
-                     findPassTwoFragment.refreshView(account,verifiCode);
-                     switchContent(mContent,findPassTwoFragment);
+                    FindPassOneFragment.ToFindPassTwoEvent event = (FindPassOneFragment.ToFindPassTwoEvent) busEvent;
+                    String account = event.getAccount();
+                    String verifiCode = event.getVerifidataCode();
+                    findPassTwoFragment.refreshView(account,verifiCode);
+                    switchContent(mContent,findPassTwoFragment);
                 }
                 else if(busEvent instanceof FindPassTwoFragment.ToLoginAfterFindPassSucc){
                     FindPassTwoFragment.ToLoginAfterFindPassSucc event = (FindPassTwoFragment.ToLoginAfterFindPassSucc) busEvent;

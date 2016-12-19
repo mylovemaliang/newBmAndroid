@@ -116,7 +116,7 @@
         android:layout_width="0dp"
         android:layout_height="40dp"
         app:layout_widthPercent="90%w"
-        app:layout_marginTopPercent="3%h"
+        app:layout_marginTopPercent="5%h"
         android:layout_below="@+id/register_password_area"
         android:background="@color/module_11"
         android:text="注册"
@@ -126,18 +126,17 @@
         android:id="@+id/commit_button"/>
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_widthPercent="90%w"
         android:layout_centerHorizontal="true"
         android:id="@+id/login_tip_area"
         android:layout_marginTop="20dp"
         android:textSize="16sp"
         android:textStyle="normal"
-        android:gravity="center"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:text="已有返钱宝宝账号？去登录"
+        android:background="@drawable/red_text_border"
         android:layout_below="@+id/commit_button" />
 
     <TextView

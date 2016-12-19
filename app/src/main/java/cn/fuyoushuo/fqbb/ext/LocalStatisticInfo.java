@@ -3,12 +3,8 @@ package cn.fuyoushuo.fqbb.ext;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.media.ExifInterface;
 import android.os.Build;
-import android.telephony.TelephonyManager;
 import android.util.Log;
-
-import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.UUID;
@@ -17,7 +13,6 @@ import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.ServiceManager;
 import cn.fuyoushuo.fqbb.commonlib.utils.MD5;
 import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
-import cn.fuyoushuo.fqbb.domain.ext.HttpResp;
 import cn.fuyoushuo.fqbb.domain.httpservice.FqbbLocalHttpService;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
