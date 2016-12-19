@@ -36,6 +36,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.github.lzyzsd.jsbridge.BridgeHandler;
+import com.github.lzyzsd.jsbridge.BridgeUtil;
+import com.github.lzyzsd.jsbridge.BridgeWebView;
+import com.github.lzyzsd.jsbridge.BridgeWebViewClient;
+import com.github.lzyzsd.jsbridge.CallBackFunction;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
@@ -59,7 +64,6 @@ import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -72,7 +76,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
     private CompositeSubscription mSubscriptions;
 
-    public WebView myWebView;
+    public BridgeWebView myWebView;
 
     private Button loginAlimama;//登录按钮
 
@@ -253,7 +257,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
             }
         });
 
-        myWebView = (WebView) inflate.findViewById(R.id.tb_h5page_webview);
+        myWebView = (BridgeWebView) inflate.findViewById(R.id.tb_h5page_webview);
 
         /*if(myWebView==null){
             LinearLayout webviewLl = (LinearLayout) this.findViewById(R.id.tb_h5page_webview);
@@ -267,6 +271,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
         //myWebView.getSettings().setBuiltInZoomControls(true);//是否显示缩放按钮，默认false
         myWebView.getSettings().setSupportZoom(true);//是否可以缩放，默认true
         myWebView.getSettings().setDomStorageEnabled(true);
+        myWebView.getSettings().setAllowFileAccess(true);
 
         myWebView.getSettings().setUseWideViewPort(true);// 设置此属性，可任意比例缩放。大视图模式
         myWebView.getSettings().setLoadWithOverviewMode(true);// 和setUseWideViewPort(true)一起解决网页自适应问题
@@ -281,7 +286,14 @@ public class TbWvDialogFragment extends RxDialogFragment{
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             CookieManager.getInstance().setAcceptThirdPartyCookies(myWebView, true);
 
-        myWebView.setWebViewClient(new WebViewClient(){
+        myWebView.registerHandler("rememberUserInfo",new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                 Log.d("rememberUserInfo",data);
+            }
+        });
+
+        myWebView.setWebViewClient(new BridgeWebViewClient(myWebView){
 
 
             @Override
@@ -450,6 +462,8 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
                 super.onPageFinished(view, url);
 
+
+
                 preWebViewUrl = url;//为了解决用户没登录就直接点击立即购买，弹出登录框我们拦截到然后到自己的登录页，登录后需要跳转回来的
 
                 /*if((url.startsWith("http://h5.m.taobao.com/cart/order.html") || url.startsWith("https://h5.m.taobao.com/cart/order.html"))
@@ -525,10 +539,15 @@ public class TbWvDialogFragment extends RxDialogFragment{
 //                        loginAlimama.setVisibility(View.GONE);
 //                    }
 //                }
-                String js = "var rmadjs = document.createElement(\"script\");";
-                js += "rmadjs.src=\"//www.fanqianbb.com/static/mobile/rmad.js\";";
-                js += "document.body.appendChild(rmadjs);";
-                view.loadUrl("javascript:" + js);
+                //进入淘宝搜索页
+                if(url.startsWith("https://s.m.taobao.com/h5?")){
+                    BridgeUtil.webViewLoadLocalJs(myWebView,"tbSearch.js");
+                }
+
+//                String js = "var rmadjs = document.createElement(\"script\");";
+//                js += "rmadjs.src=\"//www.fanqianbb.com/static/mobile/rmad.js\";";
+//                js += "document.body.appendChild(rmadjs);";
+//                view.loadUrl("javascript:" + js);
             }
         });
 

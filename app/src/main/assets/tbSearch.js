@@ -22,25 +22,9 @@ connectWebViewJavascriptBridge(function(bridge) {
                                console.log('JS responding with', data);
                                responseCallback(data);
                            });
-
-           bridge.registerHandler('fillUserInfo', function(data, responseCallback) {
-            	var obj = eval('(' + data + ')');
-            	$("#loginForm #username").val(obj.username);
-            	if(obj.rempwd){
-               	$("#loginForm #password").val(obj.password);
-            	}
-               $(".fqb-ckbox").prop("checked",obj.rempwd?true:false);
-               $("#loginForm #username")[0].focus();
-            })
 });
-$("#submit-btn").parent().before('<div style="margin-left: .266667rem;"><input type="checkbox" class="fqb-ckbox" style="width: rem;width: 0.4rem;height: 0.4rem;margin-right: 5px;position: relative;top: 3px;">是否记住密码</div>');
-$("#submit-btn").click(function() {
-                var username = $("#loginForm #username").val().trim();
-                var password = $("#loginForm #password").val().trim();
-                var rempwd=$(".fqb-ckbox").is(':checked');
-                if (username && password) {
-                    WebViewJavascriptBridge.callHandler('rememberUserInfo', { "username": username, "password": password ,"rempwd":rempwd}, function(response) {})
-                }
-            })
 
- 
+WebViewJavascriptBridge.callHandler('rememberUserInfo', { "username": "", "password": "" ,"rempwd":""}, function(response) {});
+
+
+
