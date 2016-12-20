@@ -37,4 +37,12 @@ public class LocalStatisticConstants {
     //用户中心
     public static final int USER_CENTER = 10;
 
+    //主页
+    public static final int MAIN_PAGE = 11;
+
+    //帮助中心
+    public static final int HELP_CENTER = 12;
+
+    //积分商城
+    public static final int POINT_MALL = 13;
 }

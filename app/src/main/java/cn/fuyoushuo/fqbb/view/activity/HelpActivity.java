@@ -3,24 +3,21 @@ package cn.fuyoushuo.fqbb.view.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.umeng.analytics.MobclickAgent;
 
-import org.apache.log4j.chainsaw.Main;
-
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 
 public class HelpActivity extends BaseActivity {
 
@@ -34,11 +31,14 @@ public class HelpActivity extends BaseActivity {
 
     boolean jdOrderNoEffect = false;
 
+    PageSession pageSession;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_help);
+        pageSession = new PageSession(LocalStatisticConstants.HELP_CENTER);
 
         helpBackRl = (LinearLayout) this.findViewById(R.id.helpBackRl);
         helpWebviewBackImg = (ImageView) this.findViewById(R.id.helpWebviewBackImg);
@@ -149,12 +149,14 @@ public class HelpActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        LocalStatisticInfo.getIntance().onPageStart(pageSession);
         MobclickAgent.onPageStart("帮助中心");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        LocalStatisticInfo.getIntance().onPageEnd(pageSession);
         MobclickAgent.onPageEnd("帮助中心");
     }
 }

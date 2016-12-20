@@ -43,9 +43,8 @@ public class LocalStatisticInfo {
         //获取设备的唯一标识码
         this.idString = getUniquePsuedoID();
         this.channelString = MyApplication.getChannelValue();
-        //暂时置为空
-        this.osName = "";
-        this.osVersionNum = "";
+        this.osName = Build.MODEL;
+        this.osVersionNum = Build.VERSION.RELEASE;
     }
 
     private PackageManager packageManager;
@@ -108,6 +107,29 @@ public class LocalStatisticInfo {
                     }
                 });
         }
+    }
+
+    public void onClickPage(int bizCode){
+        if(bizCode == 0) return;
+        String id = this.idString;
+        String md5Id = MD5.MD5Encode(this.idString);
+        ServiceManager.createService(FqbbLocalHttpService.class)
+                .clickCount(bizCode,md5Id,id,this.channelString,this.versionNum,this.osName,this.osVersionNum)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Object>() {
+                    @Override
+                    public void onCompleted() {}
+
+                    @Override
+                    public void onError(Throwable e) {
+                        return;
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        return;
+                    }
+                });
     }
 
 

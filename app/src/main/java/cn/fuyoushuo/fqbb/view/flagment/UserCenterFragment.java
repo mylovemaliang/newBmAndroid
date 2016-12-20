@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.text.TextDirectionHeuristicCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.text.Html;
@@ -19,30 +18,24 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxTextView;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.umeng.analytics.MobclickAgent;
-
-import org.w3c.dom.Text;
 
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
-import cn.fuyoushuo.fqbb.commonlib.utils.DateUtils;
 import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
 import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
 import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
-import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import cn.fuyoushuo.fqbb.presenter.impl.UserCenterPresenter;
 import cn.fuyoushuo.fqbb.view.activity.ConfigActivity;
 import cn.fuyoushuo.fqbb.view.activity.HelpActivity;
 import cn.fuyoushuo.fqbb.view.activity.PointMallActivity;
 import cn.fuyoushuo.fqbb.view.activity.UserLoginActivity;
-import cn.fuyoushuo.fqbb.view.flagment.pointsmall.PhoneRechargeDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.zhifubao.BindZfbDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.zhifubao.UpdateZfbDialogFragment;
 import cn.fuyoushuo.fqbb.view.view.UserCenterView;
@@ -175,6 +168,7 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
+                         LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.POINT_MALL);
                          if(isLocalLogin){
                            Intent intent = new Intent(mactivity, PointMallActivity.class);
                            startActivity(intent);
@@ -189,6 +183,7 @@ public class UserCenterFragment extends BaseFragment implements UserCenterView{
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
+                        LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.HELP_CENTER);
                         Intent intent = new Intent(mactivity,HelpActivity.class);
                         startActivity(intent);
                     }

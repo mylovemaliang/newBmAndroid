@@ -7,7 +7,6 @@ import android.view.View;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.umeng.analytics.MobclickAgent;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -15,8 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 import cn.fuyoushuo.fqbb.ServiceManager;
-import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.DateUtils;
 import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
+import cn.fuyoushuo.fqbb.domain.entity.WvGoodEvent;
 import cn.fuyoushuo.fqbb.domain.ext.SearchCondition;
 import cn.fuyoushuo.fqbb.domain.httpservice.AlimamaHttpService;
 import cn.fuyoushuo.fqbb.domain.httpservice.TaoBaoSearchHttpService;
@@ -35,6 +35,8 @@ import rx.schedulers.Schedulers;
 public class SearchPresenter extends BasePresenter{
 
     private WeakReference<SearchView> searchView;
+
+    public SearchPresenter(){}
 
     public SearchPresenter(SearchView searchView) {
         this.searchView = new WeakReference<SearchView>(searchView);
@@ -245,6 +247,43 @@ public class SearchPresenter extends BasePresenter{
          );
     }
 
+    /**
+     * 获取webview里的返利信息
+     * @param goodIds
+     * @param callbackCounts
+     */
+    public void getDiscountInfoForWv(String[] goodIds, int callbackCounts, final WvFanliInfoCallback wvFanliInfoCallback){
+        if(goodIds == null || goodIds.length == 0){
+             return;
+        }
+        mSubscriptions.add(Observable.from(goodIds)
+             .flatMap(new Func1<String, Observable<WvGoodEvent>>() {
+                 @Override
+                 public Observable<WvGoodEvent> call(String s) {
+                     return createFanliInfoObservable(s);
+                 }
+             })
+            .buffer(callbackCounts)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Subscriber<List<WvGoodEvent>>() {
+                @Override
+                public void onCompleted() {
+                  return;
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                   wvFanliInfoCallback.onUpdateFanliError();
+                }
+
+                @Override
+                public void onNext(List<WvGoodEvent> wvGoodEvents) {
+                    wvFanliInfoCallback.onUpdateFanliSucc(wvGoodEvents);
+                }
+            })
+        );
+    }
+
     //解析阿里妈妈搜索结果
     private void parseAlimamaCommonGoodsList(JSONObject resultObject,List<TaoBaoItemVo> resultList){
         if(resultObject == null || resultObject.isEmpty()){
@@ -334,6 +373,18 @@ public class SearchPresenter extends BasePresenter{
         finalUrl.append("/item.htm?id="+itemId);
         return finalUrl.toString();
     }
+
+    private String getTbUrl(String itemId){
+        if(TextUtils.isEmpty(itemId)){
+            return "";
+        }
+        StringBuffer sb = new StringBuffer();
+        sb.append("https://");
+        sb.append("item.taobao.com");
+        sb.append("/item.htm?id="+itemId);
+        return sb.toString();
+    }
+
     //获取返利信息
     private void parseFanliInfo(JSONObject resultObject,TaoBaoItemVo vo){
         if(resultObject == null || resultObject.isEmpty()){
@@ -397,6 +448,82 @@ public class SearchPresenter extends BasePresenter{
         }
         title = title.replaceAll("<.*?>","");
         return title;
+    }
+
+//    private Observable<JSONObject> createAlimamaInfoObservable(){
+//        return Observable.create(new Observable.OnSubscribe<JSONObject>() {
+//            @Override
+//            public void call(final Subscriber<? super JSONObject> subscriber) {
+//                final JSONObject result = new JSONObject();
+//                String url = "http://media.alimama.com/account/overview.htm";
+//                RequestQueue volleyRequestQueue = TaobaoInterPresenter.getVolleyRequestQueue();
+//                StringRequest stringRequest = new StringRequest(Request.Method.GET,url,
+//                        new Response.Listener<String>() {
+//                            @Override
+//                            public void onResponse(String response) {
+//                                Document document = Jsoup.parse(response);
+//                                if(document == null) {
+//                                    subscriber.onNext(result);
+//                                    return;
+//                                }
+//                                Elements icomes = document.getElementsByClass("income-wrap");
+//                                if(icomes == null || icomes.isEmpty()){
+//                                    subscriber.onNext(result);
+//                                    return;
+//                                }
+//                                Elements selects = icomes.select("span.money");
+//                                if(selects == null || selects.isEmpty()){
+//                                    subscriber.onNext(result);
+//                                    return;
+//                                }
+//                                if(selects.size() == 4){
+//                                    result.put("lastDayMoney",selects.get(0).text());
+//                                    result.put("thisMonthMoney",selects.get(1).text());
+//                                    result.put("lastMonthMoney",selects.get(2).text());
+//                                    result.put("currentMoney",selects.get(3).text());
+//                                }
+//                                subscriber.onNext(result);
+//                            }},
+//                        new Response.ErrorListener() {
+//                            @Override
+//                            public void onErrorResponse(VolleyError error) {
+//                                subscriber.onNext(result);
+//                            }
+//                        });
+//                stringRequest.setTag(VOLLEY_TAG_NAME);
+//                volleyRequestQueue.add(stringRequest);
+//            }
+//        });
+//    }
+
+    //建立获取返利信息的
+    private Observable<WvGoodEvent> createFanliInfoObservable(String goodId){
+        final WvGoodEvent event = new WvGoodEvent();
+        event.setEventId(goodId);
+        String realUrl = getTbUrl(goodId);
+        if(TextUtils.isEmpty(realUrl)) return Observable.just(event);
+        return ServiceManager.createService(AlimamaHttpService.class).getFanliInfo(realUrl)
+                .flatMap(new Func1<JSONObject, Observable<WvGoodEvent>>() {
+                    @Override
+                    public Observable<WvGoodEvent> call(JSONObject jsonObject) {
+                         TaoBaoItemVo taoBaoItemVo = new TaoBaoItemVo();
+                         parseFanliInfo(jsonObject,taoBaoItemVo);
+                         if(taoBaoItemVo.getTkRate() != null){
+                             event.setEventRate(String.valueOf(DateUtils.getFormatFloat(taoBaoItemVo.getTkRate())));
+                         }
+                         if(taoBaoItemVo.getTkCommFee() != null){
+                             event.setEventPrice(String.valueOf(DateUtils.getFormatFloat(taoBaoItemVo.getTkCommFee())));
+                         }
+                         return Observable.just(event);
+                    }
+                }).subscribeOn(Schedulers.io());
+    }
+
+    public interface WvFanliInfoCallback{
+
+         void onUpdateFanliSucc(List<WvGoodEvent> events);
+
+         void onUpdateFanliError();
     }
 
 }

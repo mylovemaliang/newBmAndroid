@@ -11,30 +11,21 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.text.method.MovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.jakewharton.rxbinding.view.RxView;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.umeng.analytics.MobclickAgent;
-
-import org.xml.sax.XMLReader;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -44,24 +35,21 @@ import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.CommonUtils;
 import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
-import cn.fuyoushuo.fqbb.commonlib.utils.SeartchPo;
 import cn.fuyoushuo.fqbb.domain.entity.FCateItem;
 import cn.fuyoushuo.fqbb.domain.entity.FGoodItem;
 import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
-import cn.fuyoushuo.fqbb.domain.ext.SearchCondition;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.MainPresenter;
 import cn.fuyoushuo.fqbb.presenter.impl.SelectedGoodPresenter;
-import cn.fuyoushuo.fqbb.view.Layout.ItemDecoration;
 import cn.fuyoushuo.fqbb.view.Layout.MyGridLayoutManager;
 import cn.fuyoushuo.fqbb.view.Layout.RefreshLayout;
 import cn.fuyoushuo.fqbb.view.activity.BaseActivity;
 import cn.fuyoushuo.fqbb.view.activity.HelpActivity;
 import cn.fuyoushuo.fqbb.view.activity.MainActivity;
-import cn.fuyoushuo.fqbb.view.activity.UserLoginActivity;
-import cn.fuyoushuo.fqbb.view.activity.WebviewActivity;
 import cn.fuyoushuo.fqbb.view.adapter.GoodDataAdapter;
-import cn.fuyoushuo.fqbb.view.adapter.SearchMenuAdapter;
 import cn.fuyoushuo.fqbb.view.listener.MyTagHandler;
 import cn.fuyoushuo.fqbb.view.view.MainView;
 import rx.functions.Action1;
@@ -117,6 +105,8 @@ public class MainFlagment extends BaseFragment implements MainView {
 
     View chihuoArea;
 
+    PageSession pageSession;
+
     public MainFlagment() {
         // Required empty public constructor
     }
@@ -133,6 +123,7 @@ public class MainFlagment extends BaseFragment implements MainView {
 
     @Override
     public void initData() {
+        pageSession = new PageSession(LocalStatisticConstants.MAIN_PAGE);
         mainPresenter = new MainPresenter(this);
     }
 
@@ -174,6 +165,7 @@ public class MainFlagment extends BaseFragment implements MainView {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
+                        LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.SEARCH);
                         RxBus.getInstance().send(new SearchTextClickEvent());
                     }
         });
@@ -198,6 +190,7 @@ public class MainFlagment extends BaseFragment implements MainView {
                         if(mainPresenter.isNeedTip(1)){
                             setTipDialogIfNeed(1);
                         }else{
+                             LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.SUPER_FAN);
                              JxspDetailDialogFragment.newInstance(SelectedGoodPresenter.QQHD_CHANNEL,"超级返","").show(getFragmentManager(),"JxspDetailDialogFragment");
                         }
                     }
@@ -211,6 +204,7 @@ public class MainFlagment extends BaseFragment implements MainView {
                         if(mainPresenter.isNeedTip(1)){
                             setTipDialogIfNeed(1);
                         }else {
+                            LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.JIU_KUAI_JIU);
                             JxspDetailDialogFragment.newInstance(SelectedGoodPresenter.JKJ_CHANNEL, "九块九还包邮", "").show(getFragmentManager(), "JxspDetailDialogFragment");
                         }
                     }
@@ -249,10 +243,11 @@ public class MainFlagment extends BaseFragment implements MainView {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.HOME_JD_BTN);
                         if(mainPresenter.isNeedTip(2)){
                             setTipDialogIfNeed(2);
                         }else {
+                            MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.HOME_JD_BTN);
+                            LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.JD);
                             JdWebviewDialogFragment.newInstance("http://m.jd.com","main").show(getFragmentManager(),"JdWebviewDialogFragment");
                         }
                     }
@@ -264,11 +259,12 @@ public class MainFlagment extends BaseFragment implements MainView {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.HOME_TAOBAO_BTN);
                         // TODO: 2016/11/15
                         if(mainPresenter.isNeedTip(1)){
                             setTipDialogIfNeed(1);
                         }else {
+                              MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.HOME_TAOBAO_BTN);
+                              LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.TAO_BAO);
 //                            Intent intent = new Intent(getActivity(), WebviewActivity.class);
 //                            intent.putExtra("bizString","taobao");
 //                            intent.putExtra("loadUrl","https://m.taobao.com");
@@ -284,11 +280,12 @@ public class MainFlagment extends BaseFragment implements MainView {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.HOME_TMALL_BTN);
                         // TODO: 2016/11/14
                         if(mainPresenter.isNeedTip(1)){
-                            setTipDialogIfNeed(1);
+                              setTipDialogIfNeed(1);
                         }else {
+                              MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.HOME_TMALL_BTN);
+                              LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.TMALL);
 //                            Intent intent = new Intent(getActivity(), WebviewActivity.class);
 //                            intent.putExtra("loadUrl","https://www.tmall.com/?from=m");
 //                            intent.putExtra("bizString","tmall");
@@ -305,6 +302,7 @@ public class MainFlagment extends BaseFragment implements MainView {
                     @Override
                     public void call(Void aVoid) {
                         MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.HOME_MYTAOBAO_BTN);
+                        LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.MY_TAOBAO);
                         // TODO: 2016/11/14
 //                        Intent intent = new Intent(getActivity(), WebviewActivity.class);
 //                        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -429,6 +427,34 @@ public class MainFlagment extends BaseFragment implements MainView {
         });
 
         initIconFront();
+    }
+
+
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if(!hidden){
+            LocalStatisticInfo.getIntance().onPageStart(pageSession);
+        }else{
+            LocalStatisticInfo.getIntance().onPageEnd(pageSession);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!this.isHidden()){
+            LocalStatisticInfo.getIntance().onPageStart(pageSession);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(!this.isHidden()){
+            LocalStatisticInfo.getIntance().onPageEnd(pageSession);
+        }
     }
 
     /**

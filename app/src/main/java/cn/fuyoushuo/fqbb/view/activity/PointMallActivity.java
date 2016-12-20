@@ -10,14 +10,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.jakewharton.rxbinding.view.RxView;
 import com.umeng.analytics.MobclickAgent;
 
-import org.apache.log4j.chainsaw.Main;
-
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
-import cn.fuyoushuo.fqbb.commonlib.utils.DateUtils;
+import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import cn.fuyoushuo.fqbb.view.flagment.pointsmall.DuihuanjiluDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.pointsmall.PhoneRechargeDialogFragment;
@@ -25,7 +25,6 @@ import cn.fuyoushuo.fqbb.view.flagment.pointsmall.PointsDetailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.pointsmall.TixianDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.pointsmall.TixianjiluDialogFragment;
 import rx.functions.Action1;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by QA on 2016/11/7.
@@ -64,12 +63,15 @@ public class PointMallActivity extends BaseActivity{
 
     private LocalLoginPresent localLoginPresent;
 
+    PageSession pageSession;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.points_mall);
         localLoginPresent = new LocalLoginPresent();
+        pageSession = new PageSession(LocalStatisticConstants.POINT_MALL);
         initView();
     }
 
@@ -192,12 +194,14 @@ public class PointMallActivity extends BaseActivity{
     @Override
     protected void onResume() {
         super.onResume();
+        LocalStatisticInfo.getIntance().onPageStart(pageSession);
         MobclickAgent.onPageStart("积分商城-主页面");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        LocalStatisticInfo.getIntance().onPageEnd(pageSession);
         MobclickAgent.onPageEnd("积分商城-主页面");
     }
 }

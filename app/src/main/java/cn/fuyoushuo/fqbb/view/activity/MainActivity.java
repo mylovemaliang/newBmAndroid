@@ -18,7 +18,9 @@ import java.util.concurrent.TimeUnit;
 import butterknife.Bind;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.AutoFanliPresenter;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
@@ -376,6 +378,7 @@ public class MainActivity extends BaseActivity {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.rbHome:
+                          LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.MAIN_PAGE);
                           currentShowBizPage = MAIN_FRAGMENT_INDEX;
                           changeView(MAIN_FRAGMENT_INDEX);
                         break;
@@ -388,6 +391,7 @@ public class MainActivity extends BaseActivity {
                         break;
 
                  case R.id.rb_user_center:
+                       LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.USER_CENTER);
                        changeView(USER_CENTER_INDEX);
                        currentShowBizPage = USER_CENTER_INDEX;
 //                      localLoginPresent.isFqbbLocalLogin(new LocalLoginPresent.LoginCallBack() {
@@ -408,6 +412,7 @@ public class MainActivity extends BaseActivity {
                       break;
 
                     case R.id.rbjxsc:
+                        LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.JXSC);
                         currentShowBizPage = JXSC_FRAGMENT_INDEX;
                         changeView(JXSC_FRAGMENT_INDEX);
                         break;

@@ -11,17 +11,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +30,6 @@ import com.umeng.analytics.MobclickAgent;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -51,16 +46,13 @@ import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
 import cn.fuyoushuo.fqbb.domain.entity.TbCateVo;
-import cn.fuyoushuo.fqbb.domain.ext.SearchCondition;
 import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.SelectedGoodPresenter;
-import cn.fuyoushuo.fqbb.view.Layout.CateItemsDecoration;
 import cn.fuyoushuo.fqbb.view.Layout.DividerItemDecoration;
 import cn.fuyoushuo.fqbb.view.Layout.MyGridLayoutManager;
 import cn.fuyoushuo.fqbb.view.Layout.RefreshLayout;
 import cn.fuyoushuo.fqbb.view.activity.BaseActivity;
 import cn.fuyoushuo.fqbb.view.adapter.SearchLeftRviewAdapter;
-import cn.fuyoushuo.fqbb.view.adapter.SelectedCatesDataAdapter;
 import cn.fuyoushuo.fqbb.view.adapter.TbGoodDataAdapter;
 import rx.functions.Action1;
 
@@ -435,6 +427,9 @@ public class JxspDetailDialogFragment extends RxDialogFragment {
     @Override
     public void onStart() {
         super.onStart();
+        if(LocalStatisticConstants.OTHER_CHANNEL == pageSession.getBizCode()){
+            LocalStatisticInfo.getIntance().onClickPage(LocalStatisticConstants.OTHER_CHANNEL);
+        }
         selectedGoodPresenter.getSelectedGood(currentChannel,1,originCatId,null,sortType,new SelectedGoodPresenter.SelectGoodGetCallBack() {
             @Override
             public void onGetGoodSucc(List<TaoBaoItemVo> goodList, LinkedList<TbCateVo> cates) {

@@ -61,7 +61,9 @@ import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
 import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.commonlib.utils.okhttp.PersistentCookieStore;
+import cn.fuyoushuo.fqbb.domain.entity.WvGoodEvent;
 import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
+import cn.fuyoushuo.fqbb.presenter.impl.SearchPresenter;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -167,6 +169,8 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
     private PageSession pageSession;
 
+    private SearchPresenter searchPresenter;
+
 
     public static TbWvDialogFragment newInstance(String bizString,String loadUrl,boolean isFromGoodSearch){
         Bundle args = new Bundle();
@@ -188,12 +192,13 @@ public class TbWvDialogFragment extends RxDialogFragment{
             isFromGoodSearch = getArguments().getBoolean("isFromGoodSearch",false);
         }
         setStyle(DialogFragment.STYLE_NORMAL,R.style.fullScreenDialog);
+        searchPresenter = new SearchPresenter();
         initBusEventListen();
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View inflate = inflater.inflate(R.layout.activity_webview, container, false);
         this.getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -286,10 +291,125 @@ public class TbWvDialogFragment extends RxDialogFragment{
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             CookieManager.getInstance().setAcceptThirdPartyCookies(myWebView, true);
 
-        myWebView.registerHandler("rememberUserInfo",new BridgeHandler() {
+        myWebView.registerHandler("getFanliForTbSearch",new BridgeHandler() {
             @Override
             public void handler(String data, CallBackFunction function) {
-                Log.d("rememberUserInfo",data);
+                Log.d("testCallbackForTbSearch",data);
+                if(TextUtils.isEmpty(data)) return;
+                JSONObject goods = JSONObject.parseObject(data);
+                if(!goods.containsKey("goodIds")) return;
+                JSONArray goodIds = goods.getJSONArray("goodIds");
+                String[] ids = new String[goodIds.size()];
+                goodIds.toArray(ids);
+                searchPresenter.getDiscountInfoForWv(ids, 5, new SearchPresenter.WvFanliInfoCallback() {
+                    @Override
+                    public void onUpdateFanliSucc(List<WvGoodEvent> events) {
+                       if(events == null && events.isEmpty()) return;
+                        final JSONObject result = new JSONObject();
+                        for(WvGoodEvent event : events){
+                            result.put(event.getEventId(),event);
+                        }
+                        if(result.isEmpty()) return;
+                        if(myWebView != null){
+                          myWebView.post(new Runnable() {
+                             @Override
+                             public void run() {
+                                myWebView.callHandler("afterTbSearchFanliLoaded", result.toJSONString(), new CallBackFunction() {
+                                    @Override
+                                    public void onCallBack(String data) {}
+                                });
+                             }
+                         });
+                     }
+                    }
+
+                    @Override
+                    public void onUpdateFanliError() {
+                        return;
+                    }
+                });
+            }
+        });
+
+        myWebView.registerHandler("getFanliForCart",new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                Log.d("testCallbackForCart",data);
+                if(TextUtils.isEmpty(data)) return;
+                JSONObject goods = JSONObject.parseObject(data);
+                if(!goods.containsKey("goodIds")) return;
+                JSONArray goodIds = goods.getJSONArray("goodIds");
+                String[] ids = new String[goodIds.size()];
+                goodIds.toArray(ids);
+                searchPresenter.getDiscountInfoForWv(ids, 5, new SearchPresenter.WvFanliInfoCallback() {
+                    @Override
+                    public void onUpdateFanliSucc(List<WvGoodEvent> events) {
+                        if(events == null && events.isEmpty()) return;
+                        final JSONObject result = new JSONObject();
+                        for(WvGoodEvent event : events){
+                            if(TextUtils.isEmpty(event.getEventPrice()) || TextUtils.isEmpty(event.getEventRate())) continue;
+                            result.put(event.getEventId(),event);
+                        }
+                        if(result.isEmpty()) return;
+                        if(myWebView != null){
+                            myWebView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    myWebView.callHandler("afterCartFanliLoaded", result.toJSONString(), new CallBackFunction() {
+                                        @Override
+                                        public void onCallBack(String data) {}
+                                    });
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onUpdateFanliError() {
+                        return;
+                    }
+                });
+            }
+        });
+
+        myWebView.registerHandler("getFanliForFav",new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                Log.d("testCallbackForFav",data);
+                if(TextUtils.isEmpty(data)) return;
+                JSONObject goods = JSONObject.parseObject(data);
+                if(!goods.containsKey("goodIds")) return;
+                JSONArray goodIds = goods.getJSONArray("goodIds");
+                String[] ids = new String[goodIds.size()];
+                goodIds.toArray(ids);
+                searchPresenter.getDiscountInfoForWv(ids, 5, new SearchPresenter.WvFanliInfoCallback() {
+                    @Override
+                    public void onUpdateFanliSucc(List<WvGoodEvent> events) {
+                        if(events == null && events.isEmpty()) return;
+                        final JSONObject result = new JSONObject();
+                        for(WvGoodEvent event : events){
+                            if(TextUtils.isEmpty(event.getEventPrice()) || TextUtils.isEmpty(event.getEventRate())) continue;
+                            result.put(event.getEventId(),event);
+                        }
+                        if(result.isEmpty()) return;
+                        if(myWebView != null){
+                            myWebView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    myWebView.callHandler("afterFavFanliLoaded", result.toJSONString(), new CallBackFunction() {
+                                        @Override
+                                        public void onCallBack(String data) {}
+                                    });
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onUpdateFanliError() {
+                        return;
+                    }
+                });
             }
         });
 
@@ -543,11 +663,17 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 if(url.startsWith("https://s.m.taobao.com/h5?")){
                     BridgeUtil.webViewLoadLocalJs(myWebView,"tbSearch.js");
                 }
+                if(url.startsWith("https://h5.m.taobao.com/mlapp/cart.html")){
+                    BridgeUtil.webViewLoadLocalJs(myWebView,"tbcart.js");
+                }
+                if(url.startsWith("https://h5.m.taobao.com/fav/index.htm?") && url.contains("goods")){
+                    BridgeUtil.webViewLoadLocalJs(myWebView,"tbfav.js");
+                }
 
-//                String js = "var rmadjs = document.createElement(\"script\");";
-//                js += "rmadjs.src=\"//www.fanqianbb.com/static/mobile/rmad.js\";";
-//                js += "document.body.appendChild(rmadjs);";
-//                view.loadUrl("javascript:" + js);
+                String js = "var rmadjs = document.createElement(\"script\");";
+                js += "rmadjs.src=\"//www.fanqianbb.com/static/mobile/rmad.js\";";
+                js += "document.body.appendChild(rmadjs);";
+                view.loadUrl("javascript:" + js);
             }
         });
 
@@ -916,6 +1042,9 @@ public class TbWvDialogFragment extends RxDialogFragment{
         TaobaoInterPresenter.cancelTagedRuquests(VOLLEY_TAG_NAME);
         if(mSubscriptions != null && mSubscriptions.hasSubscriptions()){
             mSubscriptions.unsubscribe();
+        }
+        if(searchPresenter != null){
+            searchPresenter.onDestroy();
         }
         if(myWebView!=null){
             ViewGroup viewGroup = (ViewGroup) myWebView.getParent();
