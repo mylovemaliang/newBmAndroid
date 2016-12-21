@@ -257,28 +257,34 @@ public class SearchPresenter extends BasePresenter{
              return;
         }
         mSubscriptions.add(Observable.from(goodIds)
-             .flatMap(new Func1<String, Observable<WvGoodEvent>>() {
+            .flatMap(new Func1<String, Observable<WvGoodEvent>>() {
                  @Override
-                 public Observable<WvGoodEvent> call(String s) {
-                     return createFanliInfoObservable(s);
+                 public Observable<WvGoodEvent> call(final String s) {
+                     return createFanliInfoObservable(s).onErrorReturn(new Func1<Throwable, WvGoodEvent>() {
+                         @Override
+                         public WvGoodEvent call(Throwable throwable) {
+                             WvGoodEvent event = new WvGoodEvent();
+                             event.setEventId(s);
+                             return event;
+                         }
+                     });
                  }
              })
-            .buffer(callbackCounts)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Subscriber<List<WvGoodEvent>>() {
+            .subscribe(new Subscriber<WvGoodEvent>() {
                 @Override
                 public void onCompleted() {
-                  return;
+                    return;
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                   wvFanliInfoCallback.onUpdateFanliError();
+                    wvFanliInfoCallback.onUpdateFanliError();
                 }
 
                 @Override
-                public void onNext(List<WvGoodEvent> wvGoodEvents) {
-                    wvFanliInfoCallback.onUpdateFanliSucc(wvGoodEvents);
+                public void onNext(WvGoodEvent wvGoodEvent) {
+                    wvFanliInfoCallback.onUpdateFanliSucc(wvGoodEvent);
                 }
             })
         );
@@ -521,7 +527,7 @@ public class SearchPresenter extends BasePresenter{
 
     public interface WvFanliInfoCallback{
 
-         void onUpdateFanliSucc(List<WvGoodEvent> events);
+         void onUpdateFanliSucc(WvGoodEvent event);
 
          void onUpdateFanliError();
     }

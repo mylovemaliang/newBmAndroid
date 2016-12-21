@@ -1,6 +1,8 @@
 package cn.fuyoushuo.fqbb.view.activity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,6 +32,7 @@ import cn.fuyoushuo.fqbb.view.flagment.BindEmailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.JdWebviewDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.JxspDetailDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.MainFlagment;
+import cn.fuyoushuo.fqbb.view.flagment.MainTipDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.MyOrderFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SelectedGoodFragment;
 import cn.fuyoushuo.fqbb.view.flagment.SilentLoginTbFragment;
@@ -126,6 +129,10 @@ public class MainActivity extends BaseActivity {
 
     private LocalLoginPresent localLoginPresent;
 
+    private SharedPreferences tipSharedPreferences;
+
+    public static final String TIP_IMAGE = "tip_image_info";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +140,7 @@ public class MainActivity extends BaseActivity {
         mSubscriptions = new CompositeSubscription();
         fragmentManager = getSupportFragmentManager();
         localLoginPresent = new LocalLoginPresent();
+        tipSharedPreferences = MyApplication.getContext().getSharedPreferences(TIP_IMAGE,Activity.MODE_PRIVATE);
         initButtonClick();
         initView();
         initBusEventListen();
@@ -143,6 +151,20 @@ public class MainActivity extends BaseActivity {
     public void getUpdateInfo(boolean b){
         AppUpdateView updateView = new AppUpdateView(this);
         updateView.getUpdateInfo(b);
+    }
+
+    //呈现提示
+    public void showTipImage(){
+        if(!tipSharedPreferences.contains("isImageTip") || !tipSharedPreferences.getBoolean("isImageTip",false)){
+           MainTipDialogFragment.newInstance().show(getSupportFragmentManager(),"MainTipDialogFragment");
+        }
+    }
+
+    //确认已经提示过
+    public void quireTipImage(){
+        SharedPreferences.Editor edit = tipSharedPreferences.edit();
+        edit.putBoolean("isImageTip",true);
+        edit.commit();
     }
 
     public void initAutoFanli(){
@@ -318,7 +340,12 @@ public class MainActivity extends BaseActivity {
                     if(tixianFlagment != null && !tixianFlagment.isDetached()){
                         ((TixianFlagment)tixianFlagment).loadWebviewPage();
                     }
-                }}
+                }
+                else if(busEvent instanceof MainTipDialogFragment.MainTipCompleteEvent){
+                    quireTipImage();
+                }
+            }
+
         }));
     }
 
@@ -545,6 +572,7 @@ public class MainActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         //自动登录
+        showTipImage();
         initAutoTbLoginListen();
     }
 

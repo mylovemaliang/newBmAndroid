@@ -21,7 +21,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -41,7 +40,6 @@ import com.github.lzyzsd.jsbridge.BridgeUtil;
 import com.github.lzyzsd.jsbridge.BridgeWebView;
 import com.github.lzyzsd.jsbridge.BridgeWebViewClient;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
-import com.github.lzyzsd.jsbridge.DefaultHandler;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
@@ -133,6 +131,8 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
     private TextView funText;
 
+    private RelativeLayout rightArea;
+
     private FrameLayout centerFrameLayout;
 
     private int funCode = 0; // 0:代表默认功能  1:我的订单未登录
@@ -191,7 +191,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
             loadUrl = getArguments().getString("loadUrl","");
             isFromGoodSearch = getArguments().getBoolean("isFromGoodSearch",false);
         }
-        setStyle(DialogFragment.STYLE_NORMAL,R.style.fullScreenDialog);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.fullScreenDialog);
         searchPresenter = new SearchPresenter();
         initBusEventListen();
     }
@@ -203,15 +203,12 @@ public class TbWvDialogFragment extends RxDialogFragment{
         this.getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK){
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP){
                     goBack();
                     return true;
-                }
-                // pretend we've processed it
-                else{
+                } else{
                     return false;
                 }
-                // pass on to be processed as normal
             }
         });
 
@@ -250,6 +247,8 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 }
             }
         });
+
+        rightArea = (RelativeLayout) inflate.findViewById(R.id.rightArea);
 
         centerFrameLayout = (FrameLayout) inflate.findViewById(R.id.wv_frameLayout);
 
@@ -303,12 +302,10 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 goodIds.toArray(ids);
                 searchPresenter.getDiscountInfoForWv(ids, 5, new SearchPresenter.WvFanliInfoCallback() {
                     @Override
-                    public void onUpdateFanliSucc(List<WvGoodEvent> events) {
-                       if(events == null && events.isEmpty()) return;
+                    public void onUpdateFanliSucc(WvGoodEvent event) {
+                       if(event == null) return;
                         final JSONObject result = new JSONObject();
-                        for(WvGoodEvent event : events){
-                            result.put(event.getEventId(),event);
-                        }
+                        result.put(event.getEventId(),event);
                         if(result.isEmpty()) return;
                         if(myWebView != null){
                           myWebView.post(new Runnable() {
@@ -343,13 +340,10 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 goodIds.toArray(ids);
                 searchPresenter.getDiscountInfoForWv(ids, 5, new SearchPresenter.WvFanliInfoCallback() {
                     @Override
-                    public void onUpdateFanliSucc(List<WvGoodEvent> events) {
-                        if(events == null && events.isEmpty()) return;
+                    public void onUpdateFanliSucc(WvGoodEvent event) {
+                        if(event == null) return;
                         final JSONObject result = new JSONObject();
-                        for(WvGoodEvent event : events){
-                            if(TextUtils.isEmpty(event.getEventPrice()) || TextUtils.isEmpty(event.getEventRate())) continue;
-                            result.put(event.getEventId(),event);
-                        }
+                        result.put(event.getEventId(),event);
                         if(result.isEmpty()) return;
                         if(myWebView != null){
                             myWebView.post(new Runnable() {
@@ -384,13 +378,10 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 goodIds.toArray(ids);
                 searchPresenter.getDiscountInfoForWv(ids, 5, new SearchPresenter.WvFanliInfoCallback() {
                     @Override
-                    public void onUpdateFanliSucc(List<WvGoodEvent> events) {
-                        if(events == null && events.isEmpty()) return;
+                    public void onUpdateFanliSucc(WvGoodEvent event) {
+                        if(event == null) return;
                         final JSONObject result = new JSONObject();
-                        for(WvGoodEvent event : events){
-                            if(TextUtils.isEmpty(event.getEventPrice()) || TextUtils.isEmpty(event.getEventRate())) continue;
-                            result.put(event.getEventId(),event);
-                        }
+                        result.put(event.getEventId(),event);
                         if(result.isEmpty()) return;
                         if(myWebView != null){
                             myWebView.post(new Runnable() {
@@ -1106,6 +1097,9 @@ public class TbWvDialogFragment extends RxDialogFragment{
         itemfxinfo1.setText("返");
         itemfxinfo2.setText(fxRate+"%");
         itemfxinfo3.setText("     约返"+new DecimalFormat("#.##").format(fxFee)+"元");
+        if(!rightArea.isShown()){
+            rightArea.setVisibility(View.VISIBLE);
+        }
         itemfxinfo1.setVisibility(View.VISIBLE);
         itemfxinfo2.setVisibility(View.VISIBLE);
         itemfxinfo3.setVisibility(View.VISIBLE);
@@ -1132,8 +1126,10 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
     public void showRightTishi(String tsxx){
         itemfxinfo1.setText(tsxx);
+        if(!rightArea.isShown()){
+           rightArea.setVisibility(View.VISIBLE);
+        }
         itemfxinfo1.setVisibility(View.VISIBLE);
-
         itemfxinfo2.setVisibility(View.GONE);
         itemfxinfo3.setVisibility(View.GONE);
         tipArea.setVisibility(View.GONE);
@@ -1173,6 +1169,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                     qdfjfb.setVisibility(View.VISIBLE);
                 }
                 if(tag==5){//刷新进入返利按钮
+                    rightArea.setVisibility(View.GONE);
                     reflashFl.setVisibility(View.VISIBLE);
                 }
             }
@@ -1933,7 +1930,8 @@ public class TbWvDialogFragment extends RxDialogFragment{
             final Long channelId2 = channelId;
 
             //新增广告位
-            String addAdZoneUrl = "http://pub.alimama.com/common/adzone/selfAdzoneCreate.json?promotion_type=29" + URLEncoder.encode("#", "UTF-8") + "29&gcid=8&siteid=" + siteId + "&selectact=add&newadzonename=" + URLEncoder.encode("代购", "UTF-8") + "&channelIds=" + channelId + "&_tb_token_=" + tbTokenCookie;
+            //  String addAdZoneUrl = "http://pub.alimama.com/common/adzone/selfAdzoneCreate.json?promotion_type=29" + URLEncoder.encode("#", "UTF-8") + "29&gcid=8&siteid=" + siteId + "&selectact=add&newadzonename=" + URLEncoder.encode("代购", "UTF-8") + "&channelIds=" + channelId + "&_tb_token_=" + tbTokenCookie;
+            String addAdZoneUrl = "http://pub.alimama.com/common/adzone/selfAdzoneCreate.json?tag=29&gcid=8&siteid=" + siteId + "&selectact=add&newadzonename=" + URLEncoder.encode("代购", "UTF-8") + "&channelIds=" + channelId + "&_tb_token_=" + tbTokenCookie;
             //RequestQueue volleyRq = Volley.newRequestQueue(this, new OkHttpStack(this));
             RequestQueue volleyRq = TaobaoInterPresenter.getVolleyRequestQueue();
             StringRequest stringRequest = new StringRequest(Request.Method.POST, addAdZoneUrl,

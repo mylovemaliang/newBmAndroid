@@ -14,7 +14,6 @@ import java.util.Map;
 
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.ServiceManager;
-
 import cn.fuyoushuo.fqbb.domain.entity.FCateItem;
 import cn.fuyoushuo.fqbb.domain.entity.FGoodItem;
 import cn.fuyoushuo.fqbb.domain.entity.TaoBaoItemVo;
@@ -22,7 +21,6 @@ import cn.fuyoushuo.fqbb.domain.ext.HttpResp;
 import cn.fuyoushuo.fqbb.domain.ext.SearchCondition;
 import cn.fuyoushuo.fqbb.domain.httpservice.AlimamaHttpService;
 import cn.fuyoushuo.fqbb.domain.httpservice.FqbbHttpService;
-import cn.fuyoushuo.fqbb.domain.httpservice.FqbbLocalHttpService;
 import cn.fuyoushuo.fqbb.view.view.MainView;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -114,8 +112,9 @@ public class MainPresenter extends BasePresenter{
     public void getMTaoBaoGoods(final Integer page,final boolean isRefresh){
         SearchCondition searchCondition = SearchCondition.newInstance(SearchCondition.search_cate_superfan);
         searchCondition.updateSearchKeyValue("toPage",page);
-        searchCondition.updateSearchKeyValue("startTkRate",50);
-        searchCondition.updateSearchKeyValue("startBiz30day",100);
+        searchCondition.updateSearchKeyValue("startTkRate",60);
+        searchCondition.updateSearchKeyValue("startBiz30day",500);
+        searchCondition.updateSearchKeyValue("sortType",13);
         Map<String, String> queryMap = searchCondition.getQueryMap();
         mSubscriptions.add(ServiceManager.createService(AlimamaHttpService.class)
             .searchHdFanli(queryMap)
