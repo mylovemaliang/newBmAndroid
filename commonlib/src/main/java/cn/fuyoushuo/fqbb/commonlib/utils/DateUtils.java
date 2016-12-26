@@ -50,4 +50,14 @@ public class DateUtils {
         int value = b.intValue();
         return value;
     }
+
+    public static boolean isDateForTixianCorrect(){
+        int dayNum = 25;
+        int day = new Date().getDate();
+        if(day >= 25){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

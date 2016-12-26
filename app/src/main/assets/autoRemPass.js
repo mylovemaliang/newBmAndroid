@@ -33,7 +33,7 @@ connectWebViewJavascriptBridge(function(bridge) {
                $("#loginForm #username")[0].focus();
             })
 });
-$("#submit-btn").parent().before('<div style="margin-left: .266667rem;"><input type="checkbox" class="fqb-ckbox" style="width: rem;width: 0.4rem;height: 0.4rem;margin-right: 5px;position: relative;top: 3px;">是否记住密码</div>');
+$("#submit-btn").parent().before('<div style="margin-left: .266667rem;margin-top : 10px"><input type="checkbox" class="fqb-ckbox" style="width: rem;width: 0.4rem;height: 0.4rem;margin-right: 5px;position: relative;top: 3px;">是否记住密码</div>');
 $("#submit-btn").click(function() {
                 var username = $("#loginForm #username").val().trim();
                 var password = $("#loginForm #password").val().trim();

@@ -55,6 +55,18 @@ public class LoginInfoStore {
         edit.commit();
     }
 
+    //写入是否购物车提示
+    public void writeCartTipInfo(boolean ifTip){
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putBoolean("isCartTip",ifTip);
+        edit.commit();
+    }
+
+    //获取购物车是否需要提示
+    public boolean IsCartTip(){
+        return sharedPreferences.getBoolean("isCartTip",true);
+    }
+
     //写入用户登录的账号
     public void writeUserAccount(String account){
        if(TextUtils.isEmpty(account)) return;

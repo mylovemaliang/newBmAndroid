@@ -1,6 +1,5 @@
 package cn.fuyoushuo.fqbb.view.flagment.pointsmall;
 
-import android.opengl.EGLDisplay;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -205,6 +204,10 @@ public class TixianDialogFragment extends RxDialogFragment implements TixianView
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
+                            if(!DateUtils.isDateForTixianCorrect()){
+                                Toast.makeText(MyApplication.getContext(),"每月25日至月末才能提现!",Toast.LENGTH_SHORT).show();
+                                return;
+                            }
                             timeForVerifiCode();
                             localLoginPresent.getVerifiCode(LoginInfoStore.getIntance().getUserAccount(),"phone_cash_apply", new LocalLoginPresent.VerifiCodeGetCallBack() {
                                 @Override

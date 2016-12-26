@@ -3,15 +3,10 @@ package cn.fuyoushuo.fqbb.presenter.impl;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.BooleanCodec;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import cn.fuyoushuo.fqbb.ServiceManager;
-import cn.fuyoushuo.fqbb.commonlib.utils.Constants;
 import cn.fuyoushuo.fqbb.commonlib.utils.DataCheckUtils;
 import cn.fuyoushuo.fqbb.commonlib.utils.LoginInfoStore;
 import cn.fuyoushuo.fqbb.commonlib.utils.MD5;
@@ -29,6 +24,7 @@ import rx.schedulers.Schedulers;
  * Created by QA on 2016/11/2.
  */
 public class LocalLoginPresent extends BasePresenter{
+
 
 
     public void userLogin(final String account, String password, final LocalLoginCallBack loginCallBack){
@@ -388,6 +384,9 @@ public class LocalLoginPresent extends BasePresenter{
             })
         );
     }
+
+
+
 
 
 

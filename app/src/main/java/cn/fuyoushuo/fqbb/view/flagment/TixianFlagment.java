@@ -21,7 +21,6 @@ import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
 import cn.fuyoushuo.fqbb.R;
-import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import cn.fuyoushuo.fqbb.view.activity.HelpActivity;
 import cn.fuyoushuo.fqbb.view.activity.MainActivity;
@@ -108,6 +107,10 @@ public class TixianFlagment extends RxDialogFragment {
 
         mytixianWebview.getSettings().setUseWideViewPort(true);// 设置此属性，可任意比例缩放。大视图模式
         mytixianWebview.getSettings().setLoadWithOverviewMode(true);// 和setUseWideViewPort(true)一起解决网页自适应问题
+
+        mytixianWebview.getSettings().setSupportZoom(true);
+        mytixianWebview.getSettings().setBuiltInZoomControls(true);
+        mytixianWebview.getSettings().setDisplayZoomControls(false);
 
         mytixianWebview.requestFocusFromTouch();
         mytixianWebview.setWebChromeClient(new WebChromeClient());

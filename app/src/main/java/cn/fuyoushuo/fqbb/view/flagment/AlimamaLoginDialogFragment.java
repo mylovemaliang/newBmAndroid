@@ -159,16 +159,28 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
                 super.onPageFinished(view,url);
                 if(url.startsWith("http://www.alimama.com/index.htm")
                     || url.startsWith("http://media.alimama.com/account/overview.htm")
-                    || url.startsWith("http://media.alimama.com/account/account.htm")){ // 已登录
+                    || url.startsWith("http://media.alimama.com/account/account.htm")
+                    || url.startsWith("http://media.alimama.com/user/limit_status.htm")){// 已登录
                     //保存淘宝登录的COOKIE
                     TaobaoInterPresenter.saveLoginCookie(url);
                     view.stopLoading();
                     afterSaveCookies();
                 }
-                if(!url.equals("https://login.m.taobao.com/login.htm?_input_charset=utf-8")){
-                   //加载需要回调的JS
-                   BridgeUtil.webViewLoadLocalJs(view,"autoRemPass.js");
+                BridgeUtil.webViewLoadLocalJs(view,"autoRemPass.js");
+                if(url.equals("https://login.m.taobao.com/login.htm?_input_charset=utf-8")){
+                    if(myWebView != null){
+                        myWebView.callHandler("fillUserInfo", LoginInfoStore.getIntance().getAliInfoJson(), new CallBackFunction() {
+                            @Override
+                            public void onCallBack(String data) {
+
+                            }
+                        });
+                    }
                 }
+//                if(!url.equals("https://login.m.taobao.com/login.htm?_input_charset=utf-8")){
+//                   //加载需要回调的JS
+//                   BridgeUtil.webViewLoadLocalJs(view,"autoRemPass.js");
+//                }
 //              String js = "var rmadjs = document.createElement(\"script\");";
 //              js += "rmadjs.innerHTML="+"\'"+jsContent+"\'";
 //              js += "document.body.appendChild(rmadjs);";

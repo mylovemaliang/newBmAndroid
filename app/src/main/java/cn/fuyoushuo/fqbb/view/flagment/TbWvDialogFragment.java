@@ -1,20 +1,27 @@
 package cn.fuyoushuo.fqbb.view.flagment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -40,6 +47,7 @@ import com.github.lzyzsd.jsbridge.BridgeUtil;
 import com.github.lzyzsd.jsbridge.BridgeWebView;
 import com.github.lzyzsd.jsbridge.BridgeWebViewClient;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
+import com.jakewharton.rxbinding.view.RxView;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
@@ -51,11 +59,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.commonlib.utils.CommonUtils;
 import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
 import cn.fuyoushuo.fqbb.commonlib.utils.LocalStatisticConstants;
+import cn.fuyoushuo.fqbb.commonlib.utils.LoginInfoStore;
 import cn.fuyoushuo.fqbb.commonlib.utils.PageSession;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.commonlib.utils.okhttp.PersistentCookieStore;
@@ -63,8 +74,11 @@ import cn.fuyoushuo.fqbb.domain.entity.WvGoodEvent;
 import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.SearchPresenter;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
+import cn.fuyoushuo.fqbb.view.activity.HelpActivity;
+import cn.fuyoushuo.fqbb.view.listener.MyTagHandler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -171,6 +185,8 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
     private SearchPresenter searchPresenter;
 
+    private LayoutInflater layoutInflater;
+
 
     public static TbWvDialogFragment newInstance(String bizString,String loadUrl,boolean isFromGoodSearch){
         Bundle args = new Bundle();
@@ -194,6 +210,12 @@ public class TbWvDialogFragment extends RxDialogFragment{
         setStyle(DialogFragment.STYLE_NORMAL, R.style.fullScreenDialog);
         searchPresenter = new SearchPresenter();
         initBusEventListen();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        layoutInflater = LayoutInflater.from(activity);
     }
 
     @Nullable
@@ -279,6 +301,10 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
         myWebView.getSettings().setUseWideViewPort(true);// 设置此属性，可任意比例缩放。大视图模式
         myWebView.getSettings().setLoadWithOverviewMode(true);// 和setUseWideViewPort(true)一起解决网页自适应问题
+
+        myWebView.getSettings().setSupportZoom(true);
+        myWebView.getSettings().setBuiltInZoomControls(true);
+        myWebView.getSettings().setDisplayZoomControls(false);
 
         myWebView.requestFocusFromTouch();
         myWebView.setWebChromeClient(new WebChromeClient());
@@ -656,6 +682,12 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 }
                 if(url.startsWith("https://h5.m.taobao.com/mlapp/cart.html")){
                     BridgeUtil.webViewLoadLocalJs(myWebView,"tbcart.js");
+                    myWebView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showCartTipDialog();
+                        }
+                    });
                 }
                 if(url.startsWith("https://h5.m.taobao.com/fav/index.htm?") && url.contains("goods")){
                     BridgeUtil.webViewLoadLocalJs(myWebView,"tbfav.js");
@@ -747,6 +779,44 @@ public class TbWvDialogFragment extends RxDialogFragment{
         leftDetailInfo = (TextView) inflate.findViewById(R.id.leftDetailInfo);
         // 后面的动作
         return inflate;
+    }
+
+
+    public void showCartTipDialog(){
+        if(!LoginInfoStore.getIntance().IsCartTip()) return;
+        final android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(getActivity()).create();
+        View dialog = layoutInflater.inflate(R.layout.main_tip_content_dialog, null);
+        TextView content = (TextView) dialog.findViewById(R.id.main_tip_content);
+        Button leftButton = (Button) dialog.findViewById(R.id.leftCommit);
+        Button rightButton = (Button) dialog.findViewById(R.id.rightCommit);
+        RxView.clicks(leftButton).throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        LoginInfoStore.getIntance().writeCartTipInfo(false);
+                        alertDialog.dismiss();
+                    }
+                });
+
+        RxView.clicks(rightButton).throttleFirst(1000,TimeUnit.MILLISECONDS)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        alertDialog.dismiss();
+                    }
+                });
+
+        String htmlForCart = "1.在购物车中直接结算无返利!<br>2.请进入返钱模式后直接购买!";
+        content.setText(Html.fromHtml(htmlForCart));
+        int mScreenWidth = MyApplication.getDisplayMetrics().widthPixels;
+        alertDialog.show();
+        WindowManager.LayoutParams params = alertDialog.getWindow().getAttributes();
+        params.width = CommonUtils.getIntHundred(mScreenWidth*0.6f);
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        alertDialog.getWindow().setAttributes(params);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(0, 0, 0, 0)));
+        alertDialog.setContentView(dialog);
+        alertDialog.setCanceledOnTouchOutside(false);
     }
 
 
