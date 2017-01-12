@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -33,8 +32,8 @@ public class SearchMenuAdapter extends BaseListAdapter<SearchMenuAdapter.RowItem
     static{
         SearchRowItems = new ArrayList<>();
         SearchRowItems.add(new RowItem("superfan","超级返"));
-        SearchRowItems.add(new RowItem("commonfan","返利搜索"));
-        SearchRowItems.add(new RowItem("taobao","淘宝"));
+        SearchRowItems.add(new RowItem("taobao","淘宝返利"));
+        SearchRowItems.add(new RowItem("jd","京东"));
 
         pointsOrderSearchItems = new ArrayList<>();
         pointsOrderSearchItems.add(new RowItem("","全部状态"));

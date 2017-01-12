@@ -1,6 +1,6 @@
 (function(window) {
-    var flObj = {};
-
+   var flObj = {};
+   var tbFunScroll=window.onscroll;
    function setupWebViewJavascriptBridge(callback) {
            if (window.WebViewJavascriptBridge) {
                            callback(WebViewJavascriptBridge);
@@ -93,7 +93,9 @@
                 "goodIds": result
             }, function(response) {})
         }
+        if(tbFunScroll) tbFunScroll();
     }
+
     var renderfl = throttle(_renderfl, 1000);
     setupWebViewJavascriptBridge(function(bridge) {
         if (!bridge._messageHandler) {
@@ -126,6 +128,6 @@
             timeout=setTimeout(function(){
                 renderfl(bridge);
             },500);
-        };
+        }
     });
 })(window)

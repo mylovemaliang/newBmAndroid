@@ -144,6 +144,7 @@ public class RefreshLayout extends SwipeRefreshLayout{
      * 判断是否到了最底部
      */
     private boolean isBottom() {
+        if(mRecycleView == null) return false;
         GridLayoutManager layoutManager = (GridLayoutManager) mRecycleView.getLayoutManager();
         if (mRecycleView != null && mRecycleView.getAdapter() != null) {
             return layoutManager.findLastVisibleItemPosition() == (mRecycleView.getAdapter().getItemCount() - 1);

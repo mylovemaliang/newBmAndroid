@@ -216,6 +216,11 @@ public class SearchActivity extends BaseActivity {
                 if(busEvent instanceof SearchPromtOriginFragment.CopyClipboardContentEvent){
                     searchPromptFragment.copyFromChipboard();
                 }
+                if(busEvent instanceof TbSearchResFlagment.toOtherTypeSearchEvent){
+                    TbSearchResFlagment.toOtherTypeSearchEvent event = (TbSearchResFlagment.toOtherTypeSearchEvent) busEvent;
+                    String typeString = event.getTypeString();
+                    searchFlagment.changePage(typeString);
+                }
             }
         }));
     }

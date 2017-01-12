@@ -263,6 +263,24 @@ public class SearchFlagment extends BaseFragment{
         }
     }
 
+    //调换页面
+    public void changePage(String typeString){
+        if(isDetched) return;
+        if(TextUtils.isEmpty(typeString)) return;
+        if(SearchCondition.search_cate_superfan.equals(typeString)){
+            //超级返
+            viewPager.setCurrentItem(0);
+        }else if(SearchCondition.search_cate_taobao.equals(typeString)){
+            //淘宝
+            viewPager.setCurrentItem(1);
+        }else if("jd".equals(typeString)){
+            //京东
+            viewPager.setCurrentItem(2);
+        }else{
+
+        }
+    }
+
 
     //--------------------------------------------------------------------------------------------------
 

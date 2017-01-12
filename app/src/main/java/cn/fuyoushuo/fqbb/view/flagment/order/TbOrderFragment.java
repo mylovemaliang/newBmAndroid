@@ -2,15 +2,11 @@ package cn.fuyoushuo.fqbb.view.flagment.order;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -20,15 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.umeng.analytics.MobclickAgent;
-
-import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
-import cn.fuyoushuo.fqbb.commonlib.utils.EventIdConstants;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import cn.fuyoushuo.fqbb.view.activity.MainActivity;
-import cn.fuyoushuo.fqbb.view.activity.UserLoginActivity;
-import cn.fuyoushuo.fqbb.view.activity.WebviewActivity;
 import cn.fuyoushuo.fqbb.view.flagment.AlimamaLoginDialogFragment;
 import cn.fuyoushuo.fqbb.view.flagment.BaseInnerFragment;
 import cn.fuyoushuo.fqbb.view.flagment.TbWvDialogFragment;
@@ -94,7 +84,7 @@ public class TbOrderFragment extends BaseInnerFragment {
 
         myorderTitleText = (TextView) view.findViewById(R.id.myorderTitleText);
 
-        myorderWebview = new WebView(MyApplication.getContext());
+        myorderWebview = new WebView(getActivity());
         if(Build.VERSION.SDK_INT >= 21){
             myorderWebview.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
@@ -108,6 +98,9 @@ public class TbOrderFragment extends BaseInnerFragment {
 
         myorderWebview.requestFocusFromTouch();
         myorderWebview.setWebChromeClient(new WebChromeClient());
+        if(Build.VERSION.SDK_INT <= 18) {
+            myorderWebview.getSettings().setSavePassword(false);
+        }
 
         myorderWebview.setWebViewClient(new WebViewClient(){
             @Override
@@ -271,6 +264,9 @@ public class TbOrderFragment extends BaseInnerFragment {
     @Override
     public void onDestroy() {
         if(myorderWebview != null){
+            if(webviewArea != null){
+                webviewArea.removeView(myorderWebview);
+            }
             myorderWebview.removeAllViews();
             myorderWebview.destroy();
         }

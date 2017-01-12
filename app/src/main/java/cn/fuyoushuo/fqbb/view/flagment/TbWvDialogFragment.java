@@ -316,6 +316,10 @@ public class TbWvDialogFragment extends RxDialogFragment{
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             CookieManager.getInstance().setAcceptThirdPartyCookies(myWebView, true);
 
+        if(Build.VERSION.SDK_INT <= 18){
+            myWebView.getSettings().setSavePassword(false);
+        }
+
         myWebView.registerHandler("getFanliForTbSearch",new BridgeHandler() {
             @Override
             public void handler(String data, CallBackFunction function) {
@@ -677,10 +681,10 @@ public class TbWvDialogFragment extends RxDialogFragment{
 //                    }
 //                }
                 //进入淘宝搜索页
-                if(url.startsWith("https://s.m.taobao.com/h5?")){
+                if(myWebView != null && myWebView.getContext() != null && url.startsWith("https://s.m.taobao.com/h5?")){
                     BridgeUtil.webViewLoadLocalJs(myWebView,"tbSearch.js");
                 }
-                if(url.startsWith("https://h5.m.taobao.com/mlapp/cart.html")){
+                if(myWebView != null && myWebView.getContext() != null && url.startsWith("https://h5.m.taobao.com/mlapp/cart.html")){
                     BridgeUtil.webViewLoadLocalJs(myWebView,"tbcart.js");
                     myWebView.post(new Runnable() {
                         @Override
@@ -689,7 +693,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                         }
                     });
                 }
-                if(url.startsWith("https://h5.m.taobao.com/fav/index.htm?") && url.contains("goods")){
+                if(myWebView != null && myWebView.getContext() != null && url.startsWith("https://h5.m.taobao.com/fav/index.htm?") && url.contains("goods")){
                     BridgeUtil.webViewLoadLocalJs(myWebView,"tbfav.js");
                 }
 

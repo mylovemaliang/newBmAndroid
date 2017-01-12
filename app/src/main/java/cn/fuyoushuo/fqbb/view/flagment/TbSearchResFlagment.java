@@ -22,10 +22,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.jakewharton.rxbinding.view.RxView;
@@ -113,6 +113,12 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
     @Bind(R.id.search_totop_icon)
     TextView toTopIcon;
 
+    @Bind(R.id.view_noGoods)
+    FrameLayout noGoodsLayout;
+
+    @Bind(R.id.nogoods_fun_text)
+    TextView noGoodsFunText;
+
     //左边部分recycleview adapter
     SearchLeftRviewAdapter searchLeftRviewAdapter;
 
@@ -134,6 +140,9 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
     //搜索类别
     private String searchCateString;
 
+    //是否是第一次加载内容为空
+    private boolean isFirstLoadEmpty;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -147,6 +156,7 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1,searchCateString);
         fragment.setArguments(args);
+        fragment.isFirstLoadEmpty = false;
         return fragment;
     }
 
@@ -275,6 +285,25 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
          super.onViewCreated(view, savedInstanceState);
+
+        RxView.clicks(noGoodsFunText).throttleFirst(1000,TimeUnit.MILLISECONDS)
+                .compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        String currentSearchCate = searchCondition.getCurrentSearchCate();
+                        if(SearchCondition.search_cate_superfan.equals(currentSearchCate)){
+                            searchCondition.updateSearchKeyValue("toPage",1);
+                        }else if(SearchCondition.search_cate_commonfan.equals(currentSearchCate)){
+                            searchCondition.updateSearchKeyValue("toPage",1);
+                        }else if(SearchCondition.search_cate_taobao.equals(currentSearchCate)){
+                            searchCondition.updateSearchKeyValue("page",1);
+                        }
+                        searchPresenter.getSearchResult(searchCondition,false);
+                        refreshLayout.setRefreshing(false);
+                        return;
+                    }
+                });
 
         RxView.clicks(searchleftBtn).throttleFirst(1000,TimeUnit.MILLISECONDS)
                 .compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
@@ -873,6 +902,9 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
         if(!isReflash){
             searchResultRview.scrollToPosition(0);
         }
+        if(noGoodsLayout.isShown()){
+            noGoodsLayout.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -881,50 +913,64 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
     @Override
     public void setAlertDialogIfNull(){
 
-          Toast.makeText(MyApplication.getContext(),"搜索结果为空",Toast.LENGTH_SHORT).show();
-//        final AlertDialog alertDialog = new AlertDialog.Builder(mactivity).create();
-//
-//        View dialog = layoutInflater.inflate(R.layout.search_null_content_dialog, null);
-//        String currentSearchCate = searchCondition.getCurrentSearchCate();
-//
-//        RecyclerView rview = (RecyclerView) dialog.findViewById(R.id.search_null_content_dialog_rview);
-//        TextView title = (TextView) dialog.findViewById(R.id.search_null_content_dialog_top);
-//        title.setText(SearchCondition.getSearchTypeDesc(currentSearchCate)+"无搜索结果");
-//        SearchMenuAdapter adapter = new SearchMenuAdapter();
-//        adapter.setData(adapter.getNcRowItems(currentSearchCate));
-//        rview.setHasFixedSize(true);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mactivity);
-//        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//        rview.setLayoutManager(linearLayoutManager);
-//        rview.addItemDecoration(new ItemDecoration(mactivity));
-//        rview.setAdapter(adapter);
-//
-//        adapter.setOnRowClick(new SearchMenuAdapter.OnRowClick() {
-//            @Override
-//            public void onClick(View view, SearchMenuAdapter.RowItem rowItem) {
-//                String sortCode = rowItem.getSortCode();
-//                if(!"cancel".equals(sortCode)){
-//                    SeartchPo po = new SeartchPo();
-//                    po.setQ(q);
-//                    po.setSearchType(sortCode);
-//                    refreshSearchView(po);
-//                    alertDialog.dismiss();
-//                }
-//                else if("cancel".equals(sortCode)){
-//                    alertDialog.dismiss();
-//                }
-//            }
-//        });
-//
-//        int mScreenWidth = MyApplication.getDisplayMetrics().widthPixels;
-//        alertDialog.show();
-//        WindowManager.LayoutParams params = alertDialog.getWindow().getAttributes();
-//        params.width = CommonUtils.getIntHundred(mScreenWidth*0.6f);
-//        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-//        alertDialog.getWindow().setAttributes(params);
-//        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(0, 0, 0, 0)));
-//        alertDialog.setContentView(dialog);
-//        alertDialog.setCanceledOnTouchOutside(false);
+        noGoodsLayout.setVisibility(View.VISIBLE);
+        if(!isFirstLoadEmpty && SearchCondition.search_cate_superfan.equals(searchCateString)) {
+            RxBus.getInstance().send(new toOtherTypeSearchEvent(SearchCondition.search_cate_taobao));
+            isFirstLoadEmpty = true;
+            return;
+        }
+        if(mactivity != null){
+            final AlertDialog alertDialog = new AlertDialog.Builder(mactivity).create();
+            View dialog = layoutInflater.inflate(R.layout.search_null_content_dialog, null);
+            String currentSearchCate = searchCondition.getCurrentSearchCate();
+
+            RecyclerView rview = (RecyclerView) dialog.findViewById(R.id.search_null_content_dialog_rview);
+            TextView title = (TextView) dialog.findViewById(R.id.search_null_content_dialog_top);
+            title.setText(SearchCondition.getSearchTypeDesc(currentSearchCate)+"无搜索结果");
+            SearchMenuAdapter adapter = new SearchMenuAdapter();
+            adapter.setData(adapter.getNcRowItems(currentSearchCate));
+            rview.setHasFixedSize(true);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mactivity);
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            rview.setLayoutManager(linearLayoutManager);
+            rview.addItemDecoration(new ItemDecoration(mactivity));
+            rview.setAdapter(adapter);
+
+            adapter.setOnRowClick(new SearchMenuAdapter.OnRowClick() {
+                @Override
+                public void onClick(View view, SearchMenuAdapter.RowItem rowItem) {
+                    String sortCode = rowItem.getSortCode();
+                    if("cancel".equals(sortCode)){
+                        alertDialog.dismiss();
+                    }
+                    else if("taobao".equals(sortCode)){
+                        RxBus.getInstance().send(new toOtherTypeSearchEvent(SearchCondition.search_cate_taobao));
+                        alertDialog.dismiss();
+                    }
+                    else if("jd".equals(sortCode)){
+                        RxBus.getInstance().send(new toOtherTypeSearchEvent("jd"));
+                        alertDialog.dismiss();
+                    }
+                    else if("superfan".equals(sortCode)){
+                        RxBus.getInstance().send(new toOtherTypeSearchEvent("superfan"));
+                        alertDialog.dismiss();
+                    }
+                    else{
+
+                    }
+                }
+            });
+
+            int mScreenWidth = MyApplication.getDisplayMetrics().widthPixels;
+            alertDialog.show();
+            WindowManager.LayoutParams params = alertDialog.getWindow().getAttributes();
+            params.width = CommonUtils.getIntHundred(mScreenWidth*0.6f);
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            alertDialog.getWindow().setAttributes(params);
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(0, 0, 0, 0)));
+            alertDialog.setContentView(dialog);
+            alertDialog.setCanceledOnTouchOutside(false);
+        }
     }
 
     @Override
@@ -950,6 +996,23 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
        }
    }
 
+   public class toOtherTypeSearchEvent extends RxBus.BusEvent{
+
+       private String typeString;
+
+       public toOtherTypeSearchEvent(String typeString) {
+           this.typeString = typeString;
+       }
+
+       public String getTypeString() {
+           return typeString;
+       }
+
+       public void setTypeString(String typeString) {
+           this.typeString = typeString;
+       }
+   }
+
    //------------------------------实现上下级通信------------------------------------------------------
     @Override
     public void updateQ(String q) {
@@ -960,6 +1023,7 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
             changeSearchType(searchCateString);
             searchPresenter.getSearchResult(searchCondition,false);
         }
+        isFirstLoadEmpty = false;
     }
 
     //初始化全部状态

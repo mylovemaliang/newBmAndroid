@@ -62,13 +62,8 @@ public class MainTipDialogFragment extends RxDialogFragment{
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                       if(!isLastPage){
-                            imageView.setImageResource(R.mipmap.main_tip2);
-                            isLastPage = true;
-                       }else{
-                            RxBus.getInstance().send(new MainTipCompleteEvent());
-                            dismissAllowingStateLoss();
-                       }
+                        RxBus.getInstance().send(new MainTipCompleteEvent());
+                        dismissAllowingStateLoss();
                     }
                 });
     }

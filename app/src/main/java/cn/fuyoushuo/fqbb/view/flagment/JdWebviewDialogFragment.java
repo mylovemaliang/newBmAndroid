@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PatternMatcher;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
@@ -15,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -24,7 +22,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,14 +31,10 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
-import org.jsoup.helper.DataUtil;
-import org.w3c.dom.Text;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -164,6 +157,10 @@ public class JdWebviewDialogFragment extends RxDialogFragment implements JdGoodD
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(myJdWebView, true);
+        }
+
+        if(Build.VERSION.SDK_INT <= 18){
+            myJdWebView.getSettings().setSavePassword(false);
         }
 
         myJdWebView.setWebViewClient(new WebViewClient() {

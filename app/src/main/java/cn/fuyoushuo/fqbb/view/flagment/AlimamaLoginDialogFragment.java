@@ -104,7 +104,7 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //初始化本页面的webview
-        myWebView = new BridgeWebView(MyApplication.getContext());
+        myWebView = new BridgeWebView(getActivity());
         myWebView.getSettings().setJavaScriptEnabled(true);
         //myWebView.getSettings().setBuiltInZoomControls(true);//是否显示缩放按钮，默认false
         myWebView.getSettings().setSupportZoom(true);//是否可以缩放，默认true
@@ -123,6 +123,10 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             CookieManager.getInstance().setAcceptThirdPartyCookies(myWebView, true);
+
+        if(Build.VERSION.SDK_INT <= 18){
+            myWebView.getSettings().setSavePassword(false);
+        }
 
         myWebView.registerHandler("rememberUserInfo", new BridgeHandler() {
             @Override
@@ -226,6 +230,9 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
             alimamaLoginView.removeView(myWebView);
         }
         if(myWebView != null){
+            if(alimamaLoginView != null){
+                alimamaLoginView.removeView(myWebView);
+            }
             myWebView.removeAllViews();
             myWebView.destroy();
         }

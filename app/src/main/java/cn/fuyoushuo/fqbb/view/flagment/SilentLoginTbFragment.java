@@ -16,7 +16,6 @@ import com.github.lzyzsd.jsbridge.BridgeWebViewClient;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
-import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.commonlib.utils.LoginInfoStore;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 
@@ -44,7 +43,7 @@ public class SilentLoginTbFragment extends RxFragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        myWebView = new BridgeWebView(MyApplication.getContext());
+        myWebView = new BridgeWebView(getActivity());
         myWebView.getSettings().setJavaScriptEnabled(true);
         //myWebView.getSettings().setBuiltInZoomControls(true);//是否显示缩放按钮，默认false
         myWebView.getSettings().setSupportZoom(true);//是否可以缩放，默认true
@@ -61,6 +60,10 @@ public class SilentLoginTbFragment extends RxFragment{
         }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             CookieManager.getInstance().setAcceptThirdPartyCookies(myWebView, true);
+
+        if(Build.VERSION.SDK_INT <= 18){
+            myWebView.getSettings().setSavePassword(false);
+        }
 
         myWebView.setWebViewClient(new BridgeWebViewClient(myWebView){
 
