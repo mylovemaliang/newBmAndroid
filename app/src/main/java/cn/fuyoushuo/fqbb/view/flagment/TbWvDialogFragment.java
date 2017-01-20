@@ -737,7 +737,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
         wsxx.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                getChannelAdzoneInfo();
+                getChannelAdzoneInfo(null);
             }
         });
 
@@ -746,7 +746,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
         qdfx.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                getCpsLink();
+                getCpsLink(null);
             }
         });
 
@@ -1291,6 +1291,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                                     }
                                     final Float gfFee = gfFeeCount;
 
+
                                     URI uri = URI.create(itemFanliUrl);
                                     PersistentCookieStore s = new PersistentCookieStore(MyApplication.getContext());
                                     Log.d("cookie itemFanliUrl", s.get(uri).toString());
@@ -1303,14 +1304,14 @@ public class TbWvDialogFragment extends RxDialogFragment{
                                                     if(gfFee!=null && gfFee>0){
                                                         showFanliInfo(gfRate, gfFee);
                                                         currentItemIsGaofan = 1;
-                                                        isLoginForItemdDetail(false);
+                                                        isLoginForItemdDetail(false,new CachedFanliInfo(fxFee,fxRate,gfFee,gfRate));
                                                     }else if(fxFee!=null && fxFee>0){
                                                         showFanliInfo(fxRate, fxFee);
                                                         currentItemIsGaofan = 0;
-                                                        isLoginForItemdDetail(false);
+                                                        isLoginForItemdDetail(false,new CachedFanliInfo(fxFee,fxRate,gfFee,gfRate));
                                                     }else{
                                                         jfbDisplay();
-                                                        isLoginForItemdDetail(true);
+                                                        isLoginForItemdDetail(true,new CachedFanliInfo(fxFee,fxRate,gfFee,gfRate));
                                                     }
                                                 } catch (Exception e) {
                                                     Log.d("getFlInfoCallbackError",e.getMessage());
@@ -1358,7 +1359,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
         volleyRq.add(stringRequest);
     }
 
-    public void isLoginForItemdDetail(boolean isJfb){
+    public void isLoginForItemdDetail(boolean isJfb, final CachedFanliInfo fanliInfo){
         final boolean isJfbTag = isJfb;
         TaobaoInterPresenter.judgeAlimamaLogin(new TaobaoInterPresenter.LoginCallback() {
             @Override
@@ -1369,7 +1370,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                         if(myWebView!=null){
                             try {
                                 if(!isJfbTag){
-                                    isValidCpsUser();//判断用户是否实名认证
+                                    isValidCpsUser(fanliInfo);//判断用户是否实名认证
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -1465,14 +1466,14 @@ public class TbWvDialogFragment extends RxDialogFragment{
         //cleanCurrentItemId();
     }
 
-    public void isValidCpsUser(){
+    public void isValidCpsUser(final CachedFanliInfo cachedFanliInfo){
         Log.d("isValidCpsUser", "isValidCpsUser");
         long siteId = TaobaoInterPresenter.loginUserInfoCache.getLong("siteId", 0l);
         long adzoneId = TaobaoInterPresenter.loginUserInfoCache.getLong("adzoneId", 0l);
         long channelId = TaobaoInterPresenter.loginUserInfoCache.getLong("channelId", 0l);
 
         if(siteId!=0 && adzoneId!=0 && channelId!=0){
-            getChannelAdzoneInfo();
+            getChannelAdzoneInfo(cachedFanliInfo);
         }else{
             long t = new Date().getTime();
             String isValidCpsUserUrl = "http://pub.alimama.com/common/site/generalize/guideList.json?t="+t+"&_input_charset=utf-8";
@@ -1497,7 +1498,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                                             @Override
                                             public void run() {
                                                 try {
-                                                    getChannelAdzoneInfo();
+                                                    getChannelAdzoneInfo(cachedFanliInfo);
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                     showCurrentItemUrl();
@@ -1563,7 +1564,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
         }
     }
 
-    public void getChannelAdzoneInfo(){
+    public void getChannelAdzoneInfo(final CachedFanliInfo cachedFanliInfo){
         Log.d("getChannelAdzoneInfo", "getChannelAdzoneInfo");
 		/*long siteId = TaobaoInterPresenter.loginUserInfoCache.getLong("siteId", 0l);
         long adzoneId = TaobaoInterPresenter.loginUserInfoCache.getLong("adzoneId", 0l);
@@ -1664,13 +1665,13 @@ public class TbWvDialogFragment extends RxDialogFragment{
                             try{
                                 //新增媒体
                                 if(siteId==null || siteId<=0l){
-                                    addSite();
+                                    addSite(cachedFanliInfo);
                                     return;
                                 }
 
                                 //新增渠道
                                 if(channelId==null || channelId<=0l){
-                                    addChannel();
+                                    addChannel(cachedFanliInfo);
                                     return;
                                 }
 
@@ -1688,7 +1689,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                                 @Override
                                 public void run() {
                                     try {
-                                        getCpsLink();
+                                        getCpsLink(cachedFanliInfo);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -1729,7 +1730,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
         //}
     }
 
-    public void getCpsLink(){
+    public void getCpsLink(final CachedFanliInfo cachedFanliInfo){
         Log.d("getCpsLink", "getCpsLink");
         long siteId = TaobaoInterPresenter.loginUserInfoCache.getLong("siteId", 0l);
         long adzoneId = TaobaoInterPresenter.loginUserInfoCache.getLong("adzoneId", 0l);
@@ -1737,9 +1738,14 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
         if(siteId!=0 && adzoneId!=0 && channelId!=0){
             long t = new Date().getTime();
-            String getCpsLinkUrl = "http://pub.alimama.com/common/code/getAuctionCode.json?auctionid="+currentItemId+"&siteid="+siteId+"&adzoneid="+adzoneId+"&t="+t+"&_input_charset=utf-8";
+
+            String highCpsLinkUrl = "http://pub.alimama.com/common/code/getAuctionCode.json?auctionid="+currentItemId+"&siteid="+siteId+"&adzoneid="+adzoneId+"&t="+t+"&_input_charset=utf-8&scenes=3&channel=tk_qqhd";
+
+            final String lowCpsLinkUrl = "http://pub.alimama.com/common/code/getAuctionCode.json?auctionid="+currentItemId+"&siteid="+siteId+"&adzoneid="+adzoneId+"&t="+t+"&_input_charset=utf-8";
+
+            String getCpsLinkUrl = lowCpsLinkUrl;
             if(currentItemIsGaofan==1){
-                getCpsLinkUrl = "http://pub.alimama.com/common/code/getAuctionCode.json?auctionid="+currentItemId+"&siteid="+siteId+"&adzoneid="+adzoneId+"&t="+t+"&_input_charset=utf-8&scenes=3&channel=tk_qqhd";
+                getCpsLinkUrl = highCpsLinkUrl;
             }
 
             URI uri = URI.create(getCpsLinkUrl);
@@ -1780,6 +1786,11 @@ public class TbWvDialogFragment extends RxDialogFragment{
                                         }
                                     }
                                 });
+                            }else{
+                                //当高返没有结果时候尝试普通返利cps跳转
+                                if(currentItemIsGaofan == 1){
+                                    _retryGetCpsLink(lowCpsLinkUrl,cachedFanliInfo);
+                                }
                             }
                         }},
                     new Response.ErrorListener() {
@@ -1796,6 +1807,58 @@ public class TbWvDialogFragment extends RxDialogFragment{
         }else{
             return;
         }
+    }
+
+    //重新获取cps链接
+    private void _retryGetCpsLink(String getCpsLinkUrl, final CachedFanliInfo cachedFanliInfo){
+        RequestQueue volleyRq = TaobaoInterPresenter.getVolleyRequestQueue();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getCpsLinkUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        JSONObject jsonObj =null;
+                        try{
+                            jsonObj = JSONObject.parseObject(response.trim());
+                        }catch(Exception e){
+                            reflashFanliDisplay();
+                            return;
+                        }
+                        JSONObject dataJsonObj = jsonObj.getJSONObject("data");
+                        if(dataJsonObj!=null){
+                            //final String cpsUrl = dataJsonObj.getString("shortLinkUrl");
+                            final String cpsUrl = dataJsonObj.getString("clickUrl");
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        if(myWebView!=null){
+                                            myWebView.loadUrl(cpsUrl);
+                                            qdfx.setVisibility(View.GONE);
+                                            MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.NUMBER_OF_FANLI_FOR_TAOBAO);
+                                            if(cachedFanliInfo != null && cachedFanliInfo.getFxFee() != null){
+                                                showFanliInfo(cachedFanliInfo.getFxRate(),cachedFanliInfo.getFxFee());
+                                            }
+                                            //addItemTextInfo("已进入返利模式，", null);
+                                            //testDd();
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        }
+                    }},
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        showCurrentItemUrl();
+                        // 出错了怎么办，显示通信失败信息
+                    }
+                });
+
+        // 把这个请求加入请求队列
+        stringRequest.setTag(VOLLEY_TAG_NAME);
+        volleyRq.add(stringRequest);
     }
 
     public void jfbDisplay(){
@@ -1883,7 +1946,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
         volleyRq.add(stringRequest);*/
     }
 
-    public void addSite(){
+    public void addSite(final CachedFanliInfo cachedFanliInfo){
         try{
             PersistentCookieStore s = new PersistentCookieStore(MyApplication.getContext());
             URI uri = URI.create("http://www.alimama.com");
@@ -1916,7 +1979,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                             }
                             if(jsonObj.getBooleanValue("ok") && jsonObj.getJSONObject("info")!=null && jsonObj.getJSONObject("info").getBooleanValue("ok")){
                                 //新增成功，调用新增渠道的方法
-                                addChannel();
+                                addChannel(cachedFanliInfo);
                             }else{
                                 wsxxDisplay();
                             }
@@ -1936,7 +1999,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
         }
     }
 
-    public void addChannel(){
+    public void addChannel(final CachedFanliInfo cachedFanliInfo){
         try{
             PersistentCookieStore s = new PersistentCookieStore(MyApplication.getContext());
             URI uri = URI.create("http://www.alimama.com");
@@ -1966,7 +2029,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                                 return;
                             }
                             if(jsonObj.getBooleanValue("ok") && jsonObj.getJSONObject("info")!=null && jsonObj.getJSONObject("info").getBooleanValue("ok")){
-                                getChannelAdzoneInfo();
+                                getChannelAdzoneInfo(cachedFanliInfo);
                             }else{
                                 wsxxDisplay();
                             }
@@ -2171,4 +2234,56 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
         return paramsMap;
     }
+
+    class CachedFanliInfo{
+
+        Float gfFee;
+
+        Float gfRate;
+
+        Float fxFee;
+
+        Float fxRate;
+
+        public CachedFanliInfo(Float fxFee, Float fxRate, Float gfFee, Float gfRate) {
+            this.fxFee = fxFee;
+            this.fxRate = fxRate;
+            this.gfFee = gfFee;
+            this.gfRate = gfRate;
+        }
+
+        public Float getFxFee() {
+            return fxFee;
+        }
+
+        public void setFxFee(Float fxFee) {
+            this.fxFee = fxFee;
+        }
+
+        public Float getFxRate() {
+            return fxRate;
+        }
+
+        public void setFxRate(Float fxRate) {
+            this.fxRate = fxRate;
+        }
+
+        public Float getGfFee() {
+            return gfFee;
+        }
+
+        public void setGfFee(Float gfFee) {
+            this.gfFee = gfFee;
+        }
+
+        public Float getGfRate() {
+            return gfRate;
+        }
+
+        public void setGfRate(Float gfRate) {
+            this.gfRate = gfRate;
+        }
+    }
+
+
 }
