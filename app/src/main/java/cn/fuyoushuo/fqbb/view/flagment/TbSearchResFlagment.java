@@ -779,6 +779,13 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
         }
     }
 
+    //只更新搜索值
+    private void changeSearchQOnly(String q){
+        if(searchCondition == null || TextUtils.isEmpty(q)) return;
+        this.q = q;
+        searchCondition.updateSearchKeyValue("q",q);
+    }
+
 
     //初始化搜索浮框
     private void initPopupWindow(){
@@ -1019,8 +1026,7 @@ public class TbSearchResFlagment extends BaseInnerFragment implements SearchView
         if(!isInit){
             this.q = q;
         }else{
-            this.q = q;
-            changeSearchType(searchCateString);
+            changeSearchQOnly(q);
             searchPresenter.getSearchResult(searchCondition,false);
         }
         isFirstLoadEmpty = false;
