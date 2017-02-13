@@ -109,6 +109,34 @@
 
 			</RelativeLayout>
 		</FrameLayout>
+
+		<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/wv_coupon_tip_area"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentRight="true"
+			android:layout_marginBottom="100dp"
+			android:layout_marginRight="20dp"
+			android:background="@drawable/fanli_tip_border"
+			android:visibility="gone">
+
+			<RelativeLayout
+				android:layout_width="wrap_content"
+				android:layout_height="40dp">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:id="@+id/wv_coupon_info"
+					android:layout_centerVertical="true"
+					android:textSize="15sp"
+					android:textColor="@color/module_6"
+					android:text=""/>
+
+			</RelativeLayout>
+		</FrameLayout>
+
 	</RelativeLayout>
 
 	<RelativeLayout android:id="@+id/webviewFragBottom"

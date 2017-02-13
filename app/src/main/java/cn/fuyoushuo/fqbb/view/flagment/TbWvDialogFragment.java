@@ -187,6 +187,18 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
     private LayoutInflater layoutInflater;
 
+    //coupon
+    FrameLayout couponFrameLayout;
+
+    TextView couponText;
+
+    //定义是否领取优惠券
+    private boolean hasGetCoupon;
+
+    //记录优惠券状态
+    private int couponFunCode = 1; // 1.优惠券不可领取 2.优惠券可以领取 3.优惠券已经领取
+
+    private String couponLink = "";
 
     public static TbWvDialogFragment newInstance(String bizString,String loadUrl,boolean isFromGoodSearch){
         Bundle args = new Bundle();
@@ -234,6 +246,21 @@ public class TbWvDialogFragment extends RxDialogFragment{
             }
         });
 
+        //coupon
+        couponFrameLayout = (FrameLayout) inflate.findViewById(R.id.wv_coupon_tip_area);
+        couponText = (TextView) inflate.findViewById(R.id.wv_coupon_info);
+
+        couponFrameLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(couponFunCode == 2){
+                    if(myWebView != null && !TextUtils.isEmpty(couponLink)){
+                        myWebView.loadUrl(couponLink);
+                    }
+                }
+            }
+        });
+
         webviewTitleText = (TextView) inflate.findViewById(R.id.webviewTitleText);
         webviewToHome = (TextView) inflate.findViewById(R.id.webviewToHome);
 
@@ -264,7 +291,9 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 if(itemfxinfo2 != null){
                     CharSequence text = itemfxinfo2.getText();
                     if(text != null) {
-                        GoodDetailTipDialogFragment.newInstance(text.toString()).show(getFragmentManager(),"GoodDetailTipDialogFragment");
+                        if(getActivity() != null && !getActivity().isFinishing()) {
+                            GoodDetailTipDialogFragment.newInstance(text.toString()).show(getFragmentManager(), "GoodDetailTipDialogFragment");
+                        }
                     }
                 }
             }
@@ -279,7 +308,9 @@ public class TbWvDialogFragment extends RxDialogFragment{
             @Override
             public void onClick(View v) {
                 if(funCode == 1){
-                    AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_MY_TAOBAO_PAGE).show(getFragmentManager(),"AlimamaLoginDialogFragment");
+                    if(getActivity() != null && !getActivity().isFinishing()) {
+                        AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_MY_TAOBAO_PAGE).show(getFragmentManager(), "AlimamaLoginDialogFragment");
+                    }
                 }
             }
         });
@@ -434,6 +465,22 @@ public class TbWvDialogFragment extends RxDialogFragment{
             }
         });
 
+        //显示优惠券信息
+        myWebView.registerHandler("afterCouponGet", new BridgeHandler() {
+            @Override
+            public void handler(String data, CallBackFunction function) {
+                 if(TextUtils.isEmpty(data)) return;
+                 JSONObject couponData = JSONObject.parseObject(data);
+                 if(!couponData.containsKey("couponNum")) return;
+                 String couponNum  = couponData.getString("couponNum");
+                 if(!TextUtils.isEmpty(couponNum)){
+                     couponText.setText("已领取"+couponNum+"元优惠券");
+                     couponFunCode = 3;
+                 }
+
+            }
+        });
+
         myWebView.setWebViewClient(new BridgeWebViewClient(myWebView){
 
 
@@ -450,6 +497,9 @@ public class TbWvDialogFragment extends RxDialogFragment{
                     if(url.contains("ali_trackid=2:mm_") || url.contains("ali_trackid=2%3Amm_")){
                         showLeftTishi("已进入返钱模式");
                         webviewBottom.setVisibility(View.VISIBLE);
+                        if(couponFrameLayout != null && !couponFrameLayout.isShown()){
+                            couponFrameLayout.setVisibility(View.VISIBLE);
+                        }
                         return false;
                     }else if(url.contains("frm=etao")){
                         showLeftTishi("已进入返集分宝模式");
@@ -696,6 +746,12 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 if(myWebView != null && myWebView.getContext() != null && url.startsWith("https://h5.m.taobao.com/fav/index.htm?") && url.contains("goods")){
                     BridgeUtil.webViewLoadLocalJs(myWebView,"tbfav.js");
                 }
+                if(myWebView != null && myWebView.getContext() != null && url.startsWith("https://uland.taobao.com/coupon/edetail")){
+                    BridgeUtil.webViewLoadLocalJs(myWebView,"tbCoupon.js");
+                    if(couponFrameLayout != null && couponFrameLayout.isShown()){
+                        couponFrameLayout.setVisibility(View.GONE);
+                    }
+                }
 
                 String js = "var rmadjs = document.createElement(\"script\");";
                 js += "rmadjs.src=\"//www.fanqianbb.com/static/mobile/rmad.js\";";
@@ -712,7 +768,9 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 if(myWebView!=null){
                     loginPreUrl = myWebView.getUrl();
                     //showLoginPage();
-                    AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_TB_GOOD_DETAIL).show(getFragmentManager(),"AlimamaLoginDialogFragment");
+                    if(getActivity() != null && !getActivity().isFinishing()) {
+                        AlimamaLoginDialogFragment.newInstance(AlimamaLoginDialogFragment.FROM_TB_GOOD_DETAIL).show(getFragmentManager(), "AlimamaLoginDialogFragment");
+                    }
                 }
             }
         });
@@ -787,6 +845,8 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
 
     public void showCartTipDialog(){
+        //上下文不存在或者正在销毁，取消弹出框弹出
+        if(getActivity() == null || getActivity().isFinishing()) return;
         if(!LoginInfoStore.getIntance().IsCartTip()) return;
         final android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(getActivity()).create();
         View dialog = layoutInflater.inflate(R.layout.main_tip_content_dialog, null);
@@ -962,6 +1022,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
     }
 
     private void showFanliLoginDialog() {
+        if(getActivity() == null || getActivity().isFinishing()) return;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("登录到返利模式才会有返利.");
 
@@ -980,6 +1041,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
     }
 
     private void showMyTaobaoLoginDialog() {
+        if(getActivity() == null || getActivity().isFinishing()) return;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("登录淘宝才能查看我的淘宝.");
 
@@ -1392,6 +1454,11 @@ public class TbWvDialogFragment extends RxDialogFragment{
                                 jsonObj.put("tag", 0);
                                 showFlowBtn(jsonObj.toJSONString());//显示登录(我要返钱)按钮
                                 showCurrentItemUrl();
+                                if(couponFrameLayout != null && couponFrameLayout.isShown()){
+                                    couponText.setText("");
+                                    couponFunCode = 1;
+                                    couponFrameLayout.setVisibility(View.GONE);
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 showCurrentItemUrl();
@@ -1770,6 +1837,15 @@ public class TbWvDialogFragment extends RxDialogFragment{
                             if(dataJsonObj!=null){
                                 //final String cpsUrl = dataJsonObj.getString("shortLinkUrl");
                                 final String cpsUrl = dataJsonObj.getString("clickUrl");
+                                //初始化商权信息
+                                final String couponLinkUrl;
+                                if(dataJsonObj.containsKey("couponShortLinkUrl") && !TextUtils.isEmpty(dataJsonObj.getString("couponShortLinkUrl"))){
+                                    couponLinkUrl = dataJsonObj.getString("couponShortLinkUrl");
+                                }else if(dataJsonObj.containsKey("couponLink") && !TextUtils.isEmpty(dataJsonObj.getString("couponLink"))){
+                                    couponLinkUrl = dataJsonObj.getString("couponLink");
+                                }else{
+                                    couponLinkUrl = "";
+                                }
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -1778,6 +1854,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                                                 myWebView.loadUrl(cpsUrl);
                                                 qdfx.setVisibility(View.GONE);
                                                 MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.NUMBER_OF_FANLI_FOR_TAOBAO);
+                                                initCouponInfo(couponLinkUrl);
                                                 //addItemTextInfo("已进入返利模式，", null);
                                                 //testDd();
                                             }
@@ -1859,6 +1936,20 @@ public class TbWvDialogFragment extends RxDialogFragment{
         // 把这个请求加入请求队列
         stringRequest.setTag(VOLLEY_TAG_NAME);
         volleyRq.add(stringRequest);
+    }
+
+    private void initCouponInfo(String couponLinkUrl) {
+        if(TextUtils.isEmpty(couponLinkUrl)){
+            couponText.setText("暂无可用优惠券");
+            couponFunCode = 1;
+        }else{
+            couponText.setText("请领取优惠券");
+            couponFunCode = 2;
+            this.couponLink = couponLinkUrl;
+        }
+        if(couponFrameLayout != null && !couponFrameLayout.isShown()){
+            couponFrameLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     public void jfbDisplay(){
