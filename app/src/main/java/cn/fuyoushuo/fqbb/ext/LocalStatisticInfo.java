@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.Date;
@@ -131,6 +132,84 @@ public class LocalStatisticInfo {
                     }
                 });
     }
+
+    public void onApkInstall(){
+        String id = this.idString;
+        String md5Id = MD5.MD5Encode(this.idString);
+        ServiceManager.createService(FqbbLocalHttpService.class)
+                .apkInstall(md5Id,id,this.channelString,this.versionNum,this.osName,this.osVersionNum)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Object>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                         return;
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                         return;
+                    }
+                });
+    }
+
+    public void onApkActive(){
+        String id = this.idString;
+        String md5Id = MD5.MD5Encode(this.idString);
+        ServiceManager.createService(FqbbLocalHttpService.class)
+                .apkActive(md5Id,id,this.channelString,this.versionNum,this.osName,this.osVersionNum)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Object>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        return;
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        return;
+                    }
+                });
+    }
+
+    /**
+     * 当前referer 为空
+     * @param url
+     * @param referer
+     */
+    public void appWvLoad(String url,String referer){
+        if(TextUtils.isEmpty(url)) return;
+        String id = this.idString;
+        String md5Id = MD5.MD5Encode(this.idString);
+        ServiceManager.createService(FqbbLocalHttpService.class)
+                .appWvLoad(md5Id,id,this.channelString,this.versionNum,this.osName,this.osVersionNum,url,"")
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Object>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        return;
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        return;
+                    }
+                });
+     }
 
 
     //获得独一无二的Psuedo ID

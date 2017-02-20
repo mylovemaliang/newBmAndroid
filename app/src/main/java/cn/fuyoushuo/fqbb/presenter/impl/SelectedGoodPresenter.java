@@ -104,6 +104,7 @@ public class SelectedGoodPresenter extends BasePresenter{
             taoBaoItemVo.setSold(jsonObject.getInteger("biz30day").toString());
             taoBaoItemVo.setPrice(jsonObject.getDouble("zkPrice").toString());
             taoBaoItemVo.setUrl(jsonObject.getString("auctionUrl"));
+            taoBaoItemVo.setDayLeft(jsonObject.getInteger("dayLeft"));
 
             Float itemPrice = null;
             Float gfRate = jsonObject.getFloat("eventRate");

@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -92,6 +93,13 @@ public class GoodDataAdapter extends BaseListAdapter<TaoBaoItemVo>{
         currentHolder.sellOutView.setText("已售"+item.getSold()+"件");
         onLoad.onLoadImage(currentHolder.imageView,item);
 
+        if(item.getDayLeft() != null && item.getDayLeft() > 0){
+            currentHolder.dayLeftText.setText("剩余"+item.getDayLeft()+"天");
+            currentHolder.dayLeftArea.setVisibility(View.VISIBLE);
+        }else{
+            currentHolder.dayLeftArea.setVisibility(View.GONE);
+        }
+
         if(item.isFanliSearched()){
             if(null != item.getJfbCount()){
                 if(item.getJfbCount() == 0){
@@ -148,6 +156,10 @@ public class GoodDataAdapter extends BaseListAdapter<TaoBaoItemVo>{
         @Bind(R.id.myorder_item_good_discount) TextView discountView;
 
         @Bind(R.id.myorder_item_good_pricesaved) TextView pricesaveView;
+
+        @Bind(R.id.myorder_dayLeft_area) FrameLayout dayLeftArea;
+
+        @Bind(R.id.myorder_dayLeft_text) TextView dayLeftText;
 
         public ItemViewHolder(final View itemView, int itemType){
             super(itemView);

@@ -22,13 +22,13 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:largeHeap="true">
+        android:largeHeap="true"
+        android:supportsRtl="true">
         <activity
             android:name=".view.activity.LauncherActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,14 +39,14 @@
         <activity
             android:name=".view.activity.UserguideActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize"></activity>
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
         <activity
             android:name=".view.activity.AppstartActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize">
 
             <!-- <intent-filter> -->
@@ -59,45 +59,50 @@
         <activity
             android:name=".view.activity.SearchActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/SearchActivityTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/SearchActivityTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".view.activity.UserLoginActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/LoginActivityTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/LoginActivityTheme"
             android:windowSoftInputMode="adjustUnspecified|adjustResize|stateHidden" />
         <activity
             android:name=".view.activity.PointMallActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustUnspecified|adjustResize" />
         <activity
             android:name=".view.activity.MainActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
         <activity
             android:name=".view.activity.WebviewActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
         <activity
             android:name=".view.activity.HelpActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
         <activity
             android:name=".view.activity.ConfigActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
+        <activity
+            android:name=".view.activity.MipcaCaptureActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/AppTheme" />
 
         <meta-data
             android:name="UMENG_APPKEY"
@@ -108,6 +113,7 @@
         <meta-data
             android:name="feedback_appkey"
             android:value="23441360" />
+
     </application>
 
 </manifest>

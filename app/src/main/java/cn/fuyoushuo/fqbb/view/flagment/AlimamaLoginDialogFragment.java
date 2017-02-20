@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
+import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
@@ -36,6 +38,7 @@ import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.LoginInfoStore;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.commonlib.utils.UserInfoStore;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import rx.functions.Action1;
 
@@ -80,6 +83,15 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
         AlimamaLoginDialogFragment adf = new AlimamaLoginDialogFragment();
         adf.setArguments(args);
         return adf;
+    }
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try{
+            super.show(manager, tag);
+        }catch (Exception e){
+            // to do nothing
+        }
     }
 
     @Override
@@ -160,6 +172,11 @@ public class AlimamaLoginDialogFragment extends RxDialogFragment{
 
             @Override
             public void onPageFinished(final WebView view, String url) {
+                //统计页面跳转
+                try {
+                    LocalStatisticInfo.getIntance().appWvLoad(URLEncoder.encode(url,"utf-8"),"");
+                } catch (Exception e) {
+                }
                 super.onPageFinished(view,url);
                 if(url.startsWith("http://www.alimama.com/index.htm")
                     || url.startsWith("http://media.alimama.com/account/overview.htm")

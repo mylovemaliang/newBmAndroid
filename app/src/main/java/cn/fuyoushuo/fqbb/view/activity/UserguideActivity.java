@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import rx.functions.Action1;
 
 
@@ -44,6 +45,7 @@ public class UserguideActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userguide);
+        LocalStatisticInfo.getIntance().onApkInstall();
         //初始化引导页内容
         views = new SparseArray<ImageView>();
         int[] imageIds = new int[]{R.mipmap.guide_1,R.mipmap.guide_2,R.mipmap.guide_3};

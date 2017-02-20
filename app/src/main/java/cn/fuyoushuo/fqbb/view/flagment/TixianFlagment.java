@@ -20,7 +20,10 @@ import android.widget.TextView;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
+import java.net.URLEncoder;
+
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import cn.fuyoushuo.fqbb.view.activity.HelpActivity;
 import cn.fuyoushuo.fqbb.view.activity.MainActivity;
@@ -144,6 +147,12 @@ public class TixianFlagment extends RxDialogFragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+
+                //统计页面跳转
+                try {
+                    LocalStatisticInfo.getIntance().appWvLoad(URLEncoder.encode(url,"utf-8"),"");
+                } catch (Exception e) {
+                }
 
                 Log.i("TixianWebview", url);
                 if(url.startsWith("http://www.alimama.com/index.htm")){//已登录

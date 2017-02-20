@@ -314,6 +314,7 @@ public class SearchPresenter extends BasePresenter{
             taoBaoItemVo.setUrl(jsonObject.getString("auctionUrl"));
             taoBaoItemVo.setTkRate(jsonObject.getFloat("tkRate"));
             taoBaoItemVo.setTkCommFee(jsonObject.getFloat("tkCommFee"));
+            taoBaoItemVo.setDayLeft(jsonObject.getInteger("dayLeft"));
             resultList.add(taoBaoItemVo);
         }
     }
@@ -342,6 +343,7 @@ public class SearchPresenter extends BasePresenter{
             taoBaoItemVo.setUrl(jsonObject.getString("auctionUrl"));
             taoBaoItemVo.setTkRate(jsonObject.getFloat("eventRate"));
             taoBaoItemVo.setTkCommFee(jsonObject.getFloat("tkCommFee"));
+            taoBaoItemVo.setDayLeft(jsonObject.getInteger("dayLeft"));
             resultList.add(taoBaoItemVo);
         }
     }
@@ -408,6 +410,11 @@ public class SearchPresenter extends BasePresenter{
 
         Float fxRate = fanliInfo.getFloat("tkRate");
         Float fxFee = fanliInfo.getFloat("tkCommFee");
+        Integer dayLeft = fanliInfo.getInteger("dayLeft");
+
+        if(dayLeft != null){
+            vo.setDayLeft(dayLeft);
+        }
 
         if(gfRate != null && gfRate > 0){
             itemPrice = fanliInfo.getFloat("zkPrice");

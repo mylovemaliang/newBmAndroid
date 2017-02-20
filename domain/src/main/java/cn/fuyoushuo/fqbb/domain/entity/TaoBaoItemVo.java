@@ -27,6 +27,9 @@ public class TaoBaoItemVo implements Serializable{
     //返还的集分宝
     private Integer jfbCount;
 
+    //返利剩余天数,负数为无效
+    private Integer dayLeft;
+
     private boolean isFanliSearched = false;
 
     //是否已经load 基本信息
@@ -118,5 +121,13 @@ public class TaoBaoItemVo implements Serializable{
 
     public void setLoaded(boolean loaded) {
         isLoaded = loaded;
+    }
+
+    public Integer getDayLeft() {
+        return dayLeft;
+    }
+
+    public void setDayLeft(Integer dayLeft) {
+        this.dayLeft = dayLeft;
     }
 }

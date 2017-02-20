@@ -1,10 +1,7 @@
 package cn.fuyoushuo.fqbb.domain.httpservice;
 
-import org.json.JSONObject;
-
 import cn.fuyoushuo.fqbb.domain.ext.HttpResp;
 import retrofit2.http.GET;
-import retrofit2.http.HTTP;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -90,7 +87,28 @@ public interface FqbbLocalHttpService {
    //记录时长
    @GET("/mt.gif?d=android")
    Observable<Object> timeCount(@Query("b") int biz, @Query("u") String idMd5, @Query("ur") String id, @Query("c") String channel, @Query("v") int versionCode, @Query("os") String osName, @Query("ov") String osVersion, @Query("st") long time);
+
+   //记录安装
+   @GET("/ma.gif?d=android")
+   Observable<Object> apkInstall(@Query("u") String idMd5,@Query("ur") String id,@Query("c") String channel,@Query("v") int versionCode,@Query("os") String osName,@Query("ov") String osVersion);
+
+   //apk活跃
+   @GET("/ml.gif?d=android")
+   Observable<Object> apkActive(@Query("u") String idMd5,@Query("ur") String id,@Query("c") String channel,@Query("v") int versionCode,@Query("os") String osName,@Query("ov") String osVersion);
+
+    //webview 跳转
+    @GET("/mwv.gif?d=android")
+    Observable<Object> appWvLoad(@Query("u") String idMd5,@Query("ur") String id,@Query("c") String channel,@Query("v") int versionCode,@Query("os") String osName,@Query("ov") String osVersion,@Query("pa") String weburl,@Query("refer") String refer);
+
 }
+
+
+
+
+
+
+
+
 
 
 

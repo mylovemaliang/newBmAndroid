@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -117,6 +119,15 @@ public class JdWebviewDialogFragment extends RxDialogFragment implements JdGoodD
 
     private PageSession pageSession;
 
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try{
+            super.show(manager, tag);
+        }catch (Exception e){
+            // to do nothing
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -292,6 +303,11 @@ public class JdWebviewDialogFragment extends RxDialogFragment implements JdGoodD
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                //统计页面跳转
+                try {
+                    LocalStatisticInfo.getIntance().appWvLoad(URLEncoder.encode(url,"utf-8"),"");
+                } catch (Exception e) {
+                }
                 if (jdGoodDetailPresenter.isUserFanqianMode(url)) {
                     fanliTipLayout.setVisibility(View.VISIBLE);
                 } else if (isPageGoodDetail(url)) {

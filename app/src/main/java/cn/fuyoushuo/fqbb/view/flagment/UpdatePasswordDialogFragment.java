@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -14,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
@@ -31,10 +31,7 @@ import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
 import cn.fuyoushuo.fqbb.commonlib.utils.RxBus;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by QA on 2016/11/9.
@@ -58,6 +55,16 @@ public class UpdatePasswordDialogFragment extends RxDialogFragment{
     private String currentPasswordValue = "";
 
     LocalLoginPresent localLoginPresent;
+
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try{
+            super.show(manager, tag);
+        }catch (Exception e){
+            // to do nothing
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

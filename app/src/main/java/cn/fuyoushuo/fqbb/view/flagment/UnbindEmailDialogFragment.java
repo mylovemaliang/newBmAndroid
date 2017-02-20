@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.text.TextUtils;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -67,6 +67,15 @@ public class UnbindEmailDialogFragment extends RxDialogFragment{
 
     private Long time = 60l;
 
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try{
+            super.show(manager, tag);
+        }catch (Exception e){
+            // to do nothing
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -1,13 +1,14 @@
 package cn.fuyoushuo.fqbb.view.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
+
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 
 public class AppstartActivity extends BaseActivity {
 
@@ -18,7 +19,7 @@ public class AppstartActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.appstart);
-
+        LocalStatisticInfo.getIntance().onApkActive();
         appstartLayout = (RelativeLayout) findViewById(R.id.appstartLayout);
         Animation am = AnimationUtils.loadAnimation(this, R.anim.app_start_anim);
         appstartLayout.startAnimation(am);

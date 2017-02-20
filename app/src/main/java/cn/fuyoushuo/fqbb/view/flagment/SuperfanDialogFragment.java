@@ -1,11 +1,11 @@
 package cn.fuyoushuo.fqbb.view.flagment;
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,7 +38,6 @@ import cn.fuyoushuo.fqbb.view.Layout.MyGridLayoutManager;
 import cn.fuyoushuo.fqbb.view.Layout.RefreshLayout;
 import cn.fuyoushuo.fqbb.view.activity.BaseActivity;
 import cn.fuyoushuo.fqbb.view.activity.MainActivity;
-import cn.fuyoushuo.fqbb.view.activity.WebviewActivity;
 import cn.fuyoushuo.fqbb.view.adapter.CatesDataAdapter;
 import cn.fuyoushuo.fqbb.view.adapter.FgoodDataAdapter;
 import cn.fuyoushuo.fqbb.view.view.MainView;
@@ -77,6 +76,16 @@ public class SuperfanDialogFragment extends RxDialogFragment implements MainView
     public static SuperfanDialogFragment newInstance(){
         SuperfanDialogFragment adf = new SuperfanDialogFragment();
         return adf;
+    }
+
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try{
+            super.show(manager, tag);
+        }catch (Exception e){
+            // to do nothing
+        }
     }
 
     @Override

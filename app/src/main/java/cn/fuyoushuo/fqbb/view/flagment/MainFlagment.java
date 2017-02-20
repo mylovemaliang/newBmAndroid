@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,14 +22,19 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.jakewharton.rxbinding.view.RxView;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import cn.fuyoushuo.fqbb.MyApplication;
@@ -49,10 +55,12 @@ import cn.fuyoushuo.fqbb.view.Layout.RefreshLayout;
 import cn.fuyoushuo.fqbb.view.activity.BaseActivity;
 import cn.fuyoushuo.fqbb.view.activity.HelpActivity;
 import cn.fuyoushuo.fqbb.view.activity.MainActivity;
+import cn.fuyoushuo.fqbb.view.activity.MipcaCaptureActivity;
 import cn.fuyoushuo.fqbb.view.adapter.GoodDataAdapter;
 import cn.fuyoushuo.fqbb.view.listener.MyTagHandler;
 import cn.fuyoushuo.fqbb.view.view.MainView;
 import rx.functions.Action1;
+
 
 /**
  *  main activity
@@ -73,8 +81,8 @@ public class MainFlagment extends BaseFragment implements MainView {
     @Bind(R.id.main_totop_icon)
     TextView toTopIcon;
 
-    @Bind(R.id.main_userGuide)
-    View mainUserGuide;
+    @Bind(R.id.main_erweima)
+    View mainErweima;
 
     private MainPresenter mainPresenter;
 
@@ -170,14 +178,19 @@ public class MainFlagment extends BaseFragment implements MainView {
                     }
         });
 
-        RxView.clicks(mainUserGuide).throttleFirst(1000,TimeUnit.MILLISECONDS)
+        RxView.clicks(mainErweima).throttleFirst(1000,TimeUnit.MILLISECONDS)
                 .compose(this.<Void>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
                         //FeedbackAPI.openFeedbackActivity(MyApplication.getContext());
-                        Intent intent = new Intent(getActivity(),HelpActivity.class);
-                        startActivity(intent);
+                        //Intent intent = new Intent(getActivity(),HelpActivity.class);
+                        //startActivity(intent);
+                        MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.ERWEIMA_OPEN);
+                        IntentIntegrator.forSupportFragment(MainFlagment.this)
+                                .setOrientationLocked(false)
+                                .setCaptureActivity(MipcaCaptureActivity.class) // 设置自定义的activity是CustomActivity
+                                .initiateScan();
                     }
         });
 
@@ -487,6 +500,45 @@ public class MainFlagment extends BaseFragment implements MainView {
     private void initIconFront() {
         Typeface iconfont = Typeface.createFromAsset(getActivity().getAssets(), "iconfront/iconfont.ttf");
         toTopIcon.setTypeface(iconfont);
+    }
+
+
+    //获取二维码返回数据处理
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try{
+        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode,resultCode,data);
+        if(intentResult != null) {
+            if(intentResult.getContents() == null) {
+                //不处理
+                //Toast.makeText(MyApplication.getContext(),"内容为空",Toast.LENGTH_LONG).show();
+            } else {
+                // ScanResult 为 获取到的字符串
+                String ScanResult = intentResult.getContents();
+                if(ScanResult.indexOf("fqbId") > 0){
+                    String itemId = "";
+                    Pattern pattern = Pattern.compile("fqbId=([0-9]*)");
+                    Matcher matcher = pattern.matcher(ScanResult);
+                    if (matcher.find()) {
+                        itemId = matcher.group(1);
+                    }
+                    if(!TextUtils.isEmpty(itemId)){
+                        MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.ERWEIMA_INTO_GOOD);
+                        String fqbGoodUrl = "https://item.taobao.com/item.htm?id="+itemId;
+                        TbWvDialogFragment.newInstance("tbGoodDetail",fqbGoodUrl,false).show(getFragmentManager(),"TbWvDialogFragment");
+                    }
+                }else{
+                    Uri content_url = Uri.parse(ScanResult);
+                    Intent intent = new Intent(Intent.ACTION_VIEW,content_url);
+                    startActivity(intent);
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode,resultCode,data);
+        }
+        }catch (Exception e){
+            Toast.makeText(MyApplication.getContext(),"二维码内容有误",Toast.LENGTH_SHORT).show();
+        }
     }
 
     //----------------------------view 接口实现----------------------------------------------------

@@ -131,7 +131,7 @@
 					android:id="@+id/wv_coupon_info"
 					android:layout_centerVertical="true"
 					android:textSize="15sp"
-					android:textColor="@color/module_6"
+					android:textColor="@color/white"
 					android:text=""/>
 
 			</RelativeLayout>

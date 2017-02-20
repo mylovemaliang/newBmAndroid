@@ -16,7 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.net.URLEncoder;
+
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.TaobaoInterPresenter;
 import cn.fuyoushuo.fqbb.view.activity.MainActivity;
 import cn.fuyoushuo.fqbb.view.flagment.AlimamaLoginDialogFragment;
@@ -132,6 +135,12 @@ public class TbOrderFragment extends BaseInnerFragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+
+                //统计页面跳转
+                try {
+                    LocalStatisticInfo.getIntance().appWvLoad(URLEncoder.encode(url,"utf-8"),"");
+                } catch (Exception e) {
+                }
 
                 if(myorderWebview == null){
                     return;

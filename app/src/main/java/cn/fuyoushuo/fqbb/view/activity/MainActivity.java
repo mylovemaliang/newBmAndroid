@@ -596,8 +596,6 @@ public class MainActivity extends BaseActivity {
     }
 
 
-
-
     //所有Activity退出
     public void exit() {
         if ((System.currentTimeMillis() - exitTime) > 2000) {

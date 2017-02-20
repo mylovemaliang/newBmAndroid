@@ -97,5 +97,29 @@
             android:layout_height="5dp"
             android:background="@android:color/transparent"
             android:layout_below="@+id/myorder_item_fanli_info"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#90de323a"
+            android:id="@+id/myorder_dayLeft_area"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/myorder_dayLeft_text"
+                android:text=""
+                android:textColor="@color/white"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:textSize="15sp"
+                />
+        </FrameLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

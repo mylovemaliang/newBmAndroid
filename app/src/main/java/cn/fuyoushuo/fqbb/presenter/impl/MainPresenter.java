@@ -112,9 +112,11 @@ public class MainPresenter extends BasePresenter{
     public void getMTaoBaoGoods(final Integer page,final boolean isRefresh){
         SearchCondition searchCondition = SearchCondition.newInstance(SearchCondition.search_cate_superfan);
         searchCondition.updateSearchKeyValue("toPage",page);
-        searchCondition.updateSearchKeyValue("startTkRate",60);
-        searchCondition.updateSearchKeyValue("startBiz30day",500);
-        searchCondition.updateSearchKeyValue("sortType",13);
+        searchCondition.updateSearchKeyValue("startTkRate",40);
+        searchCondition.updateSearchKeyValue("startBiz30day",200);
+        searchCondition.updateSearchKeyValue("sortType",12);
+        searchCondition.updateSearchKeyValue("startPrice",10);
+
         Map<String, String> queryMap = searchCondition.getQueryMap();
         mSubscriptions.add(ServiceManager.createService(AlimamaHttpService.class)
             .searchHdFanli(queryMap)
@@ -169,6 +171,7 @@ public class MainPresenter extends BasePresenter{
             taoBaoItemVo.setUrl(jsonObject.getString("auctionUrl"));
             taoBaoItemVo.setTkRate(jsonObject.getFloat("eventRate"));
             taoBaoItemVo.setTkCommFee(jsonObject.getFloat("tkCommFee"));
+            taoBaoItemVo.setDayLeft(jsonObject.getInteger("dayLeft"));
             resultList.add(taoBaoItemVo);
         }
     }

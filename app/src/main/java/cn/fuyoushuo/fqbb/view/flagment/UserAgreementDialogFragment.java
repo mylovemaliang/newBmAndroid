@@ -3,6 +3,7 @@ package cn.fuyoushuo.fqbb.view.flagment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,15 @@ public class UserAgreementDialogFragment extends RxDialogFragment{
     @Bind(R.id.user_agreement_text)
     TextView userAgreeText;
 
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try{ 
+           super.show(manager, tag);
+        }catch (Exception e){
+            // to do nothing
+        }
+    }
 
     public static UserAgreementDialogFragment newInstance() {
         Bundle args = new Bundle();

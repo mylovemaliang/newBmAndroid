@@ -19,17 +19,18 @@ import android.widget.Toast;
 import com.jakewharton.rxbinding.view.RxView;
 import com.trello.rxlifecycle.FragmentEvent;
 
+import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import cn.fuyoushuo.fqbb.MyApplication;
 import cn.fuyoushuo.fqbb.R;
+import cn.fuyoushuo.fqbb.ext.LocalStatisticInfo;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalLoginPresent;
 import cn.fuyoushuo.fqbb.presenter.impl.LocalOrderPresenter;
 import cn.fuyoushuo.fqbb.view.Layout.SearchPointsOrderMenu;
 import cn.fuyoushuo.fqbb.view.activity.UserLoginActivity;
 import cn.fuyoushuo.fqbb.view.adapter.SearchMenuAdapter;
-import cn.fuyoushuo.fqbb.view.flagment.BaseFragment;
 import cn.fuyoushuo.fqbb.view.flagment.BaseInnerFragment;
 import cn.fuyoushuo.fqbb.view.view.LocalOrderView;
 import rx.functions.Action1;
@@ -116,6 +117,11 @@ public class LocalOrderFragment extends BaseInnerFragment implements LocalOrderV
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                //统计页面跳转
+                try {
+                    LocalStatisticInfo.getIntance().appWvLoad(URLEncoder.encode(url,"utf-8"),"");
+                } catch (Exception e) {
+                }
                 super.onPageFinished(view, url);
             }
         });

@@ -93,4 +93,19 @@ public class EventIdConstants {
      *  app crash 重启次数
      */
     public static final String APP_CRASH_RESTART = "app_crash_restart";
+
+    /**
+     * 优惠券领取
+     */
+    public static final String COUPON_ACQUIRE = "coupon_acquire";
+
+    /**
+     * 二维码打开次数
+     */
+    public static final String ERWEIMA_OPEN = "erweima_open";
+
+    /**
+     * 二维码打开商品次数
+     */
+    public static final String ERWEIMA_INTO_GOOD = "erweima_into_good";
 }

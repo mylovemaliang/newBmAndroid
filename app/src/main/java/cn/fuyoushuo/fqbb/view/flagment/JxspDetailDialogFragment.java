@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -140,6 +141,15 @@ public class JxspDetailDialogFragment extends RxDialogFragment {
 
     //左边部分recycleview adapter
     SearchLeftRviewAdapter searchLeftRviewAdapter;
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try{
+            super.show(manager, tag);
+        }catch (Exception e){
+            // to do nothing
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

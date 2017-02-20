@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -51,6 +53,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.trello.rxlifecycle.components.support.RxDialogFragment;
 import com.umeng.analytics.MobclickAgent;
 
+import java.io.UnsupportedEncodingException;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -80,6 +83,8 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
+
+import static u.aly.x.N;
 
 /**
  * Created by QA on 2016/12/16.
@@ -208,6 +213,15 @@ public class TbWvDialogFragment extends RxDialogFragment{
         args.putBoolean("isFromGoodSearch",isFromGoodSearch);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try{
+            super.show(manager, tag);
+        }catch (Exception e){
+            // to do nothing
+        }
     }
 
     @Override
@@ -372,6 +386,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                           myWebView.post(new Runnable() {
                              @Override
                              public void run() {
+                                if(myWebView == null) return;
                                 myWebView.callHandler("afterTbSearchFanliLoaded", result.toJSONString(), new CallBackFunction() {
                                     @Override
                                     public void onCallBack(String data) {}
@@ -410,6 +425,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                             myWebView.post(new Runnable() {
                                 @Override
                                 public void run() {
+                                    if(myWebView == null) return;
                                     myWebView.callHandler("afterCartFanliLoaded", result.toJSONString(), new CallBackFunction() {
                                         @Override
                                         public void onCallBack(String data) {}
@@ -448,6 +464,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                             myWebView.post(new Runnable() {
                                 @Override
                                 public void run() {
+                                    if(myWebView == null) return;
                                     myWebView.callHandler("afterFavFanliLoaded", result.toJSONString(), new CallBackFunction() {
                                         @Override
                                         public void onCallBack(String data) {}
@@ -651,6 +668,12 @@ public class TbWvDialogFragment extends RxDialogFragment{
                     return;
                 }*/
 
+                //统计页面跳转
+                try {
+                    LocalStatisticInfo.getIntance().appWvLoad(URLEncoder.encode(url,"utf-8"),"");
+                } catch (Exception e) {
+                }
+
                 super.onPageFinished(view, url);
 
 
@@ -748,6 +771,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
                 }
                 if(myWebView != null && myWebView.getContext() != null && url.startsWith("https://uland.taobao.com/coupon/edetail")){
                     BridgeUtil.webViewLoadLocalJs(myWebView,"tbCoupon.js");
+                    MobclickAgent.onEvent(MyApplication.getContext(),EventIdConstants.COUPON_ACQUIRE);
                     if(couponFrameLayout != null && couponFrameLayout.isShown()){
                         couponFrameLayout.setVisibility(View.GONE);
                     }
@@ -1808,7 +1832,7 @@ public class TbWvDialogFragment extends RxDialogFragment{
 
             String highCpsLinkUrl = "http://pub.alimama.com/common/code/getAuctionCode.json?auctionid="+currentItemId+"&siteid="+siteId+"&adzoneid="+adzoneId+"&t="+t+"&_input_charset=utf-8&scenes=3&channel=tk_qqhd";
 
-            final String lowCpsLinkUrl = "http://pub.alimama.com/common/code/getAuctionCode.json?auctionid="+currentItemId+"&siteid="+siteId+"&adzoneid="+adzoneId+"&t="+t+"&_input_charset=utf-8";
+            final String lowCpsLinkUrl = "http://pub.alimama.com/common/code/getAuctionCode.json?auctionid="+currentItemId+"&siteid="+siteId+"&adzoneid="+adzoneId+"&t="+t+"&_input_charset=utf-8&scenes=1";
 
             String getCpsLinkUrl = lowCpsLinkUrl;
             if(currentItemIsGaofan==1){
